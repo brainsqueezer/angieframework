@@ -3,8 +3,8 @@
   /**
   * General set of functions for file handling
   *
-  * @package Angie
-  * @subpackage core.functions
+  * @package Angie.core
+  * @subpackage functions
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
 

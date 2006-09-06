@@ -3,8 +3,8 @@
   /**
   * All web related functions - content forwarding, redirections, header manipulation etc
   *
-  * @package Angie
-  * @subpackage core.functions
+  * @package Angie.core
+  * @subpackage functions
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
   

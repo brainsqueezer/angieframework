@@ -1,40 +1,39 @@
 <?php
 
   /**
-  * Base controller class
-  * 
-  * This class is inherited by all script controllers. All methods of this class 
-  * are reserved - there can't be actions with that names (for instance, there 
-  * can't be execute actions in real controllers).
+  * Abstract controller class that implements basic controller logic: action
+  * exectution, method protection etc (we don't people play with methods that we
+  * are forced to make public - such as __construct, execute etc)
   *
-  * @version 1.0
+  * @package Angie.controller
   * @author Ilija Studen <ilija.studen@gmail.com>
-  * @abstract
   */
-  class Controller {
+  abstract class Angie_Controller {
     
     /**
-    * This controller name
+    * Name of this controller. It is underscored class-name without Controller sufix
     *
     * @var string
     */
     private $controller_name;
     
     /**
-    * Action that was (or need to be) executed
+    * Name of the action that was (or need to be) executed
     *
     * @var string
     */
     private $action;
     
     /**
-    * System controller class. System controller class is class withch methods
-    * are reserved (can't be called). Basic system controllers are Controller and
-    * PageController classes.
+    * Specify this property to set what methods will be protected - they will be invisible to 
+    * execute() method. For basic controllers that just inherit abstract controller things 
+    * should work just fine because methods of Angie_Controller class are automaticly 
+    * protected, but for any other complex controller type (like Angie_Controller_Page) more 
+    * methods need to be protected - render(), renderText() etc
     *
     * @var string
     */
-    private $system_controller_class;
+    private $protect_class_methods;
     
     /**
     * Contruct controller and set controller name
@@ -44,11 +43,8 @@
     * @return null
     */
     function __construct() {
-      
-      // Get controller name (tableized classname) and controller class
-      $this->setControllerName( Env::getControllerName( get_class($this) ) );
-      $this->setSystemControllerClass('Controller');
-      
+      $this->setControllerName(get_controller_name(get_class($this)));
+      $this->setSystemControllerClass('Angie_Controller');
     } // __construct
     
     /**
@@ -84,7 +80,7 @@
     * @return null
     */
     function forward($action, $controller = null) {
-      return empty($controller) ? $this->execute($action) : Env::executeAction($controller, $action);
+      return trim($controller) == '' ? $this->execute($action) : Env::executeAction($controller, $action);
     } // forward
     
     /**
@@ -95,20 +91,16 @@
     * @return boolean or Error
     */
     function validAction($action) {
+      if(!$this->isProtectedActionName($action)) {
+        return false; // protected action
+      } // if
       
-      // Get reserved names and check action name...
-      $reserved_names = Controller::getReservedActionNames();
-      if(is_array($reserved_names) && in_array($action, $reserved_names)) return false;
-      
-      // Get methods of this class...
       $methods = get_class_methods(get_class($this));
+      if(!in_array($action, $methods)) {
+        return false; // we don't have this action defined
+      } // if
       
-      // If we don't have defined action return false
-      if(!in_array($action, $methods)) return false;
-      
-      // All fine...
       return true;
-      
     } // validAction
     
     // -------------------------------------------------------
@@ -118,7 +110,6 @@
     /**
     * Get controller_name
     *
-    * @access public
     * @param null
     * @return string
     */
@@ -129,7 +120,6 @@
     /**
     * Set controller_name value
     *
-    * @access public
     * @param string $value
     * @return null
     */
@@ -140,7 +130,6 @@
     /**
     * Get action
     *
-    * @access public
     * @param null
     * @return string
     */
@@ -151,7 +140,6 @@
     /**
     * Set action value
     *
-    * @access public
     * @param string $value
     * @return null
     */
@@ -160,51 +148,61 @@
     } // setAction
     
     /**
-    * Get system_controller_class
+    * Get protect_class_methods
     *
-    * @access public
     * @param null
     * @return string
     */
-    function getSystemControllerClass() {
-      return $this->system_controller_class;
-    } // getSystemControllerClass
+    function getProtectClassMethods() {
+      return $this->protect_class_methods;
+    } // getProtectClassMethods
     
     /**
-    * Set system_controller_class value
+    * Set protect_class_methods value
     *
-    * @access public
     * @param string $value
     * @return null
+    * @throws InvalidParamError If $value class does not exist. $value class need to be include because
+    *   this method will not use autoloader
     */
-    function setSystemControllerClass($value) {
-      $this->system_controller_class = $value;
-    } // setSystemControllerClass
+    function setProtectClassMethods($value) {
+      if(class_exists($value, false)) {
+        $this->protect_class_methods = $value;
+      } else {
+        throw new InvalidParamError('value', $value, '$value need to be a valid class name');
+      } // if
+    } // setProtectClassMethods
     
     /**
     * Return reserved action names (methods of controller class)
     *
-    * @access private
     * @param void
     * @return arrays
+    * @throws Error if class that we need to protect does not exists
     */
-    function getReservedActionNames() {
-      static $names;
-      
-      // Get and check controller class
-      $controller_class = $this->getSystemControllerClass();
-      if(!class_exists($controller_class)) throw new Error("Controller class '$controller_class' does not exists");
-      
-      // If we don't have names get them
-      if(is_null($names)) {
-        $names = get_class_methods($controller_class);
-        foreach($names as $k => $v) $names[$k] = strtolower($v);
+    private function getProtectedActionNames() {
+      $controller_class = $this->getProtectClassMethods();
+      if(!class_exists($controller_class, false)) {
+        throw new Error("Controller class '$controller_class' does not exists");
       } // if
+    
+      $names = get_class_methods($controller_class);
+      foreach($names as $k => $v) {
+        $names[$k] = strtolower($v);
+      } // foreach
       
-      // And return...
       return $names;
-      
-    } // getReservedActionNames
+    } // getProtectedActionNames
+    
+    /**
+    * Check if $action_name is protected action name
+    *
+    * @param string $action_name
+    * @return boolean
+    */
+    private function isProtectedActionName($action_name) {
+      return in_array($action_name, $this->getProtectedActionNames());
+    } // isProtectedActionName
   
   } // Controller
 

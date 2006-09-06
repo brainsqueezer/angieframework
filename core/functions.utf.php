@@ -4,8 +4,8 @@
   * MB string extension wrapper functions. This function will check if MB string extension is 
   * availalbe and use mb_ functions if it is. Otherwise it will use old PHP functions
   *
-  * @package Angie
-  * @subpackage core.functions
+  * @package Angie.core
+  * @subpackage functions
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
 

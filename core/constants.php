@@ -3,8 +3,8 @@
   /**
   * General purpose and compatibility constants
   *
-  * @package Angie
-  * @subpackage core.constants
+  * @package Angie.core
+  * @subpackage constants
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
 

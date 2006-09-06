@@ -4,8 +4,8 @@
   * General purpose functions: string and array manipulation, simple input filtering and 
   * ouput cleaning etc
   *
-  * @package Angie
-  * @subpackage core.functions
+  * @package Angie.core
+  * @subpackage functions
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
 
@@ -231,16 +231,15 @@
   // ---------------------------------------------------
   
   /**
-  * Return variable from hash (associative array). If value does not exists 
-  * return default value
+  * Return variable from an array. If field $name does not exists in array this function
+  * will return $default
   *
-  * @access public
   * @param array $from Hash
   * @param string $name
   * @param mixed $default
   * @return mixed
   */
-  function array_var(&$from, $name, $default = null) {
+  function array_var($from, $name, $default = null) {
     if(is_array($from)) {
       return isset($from[$name]) ? $from[$name] : $default;
     } // if
