@@ -11,7 +11,15 @@
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
   abstract class Angie_Engine {
+    
+    // ---------------------------------------------------
+    //  Abstract functions
+    // ---------------------------------------------------
   
+    abstract function init();
+    abstract function execute(Angie_Request $request);
+    abstract function close();
+    
   } // Angie_Engine
 
 ?>

@@ -1,5 +1,13 @@
 <?php
 
+  /**
+  * Angie class provides interface to engine instance - object that ties the whole 
+  * project in one system. Angie is able to have multiple engines running at the 
+  * same time
+  *
+  * @package Angie
+  * @author Ilija Studen <ilija.studen@gmail.com>
+  */
   class Angie {
   
     /**

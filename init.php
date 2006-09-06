@@ -18,5 +18,9 @@
   require ANGIE_PATH . '/core/functions.web.php';
   require ANGIE_PATH . '/core/functions.utf.php';
   require ANGIE_PATH . '/core/functions.utils.php';
+  
+  require ANGIE_PATH . '/Angie.class.php';
+  require ANGIE_PATH . '/engine/Angie_Engine.class.php';
+  require ANGIE_PATH . '/engine/Angie_Engine_Default.class.php';
 
 ?>
