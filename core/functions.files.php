@@ -156,18 +156,17 @@
   } // get_file_extension
   
   /**
-  * Return size of a specific dir in bytes
+  * Walks recursively through directory and calculates its total size - returned in bytes
   *
-  * @access public
   * @param string $dir Directory
   * @return integer
   */
   function dir_size($dir) {
   	$totalsize = 0;
   	
-  	if ($dirstream = @opendir($dir)) {
-  		while (false !== ($filename = readdir($dirstream))) {
-  			if (($filename != ".") && ($filename != "..")) {
+  	if($dirstream = @opendir($dir)) {
+  		while(false !== ($filename = readdir($dirstream))) {
+  			if(($filename != '.') && ($filename != '..')) {
   				$path = with_slash($dir) . $filename;
   				if (is_file($path)) $totalsize += filesize($path);
   				if (is_dir($path)) $totalsize += dir_size($path);
@@ -182,7 +181,6 @@
   /**
   * Remove specific directory
   *
-  * @access public
   * @param string $dir Directory path
   * @return boolean
   */
@@ -212,7 +210,10 @@
   * @return null
   */
   function force_mkdir($path, $chmod = null) {
-    if(is_dir($path)) return true;
+    if(is_dir($path)) {
+      return true;
+    } // if
+    
     $real_path = str_replace('\\', '/', $path);
     $parts = explode('/', $real_path);
     
@@ -229,9 +230,13 @@
       
       if(!is_dir($forced_path)) {
         if(!is_null($chmod)) {
-          if(!mkdir($forced_path)) return false;
+          if(!mkdir($forced_path)) {
+            return false;
+          } // if
         } else {
-          if(!mkdir($forced_path, $chmod)) return false;
+          if(!mkdir($forced_path, $chmod)) {
+            return false;
+          } // if
         } // if
       } // if
     } // foreach
@@ -249,250 +254,13 @@
 		$d = dir($dir_path);
     if($d) {
   		while(false !== ($entry = $d->read())) {
-  		  if(($entry == '.') || ($entry == '..')) continue;
+  		  if(($entry == '.') || ($entry == '..')) {
+  		    continue;
+  		  } // if
   		  return false;
   		} // while
 		} // if
 		return true;
   } // is_dir_empty
-  
-  /**
-  * Check if file $in/$desired_filename exists and if it exists save it in 
-  * $in/$desired_filename(x).exteionsion (X is inserted in front of the extension)
-  *
-  * @access public
-  * @param string $in Directory
-  * @param string $desired_filename
-  * @return string
-  */
-  function get_unique_filename($in, $desired_filename) {
-    
-    if(!is_dir($in)) false;
-    
-    $file_path = $in . '/' . $desired_filename;
-    $counter = 0;
-    while(is_file($file_path)) {
-      $counter++;
-      $file_path = insert_before_file_extension($file_path, '(' . $counter . ')');
-    } // if
-    
-    return $file_path;
-    
-  } // get_unique_filename
-  
-  /**
-  * Set something before file extension
-  *
-  * @access public
-  * @param string $in Filename
-  * @param string $insert Insert this
-  * @return null
-  */
-  function insert_before_file_extension($filename, $insert) {
-    return str_replace_first('.', '.' . $insert, $filename);
-  } // insert_before_file_extension
-  
-  /**
-  * Forward specific file to the browser. Download can be forced (dispolition: attachment) or passed as inline file
-  *
-  * @access public
-  * @param string $path File path
-  * @param string $type Serve file as this type
-  * @param string $name If set use this name, else use filename (basename($path))
-  * @param boolean $force_download Force download (add Disposition => attachement)
-  * @return boolean
-  */
-  function download_file($path, $type = 'application/octet-stream', $name = '', $force_download = false) {
-    if (!is_readable($path)) return false;
-    
-    $filename = trim($name) == '' ? basename($path) : trim($name);
-    return download_contents(file_get_contents($path), $type, $filename, filesize($path), $force_download);
-  } // download_file
-  
-  /**
-  * Use content (from file, from database, other source...) and pass it to the browser as a file
-  *
-  * @param string $content
-  * @param string $type MIME type
-  * @param string $name File name
-  * @param integer $size File size
-  * @param boolean $force_download Send Content-Disposition: attachment to force save dialog
-  * @return boolean
-  */
-  function download_contents($content, $type, $name, $size, $force_download = false) {
-    if(connection_status() != 0) return false; // check connection
-    
-    if($force_download) {
-      header("Cache-Control: public");
-    } else {
-      header("Cache-Control: no-store, no-cache, must-revalidate");
-      header("Cache-Control: post-check=0, pre-check=0", false);
-      header("Pragma: no-cache");
-    } // if
-    header("Expires: " . gmdate("D, d M Y H:i:s", mktime(date("H") + 2, date("i"), date("s"), date("m"), date("d"), date("Y"))) . " GMT");
-    header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-    header("Content-Type: $type");
-    header("Content-Length: " . (string) $size);
-    
-    // Prepare disposition
-    $disposition = $force_download ? 'attachment' : 'inline';
-    header("Content-Disposition: $disposition; filename=\"" . $name) . "\"";
-    header("Content-Transfer-Encoding: binary");
-    print $content;
-    
-    return((connection_status() == 0) && !connection_aborted());   
-  } // download_contents
-  
-  /**
-  * This function is used for sorting list of files. 
-  * 
-  * The most important thing about this function is $extractor. It is function 
-  * name of function that will be used to extract data that we need for sorting
-  *  - filesize, file modification type, content-type... Anything. First param of
-  * $extractor function must be filepath.
-  *
-  * After the extract have all the data it need $sort_with function will be used
-  * to sort by the extracted data... First param of the $sort_with function must
-  * be array that need to be sorted. This function MUST RETURN SORTED ARRAY, cant
-  * use side effect...
-  *
-  * Important = $sort_with must be key sorting function because this function
-  * saves extracted data into the array keys...
-  *
-  * Examples:
-  *
-  * sort_files($files, 'filemtime', 'krsort', SORT_NUMERIC) will sort all files 
-  * by modification time and the freshest files will be at the top of the result
-  *
-  * @access public
-  * @param array $file Array of filenames
-  * @param string $extractor Function that will be used for extractiong specific
-  *   file data (like file creation time or filesize)
-  * @param string $sort_with Function that will be used to sort the array
-  *   when we are done...
-  * @param mixed $sort_method If this value is <> null that this will be passed
-  *   to the sort functions as second param. I added it because there are great
-  *   number of function that can use it to make a diffrence between string and int
-  *   sorting... 
-  * @return array
-  */
-  function sort_files($files, $extractor, $sort_with = 'array_ksort', $sort_method = null) {
-    
-    // Prepare...
-    $extractor = trim($extractor);
-    $sort_with = trim($sort_with);
-    
-    // Check the input data...
-    if(!is_array($files)) return false;
-    if(!function_exists($extractor)) return false;
-    if(!function_exists($sort_with)) return false;
-    
-    // Prepare the tmp array...
-    $tmp = array();
-    
-    // OK, now get the files...
-    foreach($files as $file) {
-    
-      // Pass this one?
-      if(!is_file($file)) continue;
-      
-      // Get data...
-      $data = call_user_func($extractor, $file);
-      
-      // Prepare array...
-      if(!isset($tmp[$data])) $tmp[$data] = array();
-      
-      // Add filename to the extracted param...
-      $tmp[$data][] = $file;
-      
-    } // foreach
-    
-    // OK, now sort subarrays
-    foreach($tmp as &$subarray) {
-      if(count($subarray) > 0) sort($subarray);
-    } // if
-    
-    // OK, do the sort thing...
-    if(is_null($sort_method)) {
-      $sorted = call_user_func($sort_with, $tmp);
-    } else {
-      $sorted = call_user_func_array($sort_with, array($tmp, $sort_method));
-    } // if
-    
-    // Check sorted array
-    if(!is_array($sorted)) return false;
-    
-    // OK, flatten...
-    $result = array();
-    foreach($sorted as &$subarray) {
-      $result = array_merge($result, $subarray);
-    } // foreach
-    
-    // And done...
-    return $result;
-    
-  } // sort_files
-  
-  // ================================================================
-  //  SORT FUNC REPLACEMENTS
-  //
-  //  These function RETURN sorted array, don't use side effect. They
-  //  are used by the sort_files() function in the 
-  //  environment/functions/files.php
-  // ================================================================
-  
-  /**
-  * Replacement function for sort() function. Returns array
-  *
-  * @access public
-  * @param array $array Array that need to be sorted
-  * @param int $flag Sort flag, described on sort() function documentation page
-  * @return array
-  */
-  function array_sort($array, $flag = SORT_REGULAR) {
-    sort($array, $flag);
-    return $array;
-  } // end func 
-  
-  /**
-  * Replacement function for rsort() function. Returns array
-  *
-  * @access public
-  * @param array $array Array that need to be sorted
-  * @param int $flag Sort flag, described on sort() function documentation page
-  * @return array
-  */
-  function array_rsort($array, $flag = SORT_REGULAR) {
-    rsort($array, $flag);
-    return $array;
-  } // end func array_rsort
-  
-  /**
-  * Replacement function for ksort() function. Returns array
-  *
-  * @access public
-  * @param array $array Array that need to be sorted
-  * @param int $flag Sort flag, described on sort() function documentation page
-  * @return array
-  */
-  function array_ksort($array, $flag = SORT_REGULAR) {
-    ksort($array, $flag);
-    return $array;
-  } // end func array_ksort
-  
-  /**
-  * Replacement function for krsort() function. Returns array
-  *
-  * @access public
-  * @param array $array Array that need to be sorted
-  * @param int $flag Sort flag, described on sort() function documentation page
-  * @return array
-  */
-  function array_krsort($array, $flag = SORT_REGULAR) {
-    krsort($array, $flag);
-    return $array;
-  } // end func array_krsort
-  
-  /*** / SORT FUNC REPLACEMENTS ***/
 
 ?>
