@@ -4,7 +4,7 @@
   * General set of functions for file handling
   *
   * @package Angie
-  * @subpackage functions
+  * @subpackage core.functions
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
 

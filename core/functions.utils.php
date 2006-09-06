@@ -4,7 +4,7 @@
   * Angie specific utility functions
   *
   * @package Angie
-  * @subpackage functions
+  * @subpackage core.functions
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
   

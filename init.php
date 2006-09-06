@@ -12,8 +12,10 @@
   
   set_include_path(''); // don't rely on include path
   
+  require ANGIE_PATH . '/core/constants.php';
   require ANGIE_PATH . '/core/functions.general.php';
   require ANGIE_PATH . '/core/functions.files.php';
+  require ANGIE_PATH . '/core/functions.web.php';
   require ANGIE_PATH . '/core/functions.utf.php';
   require ANGIE_PATH . '/core/functions.utils.php';
 

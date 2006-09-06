@@ -4,9 +4,53 @@
   * All web related functions - content forwarding, redirections, header manipulation etc
   *
   * @package Angie
-  * @subpackage functions
+  * @subpackage core.functions
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
+  
+  /**
+  * Redirect to specific URL (header redirection). 
+  * 
+  * Usually URLs passed to this function are escaped so they can be printed in templates and 
+  * not break the validator (&amp; problem) so this functions undo htmlspecialchars() first
+  *
+  * @param string $to Redirect to this URL
+  * @param boolean $die Die when finished
+  * @return void
+  */
+  function redirect_to($to, $die = true) {
+  	$to = undo_htmlspecialchars($to);
+    header('Location: ' . $to);
+    if($die) {
+      die();
+    } // if
+  } // end func redirect_to
+  
+  /**
+  * Redirect to referer
+  *
+  * @access public
+  * @param string $alternative Alternative URL is used if referer is not valid URL
+  * @return null
+  */
+  function redirect_to_referer($alternative = null) {
+    $referer = get_referer();
+    if(is_valid_url($referer)) {
+      redirect_to($referer);
+    } else {
+      redirect_to($alternative);
+    } // if
+  } // redirect_to_referer
+  
+  /**
+  * Return referer URL
+  *
+  * @param string $default This value is returned if referer is not found or is empty
+  * @return string
+  */
+  function get_referer($default = null) {
+    return array_var($_SERVER, 'HTTP_REFERER', $default);
+  } // get_referer
 
   /**
   * Forward specific file to the browser as a stream of data. Download can be forced 
@@ -64,5 +108,39 @@
     
     return((connection_status() == 0) && !connection_aborted());   
   } // download_contents
+  
+  /**
+  * This function will strip slashes if magic quotes is enabled so 
+  * all input data ($_GET, $_POST, $_COOKIE) is free of slashes
+  *
+  * @access public
+  * @param void
+  * @return null
+  */
+  function fix_input_quotes() {
+    if(get_magic_quotes_gpc()) {
+      array_stripslashes($_GET);
+      array_stripslashes($_POST);
+      array_stripslashes($_COOKIE);
+    } // if
+  } // fix_input_quotes
+  
+  /**
+  * This function will walk recursivly thorugh array and strip slashes from scalar values
+  *
+  * @param array $array
+  * @return null
+  */
+  function array_stripslashes(&$array) {
+    if(!is_array($array)) return;
+    foreach($array as $k => $v) {
+      if(is_array($array[$k])) {
+        array_stripslashes($array[$k]);
+      } else {
+        $array[$k] = stripslashes($array[$k]);
+      } // if
+    } // foreach
+    return $array;
+  } // array_stripslashes
 
 ?>

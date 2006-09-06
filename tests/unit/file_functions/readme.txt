@@ -1,0 +1,1 @@
+This directory is not empty. But /empty should be for TestFileCuntions test to pass
