@@ -33,27 +33,5 @@
     
     return count($tests) ? $tests : null;
   } // collect_test_from_dir
-  
-  /**
-  * Return controller name based on controller class; name will be converted to underscore 
-  * and 'Controller' sufix will be removed
-  *
-  * @param string $controller_class
-  * @return string
-  */
-  function get_controller_name($controller_class) {
-    return Inflector::underscore(substr($controller_class, 0, strlen($controller_class) - 10));
-  } // get_controller_name
-  
-  /**
-  * Return controller class based on controller name; controller name will be 
-  * camelized and Controller will be added as sufix
-  *
-  * @param string $controller_name
-  * @return string
-  */
-  function get_controller_class($controller_name) {
-    return Inflector::camelize($controller_name) . 'Controller';
-  } // get_controller_class
 
 ?>

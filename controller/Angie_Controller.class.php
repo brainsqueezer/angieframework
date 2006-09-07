@@ -38,19 +38,17 @@
     /**
     * Contruct controller and set controller name
     *
-    * @access public
     * @param void
     * @return null
     */
     function __construct() {
-      $this->setControllerName(get_controller_name(get_class($this)));
+      $this->setControllerName(Angie::engine()->getControllerName(get_class($this)));
       $this->setSystemControllerClass('Angie_Controller');
     } // __construct
     
     /**
     * Execute specific controller action
     *
-    * @access public
     * @param string $action
     * @return InvalidControllerActionError if action name is not valid or true
     */
@@ -73,7 +71,6 @@
     /**
     * Forward to specific contrller / action
     *
-    * @access public
     * @param string $action
     * @param string $controller. If this value is NULL current controller will be
     *   used
@@ -86,9 +83,8 @@
     /**
     * Check if specific $action is valid controller action (method exists and it is not reserved)
     *
-    * @access public
     * @param string $action
-    * @return boolean or Error
+    * @return boolean
     */
     function validAction($action) {
       if(!$this->isProtectedActionName($action)) {
