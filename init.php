@@ -21,6 +21,11 @@
   
   require ANGIE_PATH . '/Angie.class.php';
   require ANGIE_PATH . '/engine/Angie_Engine.class.php';
-  require ANGIE_PATH . '/engine/Angie_Engine_Default.class.php';
+  require ANGIE_PATH . '/controller/Angie_Controller.class.php';
+  require ANGIE_PATH . '/controller/Angie_Request.class.php';
+  
+  require ANGIE_PATH . '/error/Angie_Error.class.php';
+  require ANGIE_PATH . '/error/core/Angie_Error_Core_InvalidInstance.class.php';
+  require ANGIE_PATH . '/error/file_system/Angie_Error_FileSystem_FileDnx.class.php';
 
 ?>

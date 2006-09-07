@@ -60,26 +60,46 @@
     // ---------------------------------------------------
     
     /**
-  * Return controller name based on controller class; name will be converted to underscore 
-  * and 'Controller' sufix will be removed
-  *
-  * @param string $controller_class
-  * @return string
-  */
-  function getControllerName($controller_class) {
-    return Inflector::underscore(substr($controller_class, 0, strlen($controller_class) - 10));
-  } // getControllerName
-  
-  /**
-  * Return controller class based on controller name; controller name will be 
-  * camelized and Controller will be added as sufix
-  *
-  * @param string $controller_name
-  * @return string
-  */
-  function getControllerClass($controller_name) {
-    return Inflector::camelize($controller_name) . 'Controller';
-  } // getControllerClass
+    * Return name of default controller
+    *
+    * @param void
+    * @return string
+    */
+    function getDefaultControllerName() {
+      return Angie::DEFAULT_CONTROLLER_NAME;
+    } // getDefaultControllerName
+    
+    /**
+    * Return name of default action
+    *
+    * @param void
+    * @return string
+    */
+    function getDefaultActionName() {
+      return Angie::DEFAULT_ACTION_NAME;
+    } // getDefaultActionName
+    
+    /**
+    * Return controller name based on controller class; name will be converted to underscore 
+    * and 'Controller' sufix will be removed
+    *
+    * @param string $controller_class
+    * @return string
+    */
+    function getControllerName($controller_class) {
+      return Inflector::underscore(substr($controller_class, 0, strlen($controller_class) - 10));
+    } // getControllerName
+    
+    /**
+    * Return controller class based on controller name; controller name will be 
+    * camelized and Controller will be added as sufix
+    *
+    * @param string $controller_name
+    * @return string
+    */
+    function getControllerClass($controller_name) {
+      return Inflector::camelize($controller_name) . 'Controller';
+    } // getControllerClass
     
   } // Angie_Engine
 

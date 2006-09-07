@@ -1,5 +1,8 @@
 <?php
 
+  // We need default engine for this test
+  require ANGIE_PATH . '/engine/Angie_Engine_Default.class.php';
+
   class TestAngie extends UnitTestCase {
   
     function __construct() {

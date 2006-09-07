@@ -19,6 +19,20 @@
     private $request_string;
     
     /**
+    * Controller name
+    *
+    * @var string
+    */
+    private $controller_name;
+    
+    /**
+    * Action name
+    *
+    * @var string
+    */
+    private $action_name;
+    
+    /**
     * Request params, name => value pairs in associative array
     *
     * @var array
@@ -26,13 +40,13 @@
     private $params = array();
   
     /**
-    * Constructor
+    * Constructor. 
     *
     * @param string $request_string
     * @return Angie_Request
     */
     function __construct($request_string) {
-      
+      $this->process($request_string);
     } // __construct
     
     // ---------------------------------------------------
@@ -46,7 +60,7 @@
     * @param string $request_string Request that need to be processed
     * @return boolean
     */
-    abstract function process($request_string);
+    abstract protected function process($request_string);
     
     // ---------------------------------------------------
     //  Getters and setters
@@ -71,6 +85,46 @@
     protected function setRequestString($value) {
       $this->request_string = $value;
     } // setRequestString
+    
+    /**
+    * Get controller_name
+    *
+    * @param null
+    * @return string
+    */
+    function getControllerName() {
+      return $this->controller_name;
+    } // getControllerName
+    
+    /**
+    * Set controller_name value
+    *
+    * @param string $value
+    * @return null
+    */
+    protected function setControllerName($value) {
+      $this->controller_name = $value;
+    } // setControllerName
+    
+    /**
+    * Get action_name
+    *
+    * @param null
+    * @return string
+    */
+    function getActionName() {
+      return $this->action_name;
+    } // getActionName
+    
+    /**
+    * Set action_name value
+    *
+    * @param string $value
+    * @return null
+    */
+    protected function setActionName($value) {
+      $this->action_name = $value;
+    } // setActionName
     
     /**
     * Return all params as associative array
