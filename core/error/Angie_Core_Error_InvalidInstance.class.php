@@ -3,11 +3,11 @@
   /**
   * This exception is thrown when we get a variable that is not object of valid class
   * 
-  * @package Angie.errors
-  * @subpackage core
+  * @package Angie.core
+  * @subpackage errors
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  class Angie_Error_Core_InvalidInstance extends Angie_Error {
+  class Angie_Core_Error_InvalidInstance extends Angie_Error {
     
     /**
     * Name of the variable
@@ -134,6 +134,6 @@
       $this->expected_class = $value;
     } // setExpectedClass
   
-  } // Angie_Error_Core_InvalidInstance
+  } // Angie_Core_Error_InvalidInstance
 
 ?>

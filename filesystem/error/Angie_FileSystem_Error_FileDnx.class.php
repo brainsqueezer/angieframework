@@ -3,11 +3,11 @@
   /**
   * This exception is thrown when we want to report that file we are looking for is missing
   *
-  * @package Angie.errors
-  * @subpackage filesystem
+  * @package Angie.filesystem
+  * @subpackage errors
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  class Angie_Error_FileSystem_FileDnx extends Angie_Error {
+  class Angie_FileSystem_Error_FileDnx extends Angie_Error {
   
     /**
     * Path of the requested file
@@ -66,6 +66,6 @@
       $this->file_path = $value;
     } // setFilePath
   
-  } // Angie_Error_FileSystem_FileDnx
+  } // Angie_FileSystem_Error_FileDnx
 
 ?>

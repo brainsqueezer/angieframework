@@ -36,14 +36,16 @@
     private $protect_class_methods;
     
     /**
-    * Contruct controller and set controller name
+    * Contruct controller and set controller name. All methods of this class will be protected
+    * (will not be valid action names) unless controller that inherits it implement different
+    * behavior
     *
     * @param void
-    * @return null
+    * @return Angie_Controller
     */
     function __construct() {
       $this->setControllerName(Angie::engine()->getControllerName(get_class($this)));
-      $this->setSystemControllerClass('Angie_Controller');
+      $this->setProtectClassMethods('Angie_Controller');
     } // __construct
     
     /**
@@ -53,19 +55,15 @@
     * @return InvalidControllerActionError if action name is not valid or true
     */
     function execute($action) {
-      
-      // Prepare action name
       $action = trim(strtolower($action));
       
-      // If we have valid action execute and done... Else throw exception
       if($this->validAction($action)) {
         $this->setAction($action);
         $this->$action();
         return true;
       } else {
-        throw new InvalidControllerActionError($this->getControllerName(), $action);
+        throw new Angie_Controller_Error_ActionDnx($this->getControllerName(), $action);
       } // if
-      
     } // execute
     
     /**
@@ -80,6 +78,10 @@
       return trim($controller) == '' ? $this->execute($action) : Env::executeAction($controller, $action);
     } // forward
     
+    // ---------------------------------------------------
+    //  Utils
+    // ---------------------------------------------------
+    
     /**
     * Check if specific $action is valid controller action (method exists and it is not reserved)
     *
@@ -87,7 +89,7 @@
     * @return boolean
     */
     function validAction($action) {
-      if(!$this->isProtectedActionName($action)) {
+      if($this->isProtectedActionName($action)) {
         return false; // protected action
       } // if
       

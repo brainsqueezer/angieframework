@@ -28,6 +28,81 @@
     */
     static $additional_engines = array();
     
+    /**
+    * Template engine instance used by the application
+    *
+    * @var Angie_TempalteEngine
+    */
+    static $template_engine;
+    
+    // ---------------------------------------------------
+    //  Util methods
+    // ---------------------------------------------------
+    
+    /**
+    * Load specific environment configuration from specific folder (usuably /config)
+    *
+    * @param string $where_is_it Where to look for configuration file
+    * @param string $environment Name of the environment that we need to load
+    * @return null
+    */
+    static function loadConfiguration($where_is_it, $environment) {
+      $configuration_file = with_slash($where_is_it) . $environment . '.php';
+      if(!is_file($configuration_file)) {
+        throw new Angie_FileSystem_Error_FileDnx($configuration_file);
+      } // if
+      require $configuration_file;
+    } // loadConfiguration
+    
+    /**
+    * This function will include project engine, construct it and set it under $engine_name
+    *
+    * @param string $where_is_it Directory where engine class is
+    * @param string $class_name Name of the engine class
+    * @param string $engine_name Save engine under this name. If NULL engine will be set as
+    *   default engine
+    * @return null
+    * @throws Angie_FileSystem_Error_FileDnx If engine file is not found
+    * @throws Angie_Core_Error_InvalidInstance If $class_name is not valid engine class
+    */
+    static function setProjectEngine($where_is_it, $class_name, $engine_name = null) {
+      $class_file = with_slash($where_is_it) . $class_name . '.class.php';
+      if(!is_file($class_file)) {
+        throw new Angie_FileSystem_Error_FileDnx($class_file);
+      } // if
+      
+      require $class_file;
+      
+      $engine = new $class_name();
+      if(!($engine instanceof Angie_Engine)) {
+        throw new Angie_Core_Error_InvalidInstance('engine', $engine, 'Angie_Engine');
+      } // if
+      
+      self::setEngine($engine, $engine_name);
+    } // setProjectEngine
+    
+    /**
+    * Load, construct and set template engine by class name ($template_engine_class)
+    *
+    * @param string $template_engine_name
+    * @return null
+    */
+    static function useTemplateEngine($template_engine_class) {
+      $template_engine_file = ANGIE_PATH . '/template/engine/' . $template_engine_class . '.class.php';
+      if(!is_file($template_engine_file)) {
+        throw new Angie_FileSystem_Error_FileDnx($template_engine_file);
+      } // if
+      
+      require $template_engine_file;
+      
+      $template_engine = new $template_engine_class();
+      if(!($template_engine instanceof Angie_TemplateEngine)) {
+        throw new Angie_Core_Error_InvalidInstance('template_engine', $template_engine, 'Angie_TemplateEngine');
+      } // if
+      
+      self::setTemplateEngine($template_engine);
+    } // useTemplateEngine
+    
     // ---------------------------------------------------
     //  Getters and setters
     // ---------------------------------------------------
@@ -64,64 +139,25 @@
       } // if
     } // setEngine
     
-    // ---------------------------------------------------
-    //  Util methods
-    // ---------------------------------------------------
+    /**
+    * Get template_engine
+    *
+    * @param null
+    * @return Angie_TemplateEngine
+    */
+    static function getTemplateEngine() {
+      return self::$template_engine;
+    } // getTemplateEngine
     
     /**
-    * This function will include project engine, construct it and set it under $engine_name
+    * Set template_engine value
     *
-    * @param string $where_is_it Directory where engine class is
-    * @param string $class_name Name of the engine class
-    * @param string $engine_name Save engine under this name. If NULL engine will be set as
-    *   default engine
+    * @param Angie_TemplateEngine $value
     * @return null
-    * @throws Angie_Error_FileSystem_FileDnx If engine file is not found
-    * @throws Angie_Error_Core_InvalidInstance If $class_name is not valid engine class
     */
-    static function setProjectEngine($where_is_it, $class_name, $engine_name = null) {
-      $class_file = with_slash($where_is_it) . $class_name . '.class.php';
-      if(!is_file($class_file)) {
-        throw new Angie_Error_FileSystem_FileDnx($class_file);
-      } // if
-      
-      require $class_file;
-      
-      $engine = new $class_name();
-      if(!($engine instanceof Angie_Engine)) {
-        throw new Angie_Error_Core_InvalidInstance('engine', $engine, 'Angie_Engine');
-      } // if
-      
-      self::setEngine($engine, $engine_name);
-    } // setProjectEngine
-    
-    /**
-    * This function will prepare request type, construct it with $request_string and execute 
-    * it with $engine_name engine
-    *
-    * @param string $request_type Class of request type (Get, Routed, Console etc)
-    * @param string $request_string Request string
-    * @param string $engine_name Execute request using this engine. If NULL default engine will
-    *   be used
-    * @return null
-    * @throws Angie_Error_FileSystem_FileDnx If $request_type is not found
-    * @throws Angie_Error_Core_InvalidInstance If $request_type is not valid request type
-    */
-    static function prepareRequestAndExecute($request_type, $request_string, $engine_name = null) {
-      $request_class_file = ANGIE_PATH . "/controller/request/$request_type.class.php";
-      if(!is_file($request_class_file)) {
-        throw new Angie_Error_FileSystem_FileDnx($request_class_file);
-      } // if
-      
-      require $request_class_file;
-      
-      $request = new $request_type($request_string);
-      if(!($request instanceof Angie_Request)) {
-        throw new Angie_Error_Core_InvalidInstance('request', $request, 'Angie_Request');
-      } // if
-      
-      self::engine($engine_name)->execute($request);
-    } // prepareRequestAndExecute
+    static function setTemplateEngine(Angie_TemplateEngine $value) {
+      self::$template_engine = $value;
+    } // setTemplateEngine
   
   } // Angie
 

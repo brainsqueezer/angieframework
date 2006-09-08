@@ -6,33 +6,42 @@
   * This behaviour is present only when action has not provided any exit by 
   * itself (redirect to another page, render template and die etc)
   *
+  * @package Angie.controller
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  abstract class PageController extends Controller {
+  abstract class Angie_Controller_Page extends Angie_Controller implements Angie_TemplateEngine {
   
     /**
-    * Template name. If it is empty this controller will use action name.php
+    * Name of the view. There are four supported values:
+    * 
+    * 1. Name is empty. Controller name is the name of this controller and name of the view
+    *    is action that is executed
+    * 2. View is the name of view file (without the extension). Controller that is used in 
+    *    that case is this controller
+    * 3. Absolute path of view file
+    * 4. Array where fist param is controller name and second is the name the action
     *
-    * @var string
+    * @var mixed
     */
-    private $template;
+    private $view;
     
     /**
-    * Layout name. If it is empty this controller will use its name.php
+    * Layout name. If it is empty this controller will use its own name
     *
     * @var string
     */
     private $layout;
     
     /**
-    * Array of helpers that will be automaticly loaded when render method is called
+    * Array of loaded helpers. Built-in helpers are automaticly included by the controller and they are
+    * not listed in this list
     *
     * @var array
     */
     private $helpers = array();
     
     /**
-    * Automaticly render template / layout if action ends without exit
+    * Automaticly render view / layout if action ends without exit
     *
     * @var boolean
     */
@@ -46,60 +55,110 @@
     */
     function __construct() {
       parent::__construct();
-      $this->setSystemControllerClass('PageController');;
+      $this->setProtectClassMethods('Angie_Controller_Page');;
       
-      $this->addHelper('common', 'page', 'format', 'pagination');
-      if(Env::helperExists($this->getControllerName())) $this->addHelper($this->getControllerName()); // controller name helper
+      if(Angie::engine()->helperExists($this->getControllerName())) {
+        $this->addHelper($this->getControllerName());
+      } // if
     } // __construct
     
     /**
-    * Execute action
+    * Execute action. This methods extends default controller behaviour by providing auto render
+    * functionality to the controller - it is able to map layout / template pair based on 
+    * controller and action name and automaticly render them
     *
     * @param string $action
     * @return null
     */
     function execute($action) {
       parent::execute($action);
-      if($this->getAutoRender()) $render = $this->render(); // Auto render?
+      if($this->getAutoRender()) {
+        $render = $this->render(); // Auto render?
+      } // if
       return true;
     } // execute
     
+    // ---------------------------------------------------
+    //  Template related methods
+    // ---------------------------------------------------
+    
     /**
-    * Render content... If template and/layout are NULL script will resolve 
-    * their names based on controller name and action. 
-    * 
-    * PageController::index will map with:
-    *  - template => views/page/index.php
-    *  - layout => layouts/page.php
+    * Assign variable value to the view. $variable_name can also be a associative array that
+    * is assigned as set of params where key is variable name and value is variable value
     *
-    * @param string $template
-    * @param string $layout
-    * @param boolean $die
-    * @return boolean
-    * @throws FileDnxError
+    * @param string $variable_name
+    * @param mixed $variable_value
+    * @return null
     */
-    function render($template = null, $layout = null, $die = true) {
+    function assignToView($variable_name, $variable_value) {
+      $template_engine = Angie::getTemplateEngine();
+      if(is_array($variable_name)) {
+        foreach($variable_name as $k => $v) {
+          $template_engine->assignToView($k, $v);
+        } // foreach
+      } else {
+        $template_engine->assignToView($variable_name, $variable_value);
+      }
+    } // assignToView
+    
+    /**
+    * This function will render view and return it as a string
+    *
+    * @param string $view_path
+    * @return string
+    */
+    function fetchView($view_path) {
+      return Angie::getTemplateEngine()->fetchView($view_path);
+    } // fetchView
+    
+    /**
+    * This function will render view to the output buffer (it can be flushed to the borwser, cached by 
+    * the other function etc)
+    *
+    * @param string $view_path
+    * @return boolean
+    */
+    function displayView($view_path) {
+      return Angie::getTemplateEngine()->displayView($view_path);
+    } // displayView
+    
+    // ---------------------------------------------------
+    //  Rendering related methods
+    // ---------------------------------------------------
+    
+    /**
+    * Render content of specific view / layout combination. $view can have four possible values:
+    * 
+    * 1. NULL or empty string. Controller name is the name of this controller and name of the view
+    *    is action that is executed
+    * 2. View is the name of view file (without the extension). Controller that is used in that 
+    *    case is this controller
+    * 3. Absolute path of view file
+    * 4. Array where fist param is controller name and second is the name the action
+    *
+    * @param mixed $view
+    * @param string $layout
+    * @param boolean $die Die when rendering is done, true by default
+    * @return boolean
+    */
+    function render($view = null, $layout = null, $die = true) {
+      if(!is_null($view)) {
+        $this->setView($view);
+      } // if
+      if(!is_null($layout)) {
+        $this->setLayout($layout);
+      } // if
       
-      // Set template and layout...
-      if(!is_null($template)) $this->setTemplate($template);
-      if(!is_null($layout)) $this->setLayout($layout);
+      $this->renderLayout(
+        $this->getLayoutPath(), // layout path
+        $this->fetchView($this->getViewPath()) // content
+      ); // renderLayout
       
-      // Get template and layout paths
-      $template_path = $this->getTemplatePath();
-      $layout_path = $this->getLayoutPath();
+      if($die) {
+        die();
+      } // if
       
-      // Fetch content...
-      $content = tpl_fetch($template_path);
-      
-      // Assign content and render layout
-      $this->renderLayout($layout_path, $content);
-      
-      // Die!
-      if($die) die();
-      
-      // We are done here...
       return true;
-      
     } // render
     
     /**
@@ -112,8 +171,8 @@
     * @throws FileDnxError
     */
     function renderLayout($layout_path, $content = null) {
-      tpl_assign('content_for_layout', $content);
-      return tpl_display($layout_path);
+      $this->assignToView('content_for_layout', $content);
+      return $this->displayView($layout_path);
     } // renderLayout
     
     /**
@@ -128,12 +187,15 @@
       $this->setAutoRender(false); // Turn off auto render because we will render whole thing now...
       
       if($render_layout) {
-        $layout_path = $this->getLayoutPath();
-        $this->renderLayout($layout_path, $text);
+        $this->renderLayout($this->getLayoutPath(), $text);
       } else {
         print $text;
       } // if
     } // renderText
+    
+    // ---------------------------------------------------
+    //  Redirection related methods
+    // ---------------------------------------------------
     
     /**
     * Redirect. Params are same as get_url function
@@ -173,24 +235,24 @@
     // -------------------------------------------------------
     
     /**
-    * Get template
+    * Get view
     *
     * @param null
     * @return string
     */
-    function getTemplate() {
-      return $this->template;
-    } // getTemplate
+    function getView() {
+      return $this->view;
+    } // getView
     
     /**
-    * Set template value
+    * Set view value
     *
     * @param string $value
     * @return null
     */
-    function setTemplate($value) {
-      $this->template = $value;
-    } // setTemplate
+    function setView($value) {
+      $this->view = $value;
+    } // setView
     
     /**
     * Get layout
@@ -225,16 +287,22 @@
     /**
     * Add one or many helpers
     *
-    * @param string $helper This param can be array of helpers
-    * @return null
+    * @param array of helper names
+    * @return boolean
     */
-    function addHelper($helper) {
+    function addHelper() {
       $args = func_get_args();
-      if(!is_array($args)) return false;
+      if(!is_array($args)) {
+        return false;
+      } // if
       
-      foreach($args as $helper) {
-        if(!in_array($helper, $this->helpers)) {
-          if(Env::useHelper($helper)) $this->helpers[] = $helper;
+      foreach($args as $helper_name) {
+        if(trim($helper_name) == '') {
+          continue;
+        } // if
+        
+        if(!in_array($helper_name, $this->helpers) && Angie::engine()->useHelper($helper_name)) {
+          $this->helpers[] = $helper_name;
         } // if
       } // foreach
       
@@ -266,26 +334,18 @@
     *
     * @param void
     * @return string
-    * @throws FileDnxError
     */
-    function getTemplatePath() {
-      // Filename of template
-      $template = trim($this->getTemplate()) == '' ? 
-        $this->getAction() : 
-        $this->getTemplate();
-        
-      // Prepare path...
-      if(is_file($this->getTemplate())) {
-        $path = $this->getTemplate();
+    function getViewPath() {
+      $view_value = $this->getView();
+      if(is_array($view_value)) {
+        $controller_name = array_var($view_value, 0, Angie::engine()->getDefaultControllerName());
+        $view_name = array_var($view_value, 1, Angie::engine()->getDefaultActionName());
       } else {
-        $path = get_template_path($template, $this->getControllerName());
+        $controller_name = $this->getControllerName();
+        $view_name = trim($view_value) == '' ? Angie::engine()->getDefaultActionName() : $view_value;
       } // if
       
-      // Template dnx?
-      if(!is_file($path)) throw new FileDnxError($path);
-      
-      // Return path
-      return $path;
+      return Angie::engine()->getViewPath($view_name, $controller_name);
     } // getTemplatePath
     
     /**
@@ -293,23 +353,15 @@
     *
     * @param void
     * @return string
-    * @throws FileDnxError
     */
     function getLayoutPath() {
       $layout_name = trim($this->getLayout()) == '' ? 
         $this->getControllerName() : 
         $this->getLayout();
       
-      // Path of the layout
-      $path = Env::getLayoutPath($layout_name);
-      
-      // File dnx? Throw exception
-      if(!is_file($path)) throw new FileDnxError($path);
-      
-      // Return path
-      return $path;
+      return Angie::engine()->getLayoutPath($layout_name);
     } // getLayoutPath
   
-  } // PageController
+  } // Angie_Controller_Page
 
 ?>
