@@ -52,12 +52,14 @@
     * @return boolean
     */
     protected function process($request_string) {
+      $controller_param_name = $this->getControllerParamName();
+      $action_param_name = $this->getActionParamName();
       
       // Extract and set controller name
       $controller_name = '';
-      if(isset($_GET[$this->getControllerParamName()])) {
-        $controller_name = array_var($_GET, $this->getControllerParamName());
-        unset($_GET[$this->getControllerParamName()]);
+      if(isset($_GET[$controller_param_name])) {
+        $controller_name = array_var($_GET, $controller_param_name);
+        unset($_GET[$controller_param_name]);
       } // if
       if(trim($controller_name) == '') {
         $controller_name = Angie::engine()->getDefaultControllerName();
@@ -66,9 +68,9 @@
       
       // Extract and set action name
       $action_name = '';
-      if(isset($_GET[$this->getActionParamName()])) {
-        $action_name = array_var($_GET, $this->getActionParamName());
-        unset($_GET[$this->getActionParamName()]);
+      if(isset($_GET[$action_param_name])) {
+        $action_name = array_var($_GET, $action_param_name);
+        unset($_GET[$action_param_name]);
       } // if
       if(trim($action_name) == '') {
         $action_name = Angie::engine()->getDefaultActionName();
