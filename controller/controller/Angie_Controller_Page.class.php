@@ -98,7 +98,7 @@
         } // foreach
       } else {
         $template_engine->assignToView($variable_name, $variable_value);
-      }
+      } // if
     } // assignToView
     
     /**
@@ -230,6 +230,43 @@
       redirect_to_referer($alternative);
     } // redirectToReferer
     
+    // ---------------------------------------------------
+    //  Utils
+    // ---------------------------------------------------
+    
+    /**
+    * Return path of the template. If template dnx throw exception
+    *
+    * @param void
+    * @return string
+    */
+    function getViewPath() {
+      $view_value = $this->getView();
+      if(is_array($view_value)) {
+        $controller_name = array_var($view_value, 0, Angie::engine()->getDefaultControllerName());
+        $view_name = array_var($view_value, 1, Angie::engine()->getDefaultActionName());
+      } else {
+        $controller_name = $this->getControllerName();
+        $view_name = trim($view_value) == '' ? Angie::engine()->getDefaultActionName() : $view_value;
+      } // if
+      
+      return Angie::engine()->getViewPath($view_name, $controller_name);
+    } // getTemplatePath
+    
+    /**
+    * Return path of the layout file. File dnx throw exception
+    *
+    * @param void
+    * @return string
+    */
+    function getLayoutPath() {
+      $layout_name = trim($this->getLayout()) == '' ? 
+        $this->getControllerName() : 
+        $this->getLayout();
+      
+      return Angie::engine()->getLayoutPath($layout_name);
+    } // getLayoutPath
+    
     // -------------------------------------------------------
     // Getters and setters
     // -------------------------------------------------------
@@ -328,39 +365,6 @@
     function setAutoRender($value) {
       $this->auto_render = (boolean) $value;
     } // setAutoRender
-    
-    /**
-    * Return path of the template. If template dnx throw exception
-    *
-    * @param void
-    * @return string
-    */
-    function getViewPath() {
-      $view_value = $this->getView();
-      if(is_array($view_value)) {
-        $controller_name = array_var($view_value, 0, Angie::engine()->getDefaultControllerName());
-        $view_name = array_var($view_value, 1, Angie::engine()->getDefaultActionName());
-      } else {
-        $controller_name = $this->getControllerName();
-        $view_name = trim($view_value) == '' ? Angie::engine()->getDefaultActionName() : $view_value;
-      } // if
-      
-      return Angie::engine()->getViewPath($view_name, $controller_name);
-    } // getTemplatePath
-    
-    /**
-    * Return path of the layout file. File dnx throw exception
-    *
-    * @param void
-    * @return string
-    */
-    function getLayoutPath() {
-      $layout_name = trim($this->getLayout()) == '' ? 
-        $this->getControllerName() : 
-        $this->getLayout();
-      
-      return Angie::engine()->getLayoutPath($layout_name);
-    } // getLayoutPath
   
   } // Angie_Controller_Page
 
