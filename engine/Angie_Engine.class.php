@@ -68,8 +68,10 @@
     * @return null
     */
     function execute() {
-      $controller = Angie::engine()->getController($this->getRequest()->getControllerName());
-      $controller->execute($this->getRequest()->getActionName());
+      if($this->getRequest() instanceof Angie_Request) {
+        $controller = Angie::engine()->getController($this->getRequest()->getControllerName());
+        $controller->execute($this->getRequest()->getActionName());
+      } // if
     } // execute
     
     /**

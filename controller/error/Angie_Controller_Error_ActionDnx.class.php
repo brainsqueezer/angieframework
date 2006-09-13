@@ -44,7 +44,6 @@
     /**
     * Return errors specific params...
     *
-    * @access public
     * @param void
     * @return array
     */

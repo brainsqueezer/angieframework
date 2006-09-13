@@ -29,13 +29,12 @@
   require ANGIE_PATH . '/controller/Angie_Controller.class.php';
   require ANGIE_PATH . '/controller/controller/Angie_Controller_Page.class.php';
   require ANGIE_PATH . '/controller/Angie_Request.class.php';
-  require ANGIE_PATH . '/controller/error/Angie_Controller_Error_ControllerDnx.class.php';
-  require ANGIE_PATH . '/controller/error/Angie_Controller_Error_ActionDnx.class.php';
+  
+  require ANGIE_PATH . '/datetime/Angie_DateTime.class.php';
   
   require ANGIE_PATH . '/toys/Angie_Inflector.class.php';
+  require ANGIE_PATH . '/toys/Angie_AutoLoader.class.php';
   
-  require ANGIE_PATH . '/core/error/Angie_Core_Error_InvalidParamValue.class.php';
-  require ANGIE_PATH . '/core/error/Angie_Core_Error_InvalidInstance.class.php';
-  require ANGIE_PATH . '/filesystem/error/Angie_FileSystem_Error_FileDnx.class.php';
+  Angie_DateTime::init(); // reset environment timezone and use GMT from now one
 
 ?>

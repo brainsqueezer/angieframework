@@ -167,7 +167,7 @@
       if(class_exists($value, false)) {
         $this->protect_class_methods = $value;
       } else {
-        throw new InvalidParamError('value', $value, '$value need to be a valid class name');
+        throw new Angie_Core_Error_InvalidParamValue('value', $value, '$value need to be a valid class name');
       } // if
     } // setProtectClassMethods
     
@@ -181,7 +181,7 @@
     private function getProtectedActionNames() {
       $controller_class = $this->getProtectClassMethods();
       if(!class_exists($controller_class, false)) {
-        throw new Error("Controller class '$controller_class' does not exists");
+        throw new Angie_Controller_Error_ControllerDnx($controller_class);
       } // if
     
       $names = get_class_methods($controller_class);
