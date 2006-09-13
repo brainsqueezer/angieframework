@@ -9,10 +9,6 @@
   * @subpackage helpers
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  
-  // ---------------------------------------------------
-  //  Page construction helpers
-  // ---------------------------------------------------
     
   /**
   * Return page title
@@ -22,7 +18,7 @@
   */
   function get_page_title() {
     $page_title = Angie_PageConstruction::getTitle();
-    return trim($page_title) == '' ? $page_title : PROJECT_NAME;
+    return trim($page_title) == '' ? PROJECT_NAME : $page_title;
   } // get_page_title
   
   /**
@@ -52,7 +48,7 @@
       $media = 'all';
     } // if
     
-    Angie_PageConstruction::addLink($href, 'rel', 'stylesheet', array('title' => $title, 'media' => $media));
+    Angie_PageConstruction::addRelLink($href, 'rel', 'stylesheet', array('title' => $title, 'media' => $media));
   } // add_stylesheet_to_page
   
   /**

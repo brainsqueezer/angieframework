@@ -73,6 +73,16 @@
     } // setTitle
     
     /**
+    * Return array of meta tags
+    *
+    * @param void
+    * @return array
+    */
+    static function getMetaTags() {
+      return self::$meta;
+    } // getMetaTags
+    
+    /**
     * Set value of specific meta attribute
     *
     * @param string $name Name of the meta property
@@ -80,12 +90,22 @@
     * @param boolean $http_equivalent
     * @return void
     */
-    static function setMetaValue($name, $content, $http_equivalent = false) {
+    static function setMetaTag($name, $content, $http_equivalent = false) {
       $meta_name = trim(strtolower($name));
       if(!isset(self::$meta[$meta_name])) {
         self::$meta[$meta_name] = meta_tag($meta_name, $value, $http_equivalent);
       } // if
-    } // setMetaValue
+    } // setMetaTag
+    
+    /**
+    * Return all link tags
+    *
+    * @param void
+    * @return array
+    */
+    static function getLinks() {
+      return self::$links;
+    } // getLinks
     
     /**
     * Add rel link to this page (rel can be used to specify the relationship of the target of 
@@ -116,6 +136,16 @@
     static function addRevLink($href, $rev, $attributes = null) {
       self::$links[] = link_tag_rev($href, $rev, $attributes);
     } // addRevLink
+    
+    /**
+    * Return all page scripts that go in <head> tag
+    *
+    * @param void
+    * @return array
+    */
+    static function getScripts() {
+      return self::$scripts;
+    } // getScripts
     
     /**
     * Add script to the page construction. This function can add script as external 
@@ -173,7 +203,7 @@
     * @return null
     */
     function setKeywords($value) {
-      self::setMetaValue('keywords', $value);
+      self::setMetaTag('keywords', $value);
     } // setKeywords
     
     /**
@@ -183,7 +213,7 @@
     * @return null
     */
     function setDescription($value) {
-      self::setMetaValue('description', $value);
+      self::setMetaTag('description', $value);
     } // setDescription
   
   } // Angie_PageConstruction

@@ -151,7 +151,10 @@
         $attributes['class'] = 'checkbox';
       } // if
     } else {
-      $attributes = array('type' => 'checkbox', 'class' => 'checkbox');
+      $attributes = array(
+        'type' => 'checkbox', 
+        'class' => 'checkbox'
+      ); // array
     } // if
     
     // Value
