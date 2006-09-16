@@ -4,7 +4,8 @@
   * Imlementation of default application behavior. This functions can be overriden in project 
   * application class and tailored to fit speicific needs
   *
-  * @package Angie.engies
+  * @package Angie.engines
+  * @subpackage engines
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
   class Angie_Engine_Default extends Angie_Engine {

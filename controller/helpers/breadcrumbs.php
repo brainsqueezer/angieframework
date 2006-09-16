@@ -1,6 +1,14 @@
 <?php
 
   /**
+  * This file contains set of helpers that make work with BreadCrumbs toy a bit easier
+  *
+  * @package Angie.controller
+  * @subpackage helpers
+  * @author Ilija Studen <ilija.studen@gmail.com>
+  */
+
+  /**
   * Return all crumbs
   *
   * @param void

@@ -1,11 +1,54 @@
 <?php
 
   /**
-  * Pagination class provides all the logic for describing paginated results and 
-  * doing calculations for paginated result (like, from witch record next page 
-  * starts etc)
+  * Pagination toy
+  * 
+  * Pagination class can fully describe any paginated result based on total number of
+  * items, number of items per page and current page number.
+  * 
+  * Examples:
+  * <pre>
+  * $pagination = new Angie_Pagination(97, 10, 5);
+  * 
+  * $pagination->getTotalPages(); // 10
+  * $pagination->countItemsOnPage(3); // 10
+  * $pagination->countItemsOnPage(10); // 7
+  * 
+  * $pagination->setCurrentPage(1);
+  * $pagination->hasPrevious(); // false
+  * $pagination->hasNext(); // true
+  * 
+  * $this->pagination->setCurrentPage(5);
+  * $pagination->hasPrevious(); // true
+  * $pagination->hasNext(); // true
+  * 
+  * $pagination->setCurrentPage(10);
+  * $pagination->hasPrevious(); // true
+  * $pagination->hasNext(); // false
+  * </pre>
+  * 
+  * This class is really useful when you are displaying large number of database records
+  * and want to display them on pages. paginate() method of any model manager class lets you
+  * paginate database results easily - it will return an array of two elements:
+  * 
+  * <ol>
+  * <li>Array of items that are on current page (it can be empty if resultset is empty or 
+  * current page is out of pagination boundaries)</li>
+  * <li>Object that describes paginated result (object of Angie_Pagination class)</li>
+  * </ol>
+  * 
+  * Example:
+  * <pre>
+  * list($files, $pagination) = ProjectFiles::paginate(array(
+  *   'conditions' => array('`folder_id` = ?', 12)
+  * ), 10, 2);
+  * </pre>
+  * 
+  * Pagination description can be reused in views for rendering pagination controls with single
+  * line of code using built in {@link pagination.php pagination} helpers.
   *
   * @package Angie.toys
+  * @subpackage pagination
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
   class Angie_Pagination {

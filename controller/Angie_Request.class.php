@@ -6,7 +6,6 @@
   * to provide access to additional request arguments if available.
   *
   * @package Angie.controller
-  * @subpackage requests
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
   abstract class Angie_Request {

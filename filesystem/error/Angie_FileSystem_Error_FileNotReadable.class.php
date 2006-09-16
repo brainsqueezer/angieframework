@@ -1,15 +1,15 @@
 <?php
 
   /**
-  * File does not exist error
+  * File not readable error
   * 
-  * This exception is thrown when we want to report that file we are looking for is missing
+  * This error is thrown when we want to read from a file but it is not readable
   *
   * @package Angie.filesystem
   * @subpackage errors
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  class Angie_FileSystem_Error_FileDnx extends Angie_Error {
+  class Angie_FileSystem_Error_FileNotReadable extends Angie_Error {
   
     /**
     * Path of the requested file
@@ -19,14 +19,14 @@
     private $file_path;
     
     /**
-    * Construct the Angie_FileSystem_Error_FileDnx
+    * Construct the Angie_FileSystem_Error_FileNotReadable
     *
     * @param void
-    * @return Angie_FileSystem_Error_FileDnx
+    * @return Angie_FileSystem_Error_FileNotReadable
     */
     function __construct($file_path, $message = null) {
       if(is_null($message)) {
-        $message = "File '$file_path' doesn't exists";
+        $message = "File '$file_path' is not readable";
       } // if
       parent::__construct($message);
       $this->setFilePath($file_path);
@@ -68,6 +68,6 @@
       $this->file_path = $value;
     } // setFilePath
   
-  } // Angie_FileSystem_Error_FileDnx
+  } // Angie_FileSystem_Error_FileNotReadable
 
 ?>

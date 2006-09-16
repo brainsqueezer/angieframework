@@ -1,16 +1,33 @@
 <?php
 
   /**
-  * Render simple pagination (links to pages spearated with commas). Example:
+  * Pagination helpers
   * 
-  * simple_pages($pager, 'http://www.google.com?page=#PAGE#', '#PAGE#');
+  * Helpers that use pagination toy to render pagination controls - from pretty simple page 
+  * lists to more powerful pagination controls
   *
-  * @param Angie_Pagination $pagination Pagination object
-  * @param string $url_base Base URL where $page_placeholder will be replaced with
-  *   current page number
-  * @param string $page_placeholder Short string inside of $url_base witch will be
-  *   replaced with current page number
-  * @param string $separator String that will separate page URLs
+  * @package Angie.controller
+  * @subpackage helpers
+  * @author Ilija Studen <ilija.studen@gmail.com>
+  */
+
+  /**
+  * Render simple pagination
+  * 
+  * Simple pagination will render simple list of page links separated with $separator. $pagination
+  * argument is pagination description. $url_base and $page_placeholder are two params that will be
+  * used to generate links for proper pages ($page_placeholder value in URL will be replaced with
+  * value of current page). Pages will be imploaded with $separator as a glue string.
+  * 
+  * Example:
+  * <pre>
+  * simple_pages($pagination, 'http://www.google.com/?page=#PAGE#', '#PAGE#');
+  * </pre>
+  *
+  * @param Angie_Pagination $pagination
+  * @param string $url_base
+  * @param string $page_placeholder
+  * @param string $separator
   * @return string
   */
   function simple_pagination(Angie_Pagination $pagination, $url_base, $page_placeholder = '#PAGE#', $separator = ', ') {
@@ -28,31 +45,42 @@
   } // simple_pagination
   
   /**
-  * Advanced pagination. Differenced between simple and advanced paginations is that 
-  * advanced pagination uses template so its output can be changed in a great number 
-  * of ways. Advanced pagination can also use default template where everything is 
-  *  and ready to go.
+  * Render advanced pagination
+  * 
+  * Differenced between simple and advanced paginations is that advanced pagination uses view files so 
+  * its output can be changed in a great number of ways. Advanced pagination can also use default 
+  * view where everything is in place and ready to go or developer can define new views for special cases
+  * 
+  * $pagination argument is pagination description instance. $url_base and $page_placeholder are two params 
+  * that will be used to generate links for proper pages ($page_placeholder value in URL will be replaced 
+  * with value of current page). $view can be absolute path to existing view file or filename of template
+  * 
+  * Example:
+  * <pre>
+  * // Use built in pagination view
+  * advanced_pagination($pager, 'http://www.google.com/?page=#PAGE#');
+  * 
+  * // Use your own template
+  * advanced_pagination($pager, 'http://www.google.com/?page=#PAGE#', 'my_pagination');
+  * </pre>
   * 
   * All variables are just passed to the template, nothing is done inside the function!
   *
-  * @param Angie_Pagination $pagination Pagination object
-  * @param string $url_base Base URL in witch we will insert current page number
-  * @param string $template Template that will be used. It can be absolute path to 
-  *   existing file or template name that used with get_template_path will return real 
-  *   template path
-  * @param string $page_placeholder Short string inside of $url_base that will be replaced 
-  *   with current page numer
+  * @param Angie_Pagination $pagination
+  * @param string $url_base
+  * @param string $template
+  * @param string $page_placeholder
   * @return string
   */
-  function advanced_pagination(Angie_Pagination $pagination, $url_base, $template = 'advanced_pagination', $page_placeholder = '#PAGE#') {
+  function advanced_pagination(Angie_Pagination $pagination, $url_base, $view = 'advanced_pagination', $page_placeholder = '#PAGE#') {
     Angie::getTemplateEngine()->assignToView(array(
       'advanced_pagination_object' => $pagination,
       'advanced_pagination_url_base' => $url_base,
       'advanced_pagination_page_placeholder' => urlencode($page_placeholder)
     )); // tpl_assign
     
-    $template_path = is_file($template) ? $template : Angie::engine()->getViewPath($template);
-    return Angie::getTemplateEngine()->fetchView($template_path);
+    $view_path = is_file($view) ? $view : Angie::engine()->getViewPath($view_path);
+    return Angie::getTemplateEngine()->fetchView($view_path);
   } // advanced_pagination
 
 ?>

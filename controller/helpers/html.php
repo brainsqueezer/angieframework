@@ -1,6 +1,14 @@
 <?php
 
   /**
+  * General HTML helpers that are used for rendering standard tags
+  *
+  * @package Angie.controller
+  * @subpackage helpers
+  * @author Ilija Studen <ilija.studen@gmail.com>
+  */
+
+  /**
   * Open HTML tag
   *
   * @param string $name Tag name

@@ -1,6 +1,14 @@
 <?php
 
   /**
+  * Helpers that are used for formating various data
+  *
+  * @package Angie.controller
+  * @subpackage helpers
+  * @author Ilija Studen <ilija.studen@gmail.com>
+  */
+
+  /**
   * Format filesize
   *
   * @param integer $in_bytes Site in bytes

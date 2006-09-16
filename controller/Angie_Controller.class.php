@@ -36,9 +36,10 @@
     private $protect_class_methods;
     
     /**
-    * Contruct controller and set controller name. All methods of this class will be protected
-    * (will not be valid action names) unless controller that inherits it implement different
-    * behavior
+    * Contruct controller and set controller name
+    * 
+    * All methods of Angie_Controller class will be protected (will not be valid action names) unless 
+    * controller that inherits it implement different behavior
     *
     * @param void
     * @return Angie_Controller
@@ -50,14 +51,18 @@
     
     /**
     * Execute specific controller action
+    * 
+    * Action will be executed only if it is valid (action method exists in this controller and it
+    * is not protected by the controller).
     *
     * @param string $action
-    * @return InvalidControllerActionError if action name is not valid or true
+    * @return boolean
+    * @throws InvalidControllerActionError if action name is not valid or true
     */
     function execute($action) {
       $action = trim(strtolower($action));
       
-      if($this->validAction($action)) {
+      if($this->isValidAction($action)) {
         $this->setAction($action);
         $this->$action();
         return true;
@@ -67,15 +72,38 @@
     } // execute
     
     /**
-    * Forward to specific contrller / action
+    * Forward execution from action you are in to specific controller action
+    * 
+    * This function lets controller actions to forword to other action without need to redirect
+    * user to that specific action using URL or new console request. $action_name is required
+    * argument, but $controller_name can be left out. If $controller_name is empty or it is the
+    * same name of the current controller $this will be used to execute $action_name
+    * 
+    * Examples:
+    * <pre>class MyController extends PageController {
+    * 
+    *   // Forward to 'do_something' action of current controller
+    *   function index() {
+    *     $this->forward('do_something');
+    *   }
+    *   
+    *   // Forward to 'do_other_thing' action of 'other' controller
+    *   function index() {
+    *     $this->forward('do_other_thing', 'other');
+    *   }
+    * 
+    * }</pre>
     *
-    * @param string $action
-    * @param string $controller. If this value is NULL current controller will be
-    *   used
+    * @param string $action_name
+    * @param string $controller_name
     * @return null
     */
-    function forward($action, $controller = null) {
-      return trim($controller) == '' ? $this->execute($action) : Env::executeAction($controller, $action);
+    function forward($action_name, $controller_name = null) {
+      if((trim($controller_name) == '') || ($controller_name == $this->getControllerName())) {
+        $this->execute($action_name);
+      } else {
+        Angie::engine()->executeAction($controller_name, $action_name);
+      } // if
     } // forward
     
     // ---------------------------------------------------
@@ -83,12 +111,15 @@
     // ---------------------------------------------------
     
     /**
-    * Check if specific $action is valid controller action (method exists and it is not reserved)
+    * Check if specific $action is valid controller action
+    * 
+    * Action is valid if $action method exists in this class and that method is not
+    * protected by the controller
     *
     * @param string $action
     * @return boolean
     */
-    function validAction($action) {
+    function isValidAction($action) {
       if($this->isProtectedActionName($action)) {
         return false; // protected action
       } // if
@@ -99,7 +130,7 @@
       } // if
       
       return true;
-    } // validAction
+    } // isValidAction
     
     // -------------------------------------------------------
     // Getters and setters

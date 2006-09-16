@@ -1,6 +1,16 @@
 <?php
 
   /**
+  * Set of form related helpers - from helpers that will render simple stuff like 
+  * labels or inputs to more complex controls (widgets) like date time pickers, WYSIWYG 
+  * editors etc
+  *
+  * @package Angie.controller
+  * @subpackage helpers
+  * @author Ilija Studen <ilija.studen@gmail.com>
+  */
+
+  /**
   * Render form label element. This helper makes it really simple to mark reqired elements
   * in a standard way
   *
@@ -376,7 +386,7 @@
   * @param boolean $value If true YES will be selected, otherwise NO will be selected
   * @param string $yes_lang
   * @param string $no_lang
-  * @return null
+  * @return string
   */
   function yes_no_widget($name, $id_base, $value, $yes_lang, $no_lang) {
     $yes_input = radio_field($name, $value, array('id' => $id_base . 'Yes', 'class' => 'yes_no', 'value' => 1));

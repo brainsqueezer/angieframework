@@ -4,7 +4,7 @@
   * Single date time value. This class provides some handy methods for working 
   * with timestamps and extracting data from them
   *
-  * @version 1.0
+  * @package Angie.datetime
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
   class Angie_DateTime {

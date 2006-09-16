@@ -10,12 +10,14 @@
     
     /**
     * Assign variable value to the view
+    * 
+    * Use this function to assign variable values to the view
     *
     * @param string $variable_name
     * @param mixed $variable_value
     * @return null
     */
-    function assignToView($variable_name, $variable_value);
+    function assignToView($variable_name, $variable_value = null);
     
     /**
     * This function will render view and return it as a string

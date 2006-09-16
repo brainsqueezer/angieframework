@@ -1,11 +1,12 @@
 <?php
 
   /**
-  * Abstract engine - this class provides stub function and partial implementation 
-  * of default behaviour. Purpose of engine is to tie rest of the system together - 
-  * to know how to access controllers, how to build models, how to init application 
-  * etc. Every Angie project can override default behaviour and implement things 
-  * specific for that project without hacking the rest of the system
+  * Abstract engine
+  * 
+  * This class provides stub function and partial implementation of default behaviour. Purpose of 
+  * engine is to tie rest of the system together - to know how to access controllers, how to build 
+  * models, how to init application etc. Every Angie project can override default behaviour and 
+  * implement things specific for that project without hacking the rest of the system
   *
   * @package Angie.engines
   * @author Ilija Studen <ilija.studen@gmail.com>
@@ -20,8 +21,9 @@
     private $request;
     
     /**
-    * Construct the engine. This function will register close() method that will be 
-    * executed on script shutdown
+    * Construct the engine
+    * 
+    * This function will register close() method that will be executed on script shutdown
     *
     * @param void
     * @return Angie_Engine
@@ -35,11 +37,18 @@
     // ---------------------------------------------------
   
     /**
-    * Init the system - this function is called after the engine is contructed to init 
-    * all the resources requred by the engine and prepare the environment
+    * Init the system
+    * 
+    * This function is called after the engine is contructed to init all the resources requred 
+    * by the engine and prepare the environment. By default this function will use request data
+    * and construct proper Angie_Request object.
+    * 
+    * $request_type woll specify what type of request will be constructed. $request_string will
+    * be used as a constructor param when request gets contructed. Request object will process it
+    * and extract all data from it (controller name, action name and additional params)
     *
-    * @param string $request_type Class of request type (Get, Routed, Console etc)
-    * @param string $request_string Request string
+    * @param string $request_type
+    * @param string $request_string
     * @return null
     */
     function init($request_type = null, $request_string = null) {
@@ -61,23 +70,26 @@
     } // init
     
     /**
-    * Execute request. Request is prepared outside of engine class and forwareded to 
-    * the engine
+    * Execute request that is constructed in init() method
+    * 
+    * This function will use request that is constructed by init() method, extract controller and
+    * action names and execute that action if exists
     *
     * @param void
     * @return null
     */
     function execute() {
-      if($this->getRequest() instanceof Angie_Request) {
-        $controller = Angie::engine()->getController($this->getRequest()->getControllerName());
-        $controller->execute($this->getRequest()->getActionName());
+      $request = $this->getRequest();
+      if($request instanceof Angie_Request) {
+        $this->executeAction($request->getControllerName(), $request->getActionName());
       } // if
     } // execute
     
     /**
-    * Clean up function - this one is called on script shutdown (works in multiengine 
-    * environment too). Use it save logs, send status emails, update status or whatever
-    * need to be done on end of page execution
+    * Clean up function
+    * 
+    * This function is called on script shutdown (works in multiengine environment too). Use it save logs, 
+    * send status emails, update status or whatever need to be done on end of request execution
     *
     * @param void
     * @return null
@@ -90,10 +102,18 @@
     
     /**
     * Return controller file path
+    * 
+    * $controller can be intepreted in two ways:
+    * 
+    * 1. As a controller name that need to be converted to controller class name if $is_controller_class value
+    *    is false
+    * 2. As a already prepared controller class if $is_controller_class is set to true
+    * 
+    * This function will not check if controller file actualy exists. It will just generated and return the path
+    * where engine expects to find the controller
     *
-    * @param string $controller_name Name of the controller
-    * @param boolean $is_controller_class If true $controller is treated as class name. If false
-    *   it is treated as controller name and will be converted to controller name
+    * @param string $controller
+    * @param boolean $is_controller_class
     * @return string
     */
     function getControllerPath($controller, $is_controller_class = false) {
@@ -102,8 +122,9 @@
     } // getControllerPath
     
     /**
-    * Return filesystem path of specific helper ($helper_name). This function will just return the path,
-    * it will not check if it really exists or include it
+    * Return filesystem path of specific helper ($helper_name). 
+    * 
+    * This function will just return the path, it will not check if it really exists or include it
     *
     * @param string $helper_name
     * @return string
@@ -123,23 +144,26 @@
     } // helperExists
     
     /**
-    * This function will check if helper exists and include it. If it exists function will return true
-    * else it will return false
+    * Use specific helper
+    * 
+    * This function will check if helper exists and include it if it does. 
     *
     * @param string $helper_name
     * @return string
+    * @throws Angie_Controller_Error_HelperDnx If helper $helper_name does not exist
     */
     function useHelper($helper_name) {
       if($this->helperExists($helper_name)) {
         require $this->getHelperPath($helper_name);
         return true;
       } // if
-      return false;
+      throw new Angie_Controller_Error_HelperDnx($helper_name);
     } // useHelper
     
     /**
-    * Return path of specific layout. This function will just return the path, it will not check if 
-    * layout really exists
+    * Return path of specific layout
+    * 
+    * This function will just return the path, it will not check if layout really exists
     *
     * @param string $layout_name
     * @return string
@@ -149,12 +173,14 @@
     } // getLayoutPath
     
     /**
-    * Return path of specific view file. If $controller_name value is pressent we will return controller 
-    * related path (under controller folder). If it is missing we will return global, not controller 
-    * related path
+    * Return path of specific view file
+    * 
+    * If $controller_name value is pressent we will return controller related path (under controller subfolder). 
+    * If it is missing function will assume that you are looking for file that is in /view folder, not inside
+    * any controller related subfolder
     *
-    * @param string $view_name Name of the view file
-    * @param string $controller_name Controller name, optional
+    * @param string $view_name
+    * @param string $controller_name
     * @return string
     */
     function getViewPath($view_name, $controller_name = null) {
@@ -165,9 +191,78 @@
       } // if
     } // getViewPath
     
+    /**
+    * Return URL based on wrapper function arguments
+    * 
+    * Different projects have different ways how they generate URLs so its good to have this overrideable in 
+    * project engines. By default this function convert this set of params:
+    * 
+    * 0 -> controller
+    * 1 -> action
+    * 2 -> array of params
+    * 3 -> anchor
+    * 
+    * Into:
+    * 
+    * PROJECT_URL/controller/action/param_name-param_value/param_name-param_value/#anchor
+    * 
+    * All elements can are optional. If controller and action values are not present default values will be used.
+    * If there is no params and anchor they will be excluded.
+    *
+    * @param array $arguments
+    * @return string
+    */
+    function getUrlFromArguments($arguments) {
+      $controller_name = trim(array_var($arguments, 0));
+      if($controller_name == '') {
+        $controller_name = Angie::engine()->getDefaultControllerName();
+      } // if
+      $action_name = trim(array_var($arguments, 1));
+      if($action_name == '') {
+        $action_name = Angie::engine()->getDefaultActionName();
+      } // if
+      $params = array_var($arguments, 2);
+      $anchor = trim(array_var($arguments, 3));
+      
+      $result = with_slash(PROJECT_URL) . "$controller_name/$action_name/";
+      
+      $prepared_params = array();
+      if(is_array($params) && count($params)) {
+        foreach($params as $param_name => $param_value) {
+          if(is_bool($param_value)) {
+            $param_value = $param_value ? 1 : 0;
+          } // if
+          
+          $prepared_params[] = urlencode($param_name) . '-' . urlencode($param_value);
+        } // if
+      } // if
+      
+      if(count($prepared_params)) {
+        $result .= implode('/', $prepared_params) . '/';
+      } // if
+      
+      if($anchor) {
+        $result .= "#$anchor";
+      } // if
+      
+      return $result;
+    } // getUrlFromArguments
+    
     // ---------------------------------------------------
     //  Util methods
     // ---------------------------------------------------
+    
+    /**
+    * Execute $action_name action of $controller_name controller. Both arguments are required
+    *
+    * @param string $controller_name
+    * @param string $action_name
+    * @return null
+    */
+    function executeAction($controller_name, $action_name) {
+      $controller = Angie::engine()->getController($controller_name);
+      $controller->execute($action_name);
+    } // executeAction
     
     /**
     * Include controller class for $controller_name controller, construct it and return it
@@ -219,8 +314,15 @@
     } // getDefaultActionName
     
     /**
-    * Return controller name based on controller class; name will be converted to underscore 
-    * and 'Controller' sufix will be removed
+    * Return controller name based on controller class
+    * 
+    * Name will be converted to underscore and 'Controller' sufix will be removed.
+    * 
+    * Example:
+    * <pre>
+    * MyStuffController => my_stuff
+    * TaskController => task
+    * </pre>
     *
     * @param string $controller_class
     * @return string
@@ -230,8 +332,15 @@
     } // getControllerName
     
     /**
-    * Return controller class based on controller name; controller name will be 
-    * camelized and Controller will be added as sufix
+    * Return controller class based on controller name
+    * 
+    * Controller name will be camelized and Controller will be added as sufix
+    * 
+    * Examples:
+    * <pre>
+    * my_stuff => MyStuffController
+    * tasks => TaskController
+    * </pre>
     *
     * @param string $controller_name
     * @return string
