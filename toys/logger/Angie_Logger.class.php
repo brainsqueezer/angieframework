@@ -4,8 +4,23 @@
   * Small logging library
   * 
   * This logger library supports logging messages into multiple groups and saving them into
-  * multople backends (files, database etc)
-  *
+  * multiple backends (files, database etc).
+  * 
+  * To log a message into a default group use:
+  * <pre>
+  * Angie_Logger::log('message', Angie_Logger::DEBUG);
+  * </pre>
+  * 
+  * To log a message into a specific group use:
+  * <pre>
+  * Angie_Logger::log('message', Angie_Logger::DEBUG, 'group_name');
+  * </pre>
+  * 
+  * Group 'group_name' needs to be added to the logger before you can use it that way:
+  * <pre>
+  * Angie_Logger::setGroup(new Angie_Logger_Group(), 'group_name');
+  * </pre>
+  * 
   * @package Angie.toys
   * @subpackage logger
   * @author Ilija Studen <ilija.studen@gmail.com>
@@ -220,14 +235,16 @@
     *
     * @param Angie_Logger_Group $group
     * @param string $name
-    * @return null
+    * @return $group
     */
     static function setGroup(Angie_Logger_Group $group, $name = null) {
       if(is_null($name)) {
         self::$default_group = $group;
       } else {
+        $group->setName($name);
         self::$additional_groups[$name] = $group;
       } // if
+      return $group;
     } // setGroup
     
     /**

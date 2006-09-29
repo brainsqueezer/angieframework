@@ -1,0 +1,7 @@
+Angie is web application framework written in PHP5 that lets you create database driven web applications
+in a metter of days instead of a matter of weeks and months. Key concepts used in Angie:
+
+1. Model-View-Controller (MVC) design pattern used to separate key application elements
+2. Framework behaviour can be changed easily. You don't like how folders are structured in your application?
+   You'd like to use some other persistance library or template engine? Angie will let you change them through
+   the documented and supported interface, not through hacks

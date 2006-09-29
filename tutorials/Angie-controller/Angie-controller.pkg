@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN" "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<section>
+  <para>
+    Angie_Controller provides a set of tools and helpers that speed up the development of web applicaton by helping you 
+    handle user request easily.
+  </para>
+<section>

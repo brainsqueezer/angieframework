@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN" "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<section>
+  <para>
+    Angie is web application framework written in PHP5 that lets you create database driven web applications in a metter 
+    of hours and days instead of weeks and months. It is built to speed up development process and not get in your way.
+  </para>
+  <para>
+    Key concepts used in Angie:
+  </para>
+
+  <orderedlist>
+    <listitem>
+      <emphasis>Model-View-Controller (MVC) design pattern used to separate key application elements</emphasis>. Models 
+      are the brains of application that knows how objects are related, how to retrive them from and save them to 
+      persistent storage, how things are organizeed etc. Controller provides logic for handling user requests - what to 
+      do if user visits /tasks/view/123 URL or types something in the console. Views are simple templates that let you 
+      define how output will be formated.
+    </listitem>
+    <listitem>
+      Everything you need to build poweful web applications is in place - <emphasis>database persistance, caching, 
+      controller logic, views that can be powered by any template engine, some nice tools and more</emphasis>. If you 
+      need something specific its good to know that <emphasis>Angie plays nice with other tools and 
+      libraries</emphasis>.
+    </listitem>
+    <listitem>
+      <emphasis>If you don't like how things are set up by default Angie will let you changed them easily</emphasis>. 
+      You don't like how folders are structured in your application? You'd like to use some other persistance library or 
+      template engine? Angie will let you change them through the documented and supported interfaces; no need for 
+      hacking or giving up on tools you used for years.
+    </listitem>
+    <listitem>
+      <emphasis>You don't need to know how your watch is working in order to see what time it is</emphasis>, right? 
+      Angies is designed in a similar way - when you take a look under the hood Angie is pretty complex tool, but 
+      developer needs to put a minimum of work to make it do what he wants.
+    </listitem>
+  </orderedlist>
+</section>
