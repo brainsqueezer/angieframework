@@ -344,5 +344,55 @@
     
     return $val;
   } // php_config_value_to_bytes
+  
+  /**
+  * Compare $value1 and $value2 with $comparision and return boolean result
+  * 
+  * Examples:
+  * <pre>
+  * is_true_statement(1, COMPARE_EQ, 1); // true
+  * is_true_statement(1, COMPARE_EQ, 3); // false
+  * </pre>
+  *
+  * @param mixed $value1
+  * @param string $comparision
+  * @param mixed $value2
+  * @return boolean
+  */
+  function is_true_statement($value1, $comparision = COMPARE_EQ, $value2) {
+    switch($comparision) {
+      case COMPARE_LT:
+        if($value1 < $value2) {
+          return true;
+        } // if
+        break;
+      case COMPARE_LE:
+        if($value1 <= $value2) {
+          return true;
+        } // if
+        break;
+      case COMPARE_GT:
+        if($value1 > $value2) {
+          return true;
+        } // if
+        break;
+      case COMPARE_GE:
+        if($value1 >= $value2) {
+          return true;
+        } // if
+        break;
+      case COMPARE_EQ:
+        if($value1 == $value2) {
+          return true;
+        } // if
+        break;
+      case COMPARE_NE:
+        if($value1 != $value2) {
+          return true;
+        } // if
+        break;
+    } // switch
+    return false;
+  } // is_true_statement
 
 ?>

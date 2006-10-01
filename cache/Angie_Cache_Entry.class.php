@@ -64,6 +64,16 @@
     } // setAttribute
     
     /**
+    * Return entry tags
+    *
+    * @param void
+    * @return array
+    */
+    function getTags() {
+      return $this->getAttribute('tags');
+    } // getTags
+    
+    /**
     * Set array of attributes
     *
     * @param array $attributes

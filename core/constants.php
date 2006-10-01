@@ -15,6 +15,14 @@
   define('DATE_MYSQL', 'Y-m-d H:i:s');
   define('EMPTY_DATETIME', '0000-00-00 00:00:00');
   
+  // Comparision operators
+  define('COMPARE_LT', '<');
+  define('COMPARE_LE', '<=');
+  define('COMPARE_GT', '>');
+  define('COMPARE_GE', '>=');
+  define('COMPARE_EQ', '==');
+  define('COMPARE_NE', '!=');
+  
   // Compatibility constants (available since PHP 5.1.1). This constants are taken from
   // PHP_Compat PEAR package
   if (!defined('DATE_ATOM')) {

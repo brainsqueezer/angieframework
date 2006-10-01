@@ -75,7 +75,38 @@
     } // testSaveLoad
     
     function testQuerying() {
+      Angie_Cache::set('apple_entry', 'apple', null, array('fruite', 'round'), array('type' => 'fruit', 'num' => 12));
+      Angie_Cache::set('tire_entry', 'tire', null, array('cars', 'round'), array('type' => 'object', 'num' => 4));
+      Angie_Cache::set('door_entry', 'door', null, array('house', 'open', 'close'), array('type' => 'object', 'num' => 1));
+      Angie_Cache::set('orange_entry', 'orange', null, array('fruite', 'round'), array('type' => 'fruit', 'num' => 14));
+      Angie_Cache::set('banana_entry', 'banana', null, array('fruite', 'wierd'), array('type' => 'fruit', 'num' => 5));
       
+      $fruit = Angie_Cache::getByAttribute('type', 'fruit');
+      $this->assertTrue(is_array($fruit));
+      $this->assertEqual(count($fruit), 3);
+      
+      $more_than_5 = Angie_Cache::getByAttribute('num', 5, COMPARE_LT);
+      $this->assertTrue(is_array($more_than_5));
+      $this->assertEqual(count($more_than_5), 2);
+      
+      $more_or_equal_5 = Angie_Cache::getByAttribute('num', 5, COMPARE_LE);
+      $this->assertTrue(is_array($more_or_equal_5));
+      $this->assertEqual(count($more_or_equal_5), 3);
+      
+      $round = Angie_Cache::getByTag('round');
+      $this->assertTrue(is_array($round));
+      $this->assertEqual(count($round), 3);
+      
+      $round_fruit = Angie_Cache::getByTag('round', 'fruite');
+      $this->assertTrue(is_array($round_fruit));
+      $this->assertEqual(count($round_fruit), 2);
+      
+      $wierd_cars = Angie_Cache::getByTag('cars', 'wierd');
+      $this->assertTrue(is_null($wierd_cars));
+      
+      $this->assertEqual(Angie_Cache::dropByTag('round', 'fruite'), 2);
+      $this->assertEqual(Angie_Cache::dropByTag('fruite'), 1); // other 2 got dropped in previous pass
+      $this->assertEqual(Angie_Cache::dropByTag('dnx, for sure!'), 0);
     } // testQuerying
   
   } // TestCaching
