@@ -103,6 +103,18 @@
       $flat = array(12, 13, 14, 15, 16, 17, 18);
       $this->assertEqual(array_flat($array), $flat);
     } // testArrayFlat
+    
+    function testGetMaxUploadSize() {
+      $max_upload = php_config_value_to_bytes(ini_get('upload_max_filesize'));
+      $max_post = php_config_value_to_bytes(ini_get('post_max_size'));
+      
+      $max_from_ini = min($max_upload, $max_post);
+      
+      $this->assertEqual(get_max_upload_size(), $max_from_ini);
+      
+      $new_min_value = $max_from_ini - 10;
+      $this->assertEqual(get_max_upload_size($new_min_value, $max_from_ini + 10), $new_min_value);
+    } // testGetMaxUploadSize
   
   } // TestGeneralFunctions
 

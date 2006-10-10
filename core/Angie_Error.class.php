@@ -1,8 +1,9 @@
 <?php
 
   /**
-  * Angie extension of exceptions with methods to extract and display additional data
-  * about errors through error specific params
+  * Angie extension of exceptions 
+  * 
+  * Angie exception is regular exception with additional functions that let developer define per exception specific data
   *
   * @package Angie.core
   * @author Ilija Studen <ilija.studen@gmail.com>

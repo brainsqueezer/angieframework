@@ -1,8 +1,10 @@
 <?php
 
   /**
-  * General purpose functions: string and array manipulation, simple input filtering and 
-  * ouput cleaning etc
+  * General purpose functions
+  * 
+  * This file contains various general purpose functions used for string and array manipulation, input filtering, ouput 
+  * cleaning end so on.
   *
   * @package Angie.core
   * @subpackage functions
@@ -111,10 +113,14 @@
   */
   function is_valid_function_name($str) {
     $check_str = trim($str);
-    if($check_str == '') return false; // empty string
+    if($check_str == '') {
+      return false; // empty string
+    } // if
     
     $first_char = substr_utf($check_str, 0, 1);
-    if(is_numeric($first_char)) return false; // first char can't be number
+    if(is_numeric($first_char)) {
+      return false; // first char can't be number
+    } // if
     
     return (boolean) preg_match("/^([a-zA-Z0-9_]*)$/", $check_str);
   } // is_valid_function_name
@@ -130,8 +136,10 @@
   } // is_valid_hash
   
   /**
-  * This function will return ID from array variables. Default settings will get 'id' 
-  * variable from $_GET. If ID is not found function will return NULL
+  * This function will return ID from array variables
+  * 
+  * Default settings will get 'id' variable from $_GET. If ID is not found function will return NULL. Variable name need 
+  * to be valid PHP name and value in that field need to be numeric
   *
   * @param string $var_name Variable name. Default is 'id'
   * @param array $from Extract ID from this array. If NULL $_GET will be used
@@ -231,8 +239,9 @@
   // ---------------------------------------------------
   
   /**
-  * Return variable from an array. If field $name does not exists in array this function
-  * will return $default
+  * Return variable from an array
+  * 
+  * If field $name does not exists in array this function will return $default
   *
   * @param array $from Hash
   * @param string $name
@@ -247,10 +256,11 @@
   } // array_var
   
   /**
-  * Flattens the array. This function does not preserve keys, it just returns 
-  * array indexed form 0 .. count - 1
+  * Flattens the array
+  * 
+  * This function will walk recursivly throug $array and all array values will be appended to $array and removed from
+  * subelements. Keys are not preserved (it just returns array indexed form 0 .. count - 1)
   *
-  * @access public
   * @param array $array If this value is not array it will be returned as one
   * @return array
   */
@@ -264,7 +274,9 @@
     foreach($array as $value) {
       if(is_array($value)) {
         $value = array_flat($value);
-        foreach($value as $subvalue) $result[] = $subvalue;
+        foreach($value as $subvalue) {
+          $result[] = $subvalue;
+        } // if
       } else {
         $result[] = $value;
       } // if
@@ -310,21 +322,48 @@
   } // pre_var_dump
   
   /**
-  * This function will return max upload size in bytes
+  * Return max upload size
+  * 
+  * This function will check for max upload size and return value in bytes. By default it will compare values of 
+  * upload_max_filesize and post_max_size from php.ini, but it can also take additional values provided as arguments 
+  * (for instance, if you store data in MySQL database one of the limiting factors can be max_allowed_packet 
+  * configuration value). 
+  * 
+  * Examples:
+  * <pre>
+  * $max_size = get_max_upload_size(); // check only data from php.ini
+  * $max_size = get_max_upload_size(12000, 18000); // take this values into calculation too
+  * </pre>
   *
-  * @param void
+  * @param mixed
   * @return integer
   */
   function get_max_upload_size() {
-    return min(
-      php_config_value_to_bytes(ini_get('upload_max_filesize')), 
-      php_config_value_to_bytes(ini_get('post_max_size'))
-    ); // max
+    $arguments = func_get_args();
+    if(!is_array($arguments)) {
+      $arguments = array();
+    } // if
+    
+    $arguments[] = php_config_value_to_bytes(ini_get('upload_max_filesize'));
+    $arguments[] = php_config_value_to_bytes(ini_get('post_max_size'));
+    
+    $min = null;
+    foreach($arguments as $argument) {
+      if(is_null($min)) {
+        $min = $argument;
+      } else {
+        $min = min($argument, $min);
+      } // if
+    } // if
+    
+    return $min;
   } // get_max_upload_size
   
   /**
-  * Convert PHP config value (2M, 8M, 200K...) to bytes. This function was
-  * taken from PHP documentation
+  * Convert filesize value from php.ini to bytes
+  * 
+  * Convert PHP config value (2M, 8M, 200K...) to bytes. This function was taken from PHP documentation. $val is string 
+  * value that need to be converted
   *
   * @param string $val
   * @return integer

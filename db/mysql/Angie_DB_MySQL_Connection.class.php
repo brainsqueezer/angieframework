@@ -10,7 +10,7 @@
   * @subpackage mysql
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  class Angie_DB_MySQL_Connection {
+  class Angie_DB_MySQL_Connection implements Angie_DB_Connection {
     
     /**
     * Link resource
@@ -18,6 +18,20 @@
     * @var resource
     */
     private $link;
+    
+    /**
+    * Construct connection
+    * 
+    * If $params value is present (not NULL) constructor will also try to connect to database
+    *
+    * @param array $params
+    * @return Angie_DB_MySQL_Connection
+    */
+    function __construct($params = null) {
+      if(!is_null($params)) {
+        $this->connect($params);
+      } // if
+    } // __construct
   
     /**
     * Connect to the database

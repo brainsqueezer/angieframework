@@ -9,7 +9,7 @@
   * @subpackage errors
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  class Angie_DB_Error_Connect extends Error {
+  class Angie_DB_Error_Connect extends Angie_Error {
   
     /**
     * Hostname

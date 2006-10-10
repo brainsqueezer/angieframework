@@ -1,7 +1,7 @@
 <?php
 
   /**
-  * Direcotry is not writable error
+  * Directory is not writable error
   * 
   * This exception is thrown when we want to report that directory we want to write to is not writable
   *

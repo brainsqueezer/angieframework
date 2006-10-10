@@ -1,8 +1,10 @@
 <?php
 
   /**
-  * Template implementation that uses PHP as template engine (uses row PHP files encapsulated inside of 
-  * a function call - template is 100% isolated of the global scope)
+  * Template implementation that uses PHP as template engine
+  * 
+  * This template negine uses row PHP files encapsulated inside of a function call - template is 100% isolated of the 
+  * global scope. Full support for variable assignement, fetching and display is provided
   *
   * @package Angie.template
   * @subpackage engines
@@ -54,7 +56,7 @@
     } // assign
     
     /**
-    * This function will render view and return it as a string
+    * Render template and return as string
     *
     * @param string $view_path
     * @return string
@@ -71,8 +73,8 @@
     } // fetch
     
     /**
-    * This function will render view to the output buffer (it can be flushed to the borwser, cached by 
-    * the other function etc)
+    * This function will directly print template content. Outputed content can be fetched in output buffer or flushed
+    * to the browser
     *
     * @param string $view_path
     * @return boolean

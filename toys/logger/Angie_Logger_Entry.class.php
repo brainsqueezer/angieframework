@@ -3,7 +3,8 @@
   /**
   * Single log entry
   *
-  * @package Logger
+  * @package Angie.toys
+  * @subpackage logger
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
   class Angie_Logger_Entry {

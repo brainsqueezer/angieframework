@@ -1,6 +1,8 @@
 <?php
 
   /**
+  * GET request handler
+  * 
   * Default request handle for URL request without routing ("dirty" URLs). All paramethars 
   * are collected from $_GET ($request_string provided to constructor is ignored)
   *
@@ -77,11 +79,13 @@
       } // if
       $this->setActionName($action_name);
       
-      // Other params
+      $this->setParam('controller', $this->getControllerName());
+      $this->setParam('action', $this->getActionName());
       foreach($_GET as $k => $v) {
         $this->setParam($k, $v);
       } // foreach
       
+      $_GET = $this->getParams();
     } // process
     
     // ---------------------------------------------------

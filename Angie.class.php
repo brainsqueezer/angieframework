@@ -55,6 +55,20 @@
     } // loadConfiguration
     
     /**
+    * Load project routes
+    *
+    * @param string $where_is_it
+    * @return null
+    */
+    static function loadRoutes($where_is_it) {
+      $routes_file = with_slash($where_is_it) . 'routes.php';
+      if(!is_file($routes_file)) {
+        throw new Angie_FileSystem_Error_FileDnx($routes_file);
+      } // if
+      require $routes_file;
+    } // loadRoutes
+    
+    /**
     * This function will include project engine, construct it and set it under $engine_name
     *
     * @param string $where_is_it Directory where engine class is
