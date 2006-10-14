@@ -8,32 +8,41 @@
   * @package Angie
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  class Angie {
+  final class Angie {
     
     /** Default controller and action value **/
     const DEFAULT_CONTROLLER_NAME = 'default';
     const DEFAULT_ACTION_NAME = 'index';
   
     /**
-    * Default engine, it is used when $engine_name is not provided to engine() method
+    * Default engine
+    * 
+    * Used when $engine_name is not provided to engine() method
     *
     * @var Angie_Engine
     */
-    static $default_engine = null;
+    static private $default_engine = null;
     
     /**
     * Array of additional engines that can be accessed by name
     *
     * @var array
     */
-    static $additional_engines = array();
+    static private $additional_engines = array();
     
     /**
     * Template engine instance used by the application
     *
     * @var Angie_TempalteEngine
     */
-    static $template_engine;
+    static private $template_engine;
+    
+    /**
+    * Array of key -> value configuration pairs
+    *
+    * @var array
+    */
+    static private $config_data = array();
     
     // ---------------------------------------------------
     //  Util methods
@@ -172,6 +181,32 @@
     static function setTemplateEngine(Angie_TemplateEngine $value) {
       self::$template_engine = $value;
     } // setTemplateEngine
+    
+    /**
+    * Return configuration value
+    *
+    * @param string $name
+    * @return mixed
+    */
+    static function getConfig($name, $default = null) {
+      return array_var(self::$config_data, $name, $default);
+    } // getConfig
+    
+    /**
+    * Set value of specific configuration option
+    *
+    * @param string $name
+    * @param mixed $value
+    * @return null
+    */
+    static function setConfig($name, $value) {
+      $trimmed = trim($name);
+      if($trimmed) {
+        self::$config_data[$trimmed] = $value;
+      } else {
+        throw new Angie_Core_Error_InvalidParamValue('name', $name, 'Name value must be present');
+      } // if
+    } // setConfig
   
   } // Angie
 

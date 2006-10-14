@@ -32,40 +32,25 @@
       register_shutdown_function(array($this, 'close'));
     } // __construct
     
-    // ---------------------------------------------------
-    //  Abstract functions
-    // ---------------------------------------------------
-  
     /**
-    * Init the system
+    * Initialization method
     * 
-    * This function is called after the engine is contructed to init all the resources requred 
-    * by the engine and prepare the environment. By default this function will use request data
-    * and construct proper Angie_Request object.
-    * 
-    * $request_type woll specify what type of request will be constructed. $request_string will
-    * be used as a constructor param when request gets contructed. Request object will process it
-    * and extract all data from it (controller name, action name and additional params)
+    * This method is called in init.php before we execute any action. By default this method will connect to the 
+    * database using db. configuration options. If you don't wish that kind of behavior just override this method in 
+    * your project engine class
     *
-    * @param string $request_type
-    * @param string $request_string
+    * @param void
     * @return null
     */
-    function init($request_type = null, $request_string = null) {
-      if($request_type) {
-        $request_class_file = ANGIE_PATH . "/controller/request/$request_type.class.php";
-        if(!is_file($request_class_file)) {
-          throw new Angie_FileSystem_Error_FileDnx($request_class_file);
-        } // if
-        
-        require $request_class_file;
-        
-        $request = new $request_type($request_string);
-        if(!($request instanceof Angie_Request)) {
-          throw new Angie_Core_Error_InvalidInstance('request', $request, 'Angie_Request');
-        } // if
-        
-        $this->setRequest($request);
+    function init() {
+      if(Angie::getConfig('db.connect_on_init')) {
+        Angie_DB::setConnection(new Angie_DB_MySQL_Connection(array(
+          'hostname' => Angie::getConfig('db.hostname'),
+          'username' => Angie::getConfig('db.username'),
+          'password' => Angie::getConfig('db.password'),
+          'name'     => Angie::getConfig('db.name'),
+          'persist'  => Angie::getConfig('db.persist')
+        ))); // Angie_DB_MySQL_Connection
       } // if
     } // init
     
@@ -94,7 +79,9 @@
     * @param void
     * @return null
     */
-    abstract function close();
+    function close() {
+      
+    } // close
     
     // ---------------------------------------------------
     //  Application level paths
@@ -369,7 +356,7 @@
     * @param Angie_Request $value
     * @return null
     */
-    protected function setRequest(Angie_Request $value) {
+    function setRequest(Angie_Request $value) {
       $this->request = $value;
     } // setRequest
     
