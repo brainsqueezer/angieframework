@@ -115,6 +115,14 @@
         
       } // foreach
       
+      if(!isset($values['controller'])) {
+        $values['controller'] = Angie::DEFAULT_CONTROLLER_NAME;
+      } // if
+      
+      if(!isset($values['action'])) {
+        $values['action'] = Angie::DEFAULT_ACTION_NAME;
+      } // if
+      
       return $values;
     } // match
 

@@ -29,7 +29,7 @@
     * @param string $controller Controller name
     * @param string $action Controller action
     * @param string $message Error message, if NULL default will be used
-    * @return InvalidControllerActionError
+    * @return Angie_Controller_Error_ActionDnx
     */
     function __construct($controller, $action, $message = null) {
       if(is_null($message)) {

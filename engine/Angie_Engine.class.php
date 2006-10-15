@@ -179,6 +179,20 @@
     } // getViewPath
     
     /**
+    * Checks if view exists
+    * 
+    * This function will use getViewPath() method to generate view path and return true if targeted view file exists 
+    * and is readable
+    *
+    * @param string $view_name
+    * @param string $controller_name
+    * @return boolean
+    */
+    function viewExists($view_name, $controller_name = null) {
+      return is_readable($this->getViewPath($view_name, $controller_name));
+    } // viewExists
+    
+    /**
     * Return URL based on wrapper function arguments
     * 
     * Different projects have different ways how they generate URLs so its good to have this overrideable in 

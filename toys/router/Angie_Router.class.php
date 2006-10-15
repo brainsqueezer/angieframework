@@ -43,8 +43,13 @@
     * @param string $name
     * @return null
     */
-    static function map($name, $route, $defaults = null, $requirements = null) {
-      self::$routes[$name] = new Angie_Router_Route($route, $defaults, $requirements);
+    static function map($route, $defaults = null, $requirements = null, $name = null) {
+      $route = new Angie_Router_Route($route, $defaults, $requirements);
+      if($name) {
+        self::$routes[$name] = $route;
+      } else {
+        self::$routes[] = $route;
+      } // if
     } // map
     
     /**

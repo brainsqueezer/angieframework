@@ -209,10 +209,26 @@
     * @return boolean
     */
     function execute($action) {
-      parent::execute($action);
-      if($this->getAutoRender()) {
-        $render = $this->render(); // Auto render?
-      } // if
+      try {
+        parent::execute($action);
+        if($this->getAutoRender()) {
+          $this->render(); // Auto render?
+        } // if
+      } catch(Angie_Controller_Error_ActionDnx $e) {
+        $view_name = $action;
+        $layout_name = $this->getControllerName();
+        
+        if($this->getAutoRender() && Angie::engine()->viewExists($view_name, $layout_name)) {
+          $this->setView($view_name);
+          $this->setLayout($layout_name);
+          
+          $this->render();
+        } else {
+          throw $e; // rethrow
+        } // if
+      } catch(Exception $e) {
+        throw $e;
+      } // try
     } // execute
     
     // ---------------------------------------------------

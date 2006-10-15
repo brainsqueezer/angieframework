@@ -57,7 +57,7 @@
     *
     * @param string $action
     * @return boolean
-    * @throws InvalidControllerActionError if action name is not valid or true
+    * @throws Angie_Controller_Error_ActionDnx if action name is not valid or true
     */
     function execute($action) {
       $action = trim(strtolower($action));
