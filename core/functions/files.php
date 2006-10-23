@@ -251,6 +251,10 @@
   * @return boolean
   */
   function is_dir_empty($dir_path) {
+    if(!is_dir($dir_path)) {
+      return false;
+    } // if
+    
 		$d = dir($dir_path);
     if($d) {
   		while(false !== ($entry = $d->read())) {

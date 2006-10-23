@@ -106,6 +106,39 @@
     * @return null
     */
     function rollback();
+    
+    /**
+    * Escape string before we use it a query
+    *
+    * @param string $unescaped
+    * @return string
+    */
+    function escape($unescaped);
+    
+    /**
+    * Prepare string (replace every ? with proper arguemnt value)
+    *
+    * @param string $string
+    * @param array $arguments
+    * @return string
+    */
+    function prepareString($string, $arguments);
+    
+    /**
+    * Return last insert ID
+    *
+    * @param void
+    * @return integer
+    */
+    function lastInsertId();
+    
+    /**
+    * Return number of rows affected by the last query
+    *
+    * @param void
+    * @return integer
+    */
+    function affectedRows();
   
   } // Angie_DB_Connection
 

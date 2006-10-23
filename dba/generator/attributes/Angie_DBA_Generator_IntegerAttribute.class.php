@@ -50,11 +50,17 @@
     * $is_unsigned - false
     * $is_auto_increment - false
     *
-    * @param void
+    * @param Angie_DBA_Generator_Entity $entity
+    * @param string $name
+    * @param string $size
+    * @param integer $lenght
+    * @param boolean $is_unsigned
+    * @param boolean $is_auto_increment
     * @return Angie_DBA_Generator_IntegerAttribute
     */
-    function __construct($name, $size = null, $lenght = null, $is_unsigned = false, $is_auto_increment = false) {
-      parent::__construct($name);
+    function __construct(Angie_DBA_Generator_Entity $entity, $name, $size = null, $lenght = null, $is_unsigned = false, $is_auto_increment = false) {
+      parent::__construct($entity, $name);
+      
       $this->setSize($size);
       $this->setLenght($lenght);
       $this->setIsUnsigned($this->getIsUnsigned());

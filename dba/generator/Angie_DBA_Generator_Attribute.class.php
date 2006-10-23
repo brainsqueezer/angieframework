@@ -7,7 +7,7 @@
   * @subpackage generator
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  abstract class Angie_DBA_Generator_Attribute {
+  abstract class Angie_DBA_Generator_Attribute extends Angie_DBA_Generator_Block {
     
     /**
     * Attribute name
@@ -19,23 +19,38 @@
     /**
     * Constructor
     *
+    * @param Angie_DBA_Generator_Entity $entity
     * @param string $name
     * @return Angie_DBA_Generator_Attribute
     */
-    function __construct($name) {
+    function __construct(Angie_DBA_Generator_Entity $entity, $name) {
+      parent::__construct($entity);
       $this->setName($name);
     } // __construct
     
+    // ---------------------------------------------------
+    //  Renderer
+    // ---------------------------------------------------
+    
     /**
-    * Return array of fields that are used to describe this attribute
-    * 
-    * Attribute can be described with one or many field (object of Angie_DBA_Generator_Field class). This function 
-    * returns a single field object or array of field objects
+    * Render object class properties and methods
     *
     * @param void
-    * @return mixed
+    * @return null
     */
-    abstract function getFields();
+    function renderObjectMembers() {
+      return;
+    } // renderObjectMembers
+    
+    /**
+    * Render manager class fields and methods
+    *
+    * @param void
+    * @return null
+    */
+    function renderManagerMembers() {
+      return;
+    } // renderManagerMembers
     
     // ---------------------------------------------------
     //  Getters and setters

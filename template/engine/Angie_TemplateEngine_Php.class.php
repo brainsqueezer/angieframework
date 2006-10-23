@@ -38,7 +38,8 @@
     *
     * @param string $variable_name
     * @param mixed $variable_value
-    * @return null
+    * @return boolean
+    * @throws Angie_Core_Error_InvalidParamValue
     */
     function assignToView($variable_name, $variable_value = null) {
       if(is_array($variable_name)) {

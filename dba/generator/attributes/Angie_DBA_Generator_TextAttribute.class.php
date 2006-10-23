@@ -21,11 +21,13 @@
     /**
     * Constructor
     *
-    * @param void
+    * @param Angie_DBA_Generator_Entity $entity
+    * @param string $name
+    * @param string $size
     * @return Angie_DBA_Generator_TextAttribute
     */
-    function __construct($name, $size = null) {
-      parent::__construct($name);
+    function __construct(Angie_DBA_Generator_Entity $entity, $name, $size = null) {
+      parent::__construct($entity, $name);
       $this->setSize($size);
     } // __construct
     

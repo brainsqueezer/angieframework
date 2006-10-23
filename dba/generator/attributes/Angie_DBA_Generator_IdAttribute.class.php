@@ -29,13 +29,15 @@
     /**
     * Constructor
     *
+    * @param Angie_DBA_Generator_Entity $entity
     * @param string $name
     * @param integer $size
     * @param boolean $is_auto_increment
     * @return Angie_DBA_Generator_IdAttribute
     */
-    function __construct($name, $size = null, $is_auto_increment = true) {
-      parent::__construct($name);
+    function __construct(Angie_DBA_Generator_Entity $entity, $name, $size = null, $is_auto_increment = false) {
+      parent::__construct($entity, $name);
+      
       $this->setSize($size);
       $this->setIsAutoIncrement($is_auto_increment);
     } // __construct

@@ -21,6 +21,34 @@
     private $name;
     
     /**
+    * Name of the getter method
+    *
+    * @var string
+    */
+    private $getter_name;
+    
+    /**
+    * Name of the setter method
+    *
+    * @var string
+    */
+    private $setter_name;
+    
+    /**
+    * PHP native type for this filed (can be class name)
+    *
+    * @var string
+    */
+    private $native_type = 'mixed';
+    
+    /**
+    * Functio that is used for casting
+    *
+    * @var string
+    */
+    private $cast_function = '';
+    
+    /**
     * Primitive field type (varchar, integer, float, text...)
     *
     * @var string
@@ -108,6 +136,31 @@
     } // __construct
     
     // ---------------------------------------------------
+    //  Generator
+    // ---------------------------------------------------
+    
+    /**
+    * Render object class properties and methods
+    *
+    * @param void
+    * @return null
+    */
+    function renderObjectMembers() {
+      Angie_DBA_Generator::assignToView('field', $this);
+      Angie_DBA_Generator::displayView('field_object_members');
+    } // renderObjectMembers
+    
+    /**
+    * Render manager class fields and methods
+    *
+    * @param void
+    * @return null
+    */
+    function renderManagerMembers() {
+      return;
+    } // renderManagerMembers
+    
+    // ---------------------------------------------------
     //  Getters and setters
     // ---------------------------------------------------
     
@@ -130,6 +183,92 @@
     function setName($value) {
       $this->name = $value;
     } // setName
+    
+    /**
+    * Get getter_name
+    *
+    * @param null
+    * @return string
+    */
+    function getGetterName() {
+      if(trim($this->getter_name) == '') {
+        return 'get' . ucfirst(Angie_Inflector::camelize($this->getName()));
+      } // if
+      return $this->getter_name;
+    } // getGetterName
+    
+    /**
+    * Set getter_name value
+    *
+    * @param string $value
+    * @return null
+    */
+    function setGetterName($value) {
+      $this->getter_name = $value;
+    } // setGetterName
+    
+    /**
+    * Get setter_name
+    *
+    * @param null
+    * @return string
+    */
+    function getSetterName() {
+      if(trim($this->setter_name) == '') {
+        return 'set' . ucfirst(Angie_Inflector::camelize($this->getName()));
+      } // if
+      return $this->setter_name;
+    } // getSetterName
+    
+    /**
+    * Set setter_name value
+    *
+    * @param string $value
+    * @return null
+    */
+    function setSetterName($value) {
+      $this->setter_name = $value;
+    } // setSetterName
+    
+    /**
+    * Get native_type
+    *
+    * @param null
+    * @return string
+    */
+    function getNativeType() {
+      return $this->native_type;
+    } // getNativeType
+    
+    /**
+    * Set native_type value
+    *
+    * @param string $value
+    * @return null
+    */
+    function setNativeType($value) {
+      $this->native_type = $value;
+    } // setNativeType
+    
+    /**
+    * Get cast_function
+    *
+    * @param null
+    * @return string
+    */
+    function getCastFunction() {
+      return $this->cast_function;
+    } // getCastFunction
+    
+    /**
+    * Set cast_function value
+    *
+    * @param string $value
+    * @return null
+    */
+    function setCastFunction($value) {
+      $this->cast_function = $value;
+    } // setCastFunction
     
     /**
     * Get type

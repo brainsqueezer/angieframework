@@ -235,8 +235,54 @@
   } // undo_htmlspecialchars
   
   // ---------------------------------------------------
+  //  Object handling function
+  // ---------------------------------------------------
+  
+  /**
+  * Populate object properties from array through setter
+  * 
+  * This function will loop through $array, prepare setter based on element key and 
+  * if setter exists and is not protected it will be called with elements value as 
+  * first parametar.
+  *
+  * @param object $object
+  * @param array $array
+  * @param array $protected_methods
+  * @return null
+  */
+  function populate_through_setter($object, $array, $protected_methods = null) {
+    if(!is_object($object)) {
+      return;
+    } // if
+    
+    if(is_foreachable($array)) {
+      $object_methods = get_class_methods(get_class($object));
+      $protected_methods = is_array($protected_methods) ? $protected_methods : array();
+      
+      foreach($array as $property_name => $property_value) {
+        $setter = 'set' . Angie_Inflector::camelize($property_name);
+        if(in_array($setter, $object_methods) && !in_array($setter, $protected_methods)) {
+          $object->$setter($property_value);
+        } // if
+      } // foreahc
+    } // if
+  } // populate_through_setter
+  
+  // ---------------------------------------------------
   //  Array handling functions
   // ---------------------------------------------------
+  
+  /**
+  * Is $var foreachable
+  * 
+  * This function will return true if $var is array and it is not empty
+  *
+  * @param mixed $var
+  * @return boolean
+  */
+  function is_foreachable($var) {
+    return is_array($var) && count($var);
+  } // is_foreachable
   
   /**
   * Return variable from an array

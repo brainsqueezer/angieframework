@@ -208,17 +208,17 @@
     * 
     * This function will walk through string and replace every ? with proper escaped argument
     *
-    * @param string $sql
+    * @param string $string
     * @param array $arguments
     * @return string
     */
-    function prepareString($sql, $arguments) {
+    function prepareString($string, $arguments) {
       if(is_array($arguments) && count($arguments)) {
         foreach($arguments as $argument) {
-          $sql = str_replace_first('?', $this->escape($argument), $sql);
+          $string = str_replace_first('?', $this->escape($argument), $string);
         } // foreach
       } // if
-      return $sql;
+      return $string;
     } // prepareString
     
     /**
@@ -246,6 +246,26 @@
         return "'" . mysql_real_escape_string($unescaped, $this->link) . "'";
       } // if
     } // escapeString
+    
+    /**
+    * Return last insert ID
+    *
+    * @param void
+    * @return integer
+    */
+    function lastInsertId() {
+      return mysql_insert_id($this->link);
+    } // lastInsertId
+    
+    /**
+    * Return number of rows affected by the last query
+    *
+    * @param void
+    * @return integer
+    */
+    function affectedRows() {
+      return mysql_affected_rows($this->link);
+    } // affectedRows
     
     // ---------------------------------------------------
     //  Getters and setters
