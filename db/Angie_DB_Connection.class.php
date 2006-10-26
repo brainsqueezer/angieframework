@@ -29,17 +29,23 @@
     function connect($params);
   
     /**
-    * Execute query that returns result set
+    * Execute SQL command
     * 
-    * This method is used to execute a query that does not do any data manipulation but returns data from the database 
-    * (SELECT, SHOW etc). Result of this function is ResultSet object. If $arguments is present $sql will be prepared. 
-    * This function returns NULL if there is no rows that match the request.
+    * Use this function to execute SQL command. Possible results:
+    * 
+    * - commands that return some kind of result (SELECT, SHOW...) return a populated Angie_DB_ResultSet object
+    * - DELETE or UPDATE commants return number of affected rows
+    * - INSERT commants return last insert ID
+    * - other commants return TRUE on success
+    * 
+    * In case of any error Angie_DB_Error_Query will be thrown.
     *
     * @param string $sql
-    * @param array $arguments
-    * @return Angie_DB_ResultSet
+    * @param mixed $arguments
+    * @return mixed
+    * @throws Angie_DB_Error_Query
     */
-    function executeQuery($sql, $arguments = null);
+    function execute($sql, $arguments = null);
     
     /**
     * Execute query and return first result as associative array
@@ -64,18 +70,6 @@
     * @return array
     */
     function executeAll($sql, $arguments = null);
-    
-    /**
-    * Execute query that update data (INSERT, UPDATE, DELETE)
-    * 
-    * This function will execute a query that updates data and return number of affected rows. If INSERT is executed 
-    * last insert ID will be returned
-    *
-    * @param string $sql
-    * @param array $arguments
-    * @return integer
-    */
-    function executeUpdate($sql, $arguments = null);
     
     /**
     * Begin work

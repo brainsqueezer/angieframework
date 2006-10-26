@@ -24,7 +24,10 @@
     */
     function __construct($name, $lenght, $properties = null) {
       parent::__construct($name, $properties);
+      
       $this->setType(Angie_DBA_Generator::TYPE_VARCHAR);
+      $this->setCastFunction('strval');
+      
       $this->setLenght($lenght);
     } // __construct
   

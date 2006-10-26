@@ -21,11 +21,11 @@
     protected $fields = array(<?= $entity->exportFieldNames() ?>);
     
     /**
-    * List of fields without detail fields
+    * Array of detail fields
     *
     * @var array
     */
-    protected $fields_without_details = array(<?= $entity->exportFieldNamesWithoutDetails() ?>);
+    protected $detail_fields = array(<?= $entity->exportDetailFieldNames() ?>);
     
     /**
     * Name of the table where we persist this objec type
@@ -63,6 +63,28 @@
   	* @var string
   	*/
   	protected $auto_increment_field = <?= var_export($entity->getAutoIncrementField(), true) ?>;
+  	
+  	/**
+  	* Set value for specific field and make sure that it is casted to proper type
+  	*
+  	* @param string
+  	* @param mixed $value
+  	* @return null
+  	*/
+  	function setFieldValue($field_name, $value) {
+  	  switch($field_name) {
+<?php foreach($entity->getFields() as $field) { ?>
+        case '<?= $field->getName() ?>':
+<?php if($field->getCastFunction()) { ?>
+          $to_set = <?= $field->getCastFunction() ?>($value);
+<?php } else { ?>
+          $to_set = $value;
+<?php } // if ?>
+          break;
+<?php } // foreach ?>
+  	  } // switch
+  	  parent::setFieldValue($field_name, $to_set);
+  	} // setValue
   
 <?php if(is_foreachable($entity->getFields())) { ?>
 <?php foreach($entity->getFields() as $field) { ?>

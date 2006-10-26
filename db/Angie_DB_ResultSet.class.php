@@ -50,7 +50,10 @@
     * @param void
     * @return array
     */
-    abstract function fetchRow();
+    function fetchRow($row) {
+      $this->rows[] = $row;
+      return $row;
+    } // fetchRow
     
     /**
     * Return number of rows in resource

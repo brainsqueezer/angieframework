@@ -26,6 +26,8 @@
       parent::__construct($name, $properties);
       
       $this->setType(Angie_DBA_Generator::TYPE_INTEGER);
+      $this->setCastFunction('intval');
+      
       $this->setIsUnsigned($is_unsigned);
       $this->setIsAutoIncrement($is_auto_increment);
       if(!is_null($size)) {

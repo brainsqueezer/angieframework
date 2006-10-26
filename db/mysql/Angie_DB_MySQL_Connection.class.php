@@ -67,19 +67,25 @@
       
       $this->setLink($link);
     } // connect
-  
+    
     /**
-    * Execute query that returns result set
+    * Execute SQL command
     * 
-    * This method is used to execute a query that does not do any data manipulation but returns data from the database 
-    * (SELECT, SHOW etc). Result of this function is ResultSet object. If $arguments is present $sql will be prepared. 
-    * This function returns NULL if there is no rows that match the request.
+    * Use this function to execute SQL command. Possible results:
+    * 
+    * - commands that return some kind of result (SELECT, SHOW...) return a populated Angie_DB_ResultSet object
+    * - DELETE or UPDATE commants return number of affected rows
+    * - INSERT commants return last insert ID
+    * - other commants return TRUE on success
+    * 
+    * In case of any error Angie_DB_Error_Query will be thrown.
     *
     * @param string $sql
-    * @param array $arguments
-    * @return Angie_DB_ResultSet
+    * @param mixed $arguments
+    * @return mixed
+    * @throws Angie_DB_Error_Query
     */
-    function executeQuery($sql, $arguments = null) {
+    function execute($sql, $arguments = null) {
       $for_execution = is_array($arguments) ? $this->prepareString($sql, $arguments) : $sql;
       $result = @mysql_query($for_execution, $this->link);
       
@@ -90,9 +96,16 @@
       if(is_resource($result)) {
         return new Angie_DB_MySQL_ResultSet($result, $this);
       } else {
-        return null;
+        $lowercased_query = strtolower($for_execution);
+        if(str_starts_with($lowercased_query, 'insert')) {
+          return mysql_insert_id($this->link);
+        } elseif(str_starts_with($lowercased_query, 'update') || str_starts_with($lowercased_query, 'delete')) {
+          return mysql_affected_rows($this->link);
+        } else {
+          return true;
+        } // if
       } // if
-    } // executeQuery
+    } // execute
     
     /**
     * Execute query and return first result as associative array
@@ -105,7 +118,7 @@
     * @return array
     */
     function executeOne($sql, $arguments = null) {
-      $result = $this->executeQuery($sql, $arguments);
+      $result = $this->execute($sql, $arguments);
       
       if($result instanceof Angie_DB_ResultSet) {
         $row = $result->fetchRow();
@@ -127,7 +140,7 @@
     * @return array
     */
     function executeAll($sql, $arguments = null) {
-      $result = $this->executeQuery($sql, $arguments);
+      $result = $this->execute($sql, $arguments);
       
       if($result instanceof Angie_DB_ResultSet) {
         $rows = $result->fetchAll();
@@ -137,31 +150,6 @@
         return null;
       } // if
     } // executeAll
-    
-    /**
-    * Execute query that update data (INSERT, UPDATE, DELETE)
-    * 
-    * This function will execute a query that updates data and return number of affected rows. If INSERT is executed 
-    * last insert ID will be returned
-    *
-    * @param string $sql
-    * @param array $arguments
-    * @return integer
-    */
-    function executeUpdate($sql, $arguments = null) {
-      $for_execution = trim(is_array($arguments) ? $this->prepareString($sql, $arguments) : $sql);
-      
-      $result = @mysql_query($for_execution, $this->link);
-      if($result === false) {
-        throw new Angie_DB_Error_Query($for_execution, mysql_error($this->link));
-      } // if
-      
-      if(str_starts_with(strtolower($for_execution), 'insert')) {
-        return mysql_insert_id($this->link);
-      } else {
-        return mysql_affected_rows($this->link);
-      } // if
-    } // executeUpdate
     
     /**
     * Begin work

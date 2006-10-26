@@ -31,37 +31,27 @@
     // ---------------------------------------------------
     
     /**
-    * Execute query that returns result set (SELECT, SHOW etc)
+    * Execute SQL command
     * 
-    * If $arguments is array than they will be used to with $sql to preapre a query, else raw $sql value will be used. 
-    * Optional $connection_name let you select what connection will be used to execute this query
+    * Use this function to execute any SQL command on given connection (if $connection_name is NULL default connection 
+    * will be used). Possible results:
+    * 
+    * - commands that return some kind of result (SELECT, SHOW...) return a populated Angie_DB_ResultSet object
+    * - DELETE or UPDATE commants return number of affected rows
+    * - INSERT commants return last insert ID
+    * - other commants return TRUE on success
+    * 
+    * In case of any error Angie_DB_Error_Query will be thrown.
     *
     * @param string $sql
-    * @param array $arguments
+    * @param mixed $arguments
     * @param string $connection_name
-    * @return Angie_DB_ResultSet
+    * @return mixed
+    * @throws Angie_DB_Error_Query
     */
-    static function executeQuery($sql, $arguments = null, $connection_name = null) {
-      return self::getConnection($connection_name)->executeQuery($sql);
-    } // executeQuery
-    
-    /**
-    * Execute update type of query (INSERT, UPDATE, DELETE)
-    * 
-    * If $arguments is array than they will be used to with $sql to preapre a query, else raw $sql value will be used. 
-    * Optional $connection_name let you select what connection will be used to execute this query.
-    * 
-    * In case of INSERT this function will return last insert ID, else it will return number of affected rows
-    *
-    * @param string $sql
-    * @param array $arguments
-    * @param string $connection_name
-    * @return integer
-    * @throws SQLException
-    */
-    static function executeUpdate($sql, $arguments = null, $connection_name = null) {
-      return self::getConnection($connection_name)->executeUpdate($sql, $arguments);
-    } // executeUpdate
+    static function execute($sql, $arguments = null, $connection_name = null) {
+      return self::getConnection($connection_name)->execute($sql, $arguments);
+    } // execute
     
     /**
     * Execute query that returns result set (SELECT, SHOW etc), but return only first row

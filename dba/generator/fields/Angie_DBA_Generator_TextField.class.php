@@ -23,6 +23,10 @@
     */
     function __construct($name, $size = null, $properties = null) {
       parent::__construct($name, $properties);
+      
+      $this->setType(Angie_DBA_Generator::TYPE_TEXT);
+      $this->setCastFunction('strval');
+      
       if(!is_null($size)) {
         $this->setTypeSize($size);
       } // if

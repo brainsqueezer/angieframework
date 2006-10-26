@@ -36,8 +36,9 @@
         $conditions = implode(' AND ', $conditions);
       } // if
       
-      return self::findOne(array(
-        'conditions' => $conditions
+      return self::find(array(
+        'conditions' => $conditions,
+        'one' => true,
       ), $object_class, $table_name, $fields);
     } // name
     
@@ -81,6 +82,8 @@
     * @return array
     */
     static function find($arguments, $object_class, $table_name, $fields = null) {
+      $table_prefix = trim(Angie::getConfig('db.table_prefix'));
+      
       $one        = (boolean) array_var($arguments, 'one', false);
       $conditions = self::prepareConditions(array_var($arguments, 'conditions', ''));
       $order_by   = array_var($arguments, 'order', '');
@@ -93,7 +96,7 @@
       $order_by_string = trim($order_by) == '' ? '' : "ORDER BY $order_by";
       $limit_string = $limit > 0 ? "LIMIT $offset, $limit" : '';
       
-      $sql = "SELECT $fields_list FROM $table_name $where_string $order_by_string $limit_string";
+      $sql = "SELECT $fields_list FROM $table_prefix$table_name $where_string $order_by_string $limit_string";
       
       $rows = Angie_DB::getConnection()->executeAll($sql);
       if(!is_array($rows) || (count($rows) < 1)) {
@@ -101,11 +104,11 @@
       } // if
       
       if($one) {
-        return $this->loadFromRow($rows[0], $object_class);
+        return self::loadFromRow($rows[0], $object_class);
       } else {
         $objects = array();
         foreach($rows as $row) {
-          $object = $this->loadFromRow($row, $object_class);
+          $object = self::loadFromRow($row, $object_class);
           if($object instanceof $object_class) {
             $objects[] = $object;
           } // if
@@ -131,7 +134,7 @@
         $arguments = array();
       } // if
       $arguments['one'] = true;
-      return $this->find($arguments);
+      return self::find($arguments, $object_class, $table_name, $fields);
     } // findOne
     
     /**
@@ -151,7 +154,7 @@
         $arguments = array();
       } // if
       $arguments['one'] = false;
-      return $this->find($arguments);
+      return self::find($arguments, $object_class, $table_name, $fields);
     } // findAll
     
     /**
@@ -162,12 +165,14 @@
     * @return integer
     */
     static function count($conditions, $table_name, $primary_key) {
+      $table_prefix = trim(Angie::getConfig('db.table_prefix'));
+      
       $fields = count($primary_key) == 1 ? $primary_key[0] : '*';
       
-      $conditions = $this->prepareConditions($conditions);
+      $conditions = self::prepareConditions($conditions);
       $where_string = trim($conditions) == '' ? '' : "WHERE $conditions";
       
-      $row = Angie_DB::getConnection()->executeOne("SELECT COUNT($fields) AS 'row_count' FROM $table_name $where_string");
+      $row = Angie_DB::executeOne("SELECT COUNT($fields) AS 'row_count' FROM $table_prefix$table_name $where_string");
       return (integer) array_var($row, 'row_count', 0);
     } // count
     
@@ -179,9 +184,11 @@
     * @return integer
     */
     static function delete($conditions, $table_name) {
-      $conditions = $this->prepareConditions($conditions);
+      $table_prefix = trim(Angie::getConfig('db.table_prefix'));
+      
+      $conditions = self::prepareConditions($conditions);
       $where_string = trim($conditions) == '' ? '' : "WHERE $conditions";
-      return DB::execute("DELETE FROM $table_name $where_string");
+      return Angie_DB::execute("DELETE FROM $table_prefix$table_name $where_string");
     } // delete
     
     /**

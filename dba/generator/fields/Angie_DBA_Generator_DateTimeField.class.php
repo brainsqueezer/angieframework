@@ -20,6 +20,7 @@
     function __construct($name, $properties = null) {
       parent::__construct($name, $properties);
       $this->setType(Angie_DBA_Generator::TYPE_DATETIME);
+      $this->setCastFunction('datetimeval');
     } // __construct
   
   } // Angie_DBA_Generator_DateTimeField

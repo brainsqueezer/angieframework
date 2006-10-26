@@ -18,7 +18,7 @@
     * @return array
     */
     function fetchRow() {
-      return mysql_fetch_row($this->resource);
+      return parent::fetchRow(mysql_fetch_assoc($this->resource));
     } // fetchRow
     
     /**

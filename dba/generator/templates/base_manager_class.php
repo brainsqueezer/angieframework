@@ -41,7 +41,7 @@
     */
     static public $primary_key = array(<?= $entity->exportPkFieldNames() ?>);
     
-    function findById($id, $full = false) {
+    static function findById($id, $full = false) {
       if($full) {
         return parent::findById($id, self::$primary_key, self::$object_class, self::$table_name);
       } else {
@@ -49,7 +49,7 @@
       } // if
     } // findById
     
-    function find($arguments = null, $full = false) {
+    static function find($arguments = null, $full = false) {
       if($full) {
         return parent::find($arguments, self::$object_class, self::$table_name);
       } else {
@@ -57,7 +57,7 @@
       } // if
     }  // find
     
-    function findOne($arguments, $full = false) {
+    static function findOne($arguments, $full = false) {
       if($full) {
         return parent::findOne($arguments, self::$object_class, self::$table_name);
       } else {
@@ -65,7 +65,7 @@
       } // if
     } // findOne
     
-    function findAll($arguments, $full = false) {
+    static function findAll($arguments, $full = false) {
       if($full) {
         return parent::findAll($arguments, self::$object_class, self::$table_name);
       } else {
@@ -73,15 +73,15 @@
       } // if
     } // findAll
     
-    function count($conditions = null) {
+    static function count($conditions = null) {
       return parent::count($conditions, self::$table_name, self::$primary_key);
     } // count
     
-    function delete($conditions = null) {
+    static function delete($conditions = null) {
       return parent::delete($conditions, self::$table_name);
     } // delete
     
-    function paginate($arguments = null, $items_per_page = 10, $current_page = 1) {
+    static function paginate($arguments = null, $items_per_page = 10, $current_page = 1) {
       if($full) {
         return parent::paginate($arguments, $items_per_page, $current_page, self::$object_class, self::$table_name, self::$primary_key);
       } else {

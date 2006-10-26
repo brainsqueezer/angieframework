@@ -33,5 +33,33 @@
     
     return count($tests) ? $tests : null;
   } // collect_test_from_dir
+  
+  /**
+  * Return valid boolean value
+  *
+  * @param mixed $value
+  * @return boolean
+  */
+  function boolval($value) {
+    return (boolean) $value;
+  } // boolval
+  
+  /**
+  * Take input value and return valid datetime object
+  *
+  * @param void
+  * @return Angie_DateTime
+  */
+  function datetimeval($value) {
+    if($value instanceof Angie_DateTime) {
+      return $value;
+    } else {
+      if(is_integer($value)) {
+        return new Angie_DateTime($value);
+      } else {
+        return new Angie_DateTime(strtotime((string) $value));
+      } // if
+    } // if
+  } // datetimeval
 
 ?>

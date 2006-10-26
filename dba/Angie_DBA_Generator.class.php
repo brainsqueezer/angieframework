@@ -92,10 +92,10 @@
           $entity_output_dir = with_slash(self::$output_dir) . $entity->getOutputDir();
           
           if(is_dir($entity_output_dir)) {
-            $output->printMessage("Directory '" . self::relativeToOutput($entity_output_dir) . "' exists", 'skip');
+            $output->printMessage("Directory '" . self::relativeToOutput($entity_output_dir) . "' exists");
           } else {
             if(mkdir($entity_output_dir)) {
-              $output->printMessage("Directory '" . self::relativeToOutput($entity_output_dir) . "' created", '+');
+              $output->printMessage("Directory '" . self::relativeToOutput($entity_output_dir) . "' created");
             } else {
               throw new Angie_FileSystem_Error_DirNotWritable(self::$output_dir);
             } // if

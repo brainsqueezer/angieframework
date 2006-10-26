@@ -42,11 +42,11 @@
     private $native_type = 'mixed';
     
     /**
-    * Functio that is used for casting
+    * Name of the function that is called when we need to cast raw value to PHP value
     *
     * @var string
     */
-    private $cast_function = '';
+    private $cast_function;
     
     /**
     * Primitive field type (varchar, integer, float, text...)

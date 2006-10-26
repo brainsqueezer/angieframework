@@ -26,11 +26,20 @@
     protected $fields;
     
     /**
-    * All fields except detail fields
+    * Array of detail fields
     *
     * @var array
     */
-    protected $fields_without_details;
+    protected $detail_fields;
+    
+    /**
+    * Details loaded indicator
+    * 
+    * Value is set to true when details are loaded
+    *
+    * @var boolean
+    */
+    protected $details_loaded = false;
     
     /**
     * Name of the table where we story instances of this object
@@ -185,6 +194,18 @@
   	} // isModifiedField
   	
   	/**
+  	* Report modified column
+  	*
+  	* @param string $field_name
+  	* @return null
+  	*/
+  	protected function addModifiedField($field_name) {
+  	  if(!in_array($field_name, $this->modified_fields)) {
+  	    $this->modified_fields[] = $field_name;
+  	  } // if
+  	} // addModifiedField
+  	
+  	/**
   	* Check if this field is PK and if it is modified
   	*
   	* @param string $field_name
@@ -199,16 +220,14 @@
   	} // isModifiedPrimaryKeyColumn
   	
   	/**
-  	* Report modified column
+  	* Check if $field_name is a detail field
   	*
   	* @param string $field_name
-  	* @return null
+  	* @return boolean
   	*/
-  	protected function addModifiedField($field_name) {
-  	  if(!in_array($field_name, $this->modified_fields)) {
-  	    $this->field_values[] = $field_name;
-  	  } // if
-  	} // addModifiedField
+  	protected function isDetailField($field_name) {
+  	  return in_array($field_name, $this->detail_fields);
+  	} // isDetailField
   	
   	/**
   	* Return value of PK colum(s) that was initaly loaded
@@ -245,14 +264,14 @@
   	* @param mixed $default
   	* @return mixed
   	*/
-  	function getFieldValue($field_name, $default = null) {
-  	  if(isset($this->field_values[$column_name])) {
-  	    return $this->field_values[$column_name];
+  	protected function getFieldValue($field_name, $default = null) {
+  	  if($this->isLoaded() && $this->isDetailField($field_name) && !$this->detailsLoaded()) {
+        $this->loadDetails();
   	  } // if
   	  
-//  	  if(!$this->fieldExists($field_name) && $this->isLazyLoadColumn($column_name)) {
-//    	  return $this->loadLazyLoadColumnValue($column_name, $default);
-//  	  } // if
+  	  if(isset($this->field_values[$field_name])) {
+  	    return $this->field_values[$field_name];
+  	  } // if
   	  
   	  return $default;
   	} // getFieldValue
@@ -264,16 +283,16 @@
   	* @param mixed $value
   	* @return boolean
   	*/
-  	function setFieldValue($field_name, $value) {
+  	protected function setFieldValue($field_name, $value) {
   		if(!$this->fieldExists($field_name)) {
   		  return false;
   		} // if
   		
-  		$coverted_value = $this->rawToPHP($field_name, $value);
-  		$old_value = $this->getFieldValue($field_name);
-  		
-  		if($this->isNew() || ($old_value <> $coverted_value)) {
-  		  $this->field_value[$column] = $coverted_value;
+		  $old_value = $this->getFieldValue($field_name);
+		
+  		if($this->isNew() || ($old_value <> $value)) {
+  		  $this->field_values[$field_name] = $value;
+  		  
   		  $this->addModifiedField($field_name);
   		  
   		  // Save primary key value. Also make sure that only the first PK value is
@@ -317,14 +336,11 @@
   		  return false;
   		} // if
   		
-  		if($this->doDelete()) {
-  		  $this->setDeleted(true);
-  		  $this->setLoaded(false);
-  		  
-  		  return true;
-  		} else {
-  		  return false;
-  		} // if
+  		$this->doDelete();
+  		$this->setIsDeleted(true);
+  		$this->setIsLoaded(false);
+  		
+  		return true;
   	} // delete
   	
   	/**
@@ -337,12 +353,10 @@
   	function loadFromRow($row) {
   	  if(is_array($row)) {
   	    foreach ($row as $k => $v) {
-  	      if($this->columnExists($k)) {
-  	        $this->setColumnValue($k, $v);
-  	      } // if
+  	      $this->setFieldValue($k, $v);
   	    } // foreach
   	    
-  	    $this->setLoaded(true);
+  	    $this->setIsLoaded(true);
   	    $this->notModified();
   	    
   	    return true;
@@ -372,31 +386,28 @@
   	private function doSave() {
   		if($this->isNew()) {
   		  $autoincrement_field = $this->auto_increment_field;
-  		  $autoincrement_field_modified = $this->fieldExists($autoincrement_field) && $this->isModifiedField($autoincrement_field);
+  		  $autoincrement_field_modified = $this->isModifiedField($autoincrement_field);
   			
-  		  if(!Angie_DB::getConnection()->execute($this->getInsertQuery())) {
+  		  $insert_id = Angie_DB::getConnection()->execute($this->getInsertQuery());
+  		  if($insert_id === false) {
   		    return false;
   		  } // if
   		  
 				if(!$autoincrement_field_modified && $this->fieldExists($autoincrement_field)) {
-				  $this->setFieldValue($autoincrement_field, Angie_DB::getConnection()->lastInsertId());
+				  $this->setFieldValue($autoincrement_field, $insert_id);
 				} // if
-				
-				$this->setLoaded(true);
-			  return true;
-  		
   		} else {
   		  $sql = $this->getUpdateQuery();
   		  if(is_null($sql)) {
   		    return true; // nothing to update
   		  } // if
   		  
-  		  if(!Angie_DB::getConnection()->execute($sql)) {
-  		    return false;
-  		  } // if
-		    $this->setLoaded(true);
-		    return true;
+  		  $affected_rows = Angie_DB::getConnection()->execute($sql);
   		} // if
+  		
+  		$this->notModified(); // saved!
+  		$this->setIsLoaded(true);
+		  return true;
   	} // doSave
   	
   	/**
@@ -407,7 +418,7 @@
   	* @throws Angie_DB_Error_Query
   	*/
   	private function doDelete() {
-  	  return Angie_DB::getConnection()->execute("DELETE FROM " . $this->getTableName() . " WHERE " . $this->getConditionsById( $this->getInitialPkValue() ));
+  	  return (boolean) Angie_DB::getConnection()->execute("DELETE FROM " . $this->getTableName(true) . " WHERE " . $this->getConditionsById($this->getInitialPkValue()));
   	} // doDelete
   	
   	/**
@@ -420,20 +431,17 @@
   		$fields = array();
   		$values = array();
   		
-  		foreach($this->fields as $field) {
-  		  if(!$this->isAutoIncrementField($field) || $this->isModifiedField($field)) {
-				  $fields[] = $field;
-				  $values[] = Angie_DB::getConnection()->escape(
-				    $this->phpToRaw($field, $this->getFieldValue($field))
-				  ); // escape
-  		  } // if
+  		foreach($this->modified_fields as $field) {
+			  $fields[] = $field;
+			  $values[] = Angie_DB::getConnection()->escape($this->getFieldValue($field));
   		} // foreach
   		
-  		return sprintf("INSERT INTO %s (%s) VALUES (%s)", 
+  		$sql = sprintf("INSERT INTO %s (%s) VALUES (%s)", 
   		  $this->getTableName(true), 
   		  implode(', ', $fields), 
   		  implode(', ', $values)
   		); // sprintf
+  		return $sql;
   	} // getInsertQuery
   	
   	/**
@@ -443,22 +451,61 @@
   	* @return string
   	*/
   	private function getUpdateQuery() {
-  		$columns = array();
+  		$fields = array();
   		
-  		if(!$this->isObjectModified()) {
+  		if(!$this->isModified()) {
   		  return null;
   		} // if
   		
-  		foreach ($this->fields as $field) {
-  			if($this->isModifiedField($field)) {
-  			  $columns[] = sprintf('%s = %s', $field, Angie_DB::getConnection()->escape(
-  			    $this->phpToRaw($field, $this->getFieldValue($field))
-  			  )); // escape
-  			} // if
+  		foreach($this->modified_fields as $field) {
+  			$fields[] = sprintf('%s = %s', $field, Angie_DB::getConnection()->escape($this->getFieldValue($field)));
   		} // foreach
   		
-  		return sprintf("UPDATE %s SET %s WHERE %s", $this->getTableName(), implode(', ', $field), $this->getConditionsById($this->getInitialPkValue()));
+  		$sql = sprintf("UPDATE %s SET %s WHERE %s", 
+  		  $this->getTableName(true), 
+  		  implode(', ', $fields), 
+  		  $this->getConditionsById($this->getInitialPkValue())
+  		); // sprintf
+  		return $sql;
   	} // getUpdateQuery
+  	
+  	/**
+  	* Load details
+  	* 
+  	* Load values of detail columns and set them. If there is a value for specific field already set that value will be 
+  	* skipped
+  	*
+  	* @param void
+  	* @return null
+  	*/
+  	protected function loadDetails() {
+  	  if($this->isNew() || $this->detailsLoaded()) {
+  	    return;
+  	  } // if
+  	  
+  	  if(count($this->detail_fields) < 1) {
+  	    $this->setDetailsLoaded(true);
+  	    return;
+  	  } // if
+  	  
+  	  $sql = sprintf("SELECT %s FROM %s WHERE %s",
+  	    implode(', ', $this->detail_fields), 
+  	    $this->getTableName(true), 
+  	    $this->getConditionsById($this->getInitialPkValue())
+  	  ); // sprintf
+  	  
+  	  $row = Angie_DB::getConnection()->executeOne($sql);
+  	  
+  	  if(is_array($row)) {
+  	    foreach($row as $k => $v) {
+  	      if(!isset($this->field_values[$k])) {
+  	        $this->field_values[$k] = $v;
+  	      } // if
+  	    } // foreach
+  	  } // if
+  	  
+  	  $this->setDetailsLoaded(true);
+  	} // loadDetails
   	
   	/**
   	* Return conditions part of the query based on ID
@@ -466,7 +513,7 @@
   	* @param mixed $id
   	* @return string
   	*/
-  	function getConditionsById($id) {
+  	private function getConditionsById($id) {
   	  if(count($this->primary_key) == 1) {
   	    return Angie_DB::getConnection()->prepareString($this->primary_key[0] . ' = ?', $id);
   	  } else {
@@ -477,36 +524,78 @@
   	    return implode(' AND ', $conditions);
   	  } // if
   	} // getConditionsById
-
-  	// ---------------------------------------------------
-  	//  Cast methods
-  	// ---------------------------------------------------
-  	
-  	function rawToPHP($field_name, $value) {
-  	  return $value;
-  	} // rawToPHP
-  	
-  	function phpToRaw($field_name, $value) {
-  	  return $value;
-  	} // phpToRaw
   	
   	// ---------------------------------------------------
-  	//  Getters and setters
+  	//  Getters and setters, indicators
   	// ---------------------------------------------------
   	
   	/**
+  	* Return array of fields that form primary key
+  	*
+  	* @param void
+  	* @return array
+  	*/
+  	function getPrimaryKey() {
+  	  return $this->primary_key;
+  	} // getPrimaryKey
+  	
+  	/**
+  	* Return array of object fields
+  	*
+  	* @param void
+  	* @return array
+  	*/
+  	function getFields() {
+  	  return $this->fields;
+  	} // getFields
+  	
+  	/**
+  	* Return array of detail fields
+  	*
+  	* @param void
+  	* @return array
+  	*/
+  	function getDetailFields() {
+  	  return $this->detail_fields;
+  	} // getDetailFields
+  	
+  	/**
   	* Return table name
+  	* 
+  	* This function will return table name. If $prefixed is true script will read table prefix from configuration and 
+  	* return table name with that prefix
+  	*
+  	* @param boolean $prefixed
+  	* @return string
+  	*/
+  	function getTableName($prefixed = false) {
+  	  static $prefix = null;
+  	  if($prefixed && is_null($prefix)) {
+  	    $prefix = Angie::getConfig('db.table_prefix');
+  	  } // if
+  	  
+  	  return $prefixed ? trim($prefix) . $this->table_name : $this->table_name;
+  	} // getTableName
+  	
+  	/**
+  	* Return name of manager class
   	*
   	* @param void
   	* @return string
   	*/
-  	function getTableName() {
-  	  return $this->table_name;
-  	} // getTableName
+  	function getManagerClass() {
+  	  return $this->manager_class;
+  	} // getManagerClass
   	
-  	// ---------------------------------------------------------------
-  	//  Flags
-  	// ---------------------------------------------------------------
+  	/**
+  	* Name of auto increment field (only one per object supported)
+  	*
+  	* @param void
+  	* @return string
+  	*/
+  	function getAutoIncrementField() {
+  	  return $this->auto_increment_field;
+  	} // getAutoIncrementField
   	
   	/**
   	* Return value of $is_new variable
@@ -524,9 +613,30 @@
   	* @param boolean $value
   	* @return void
   	*/
-  	function setNew($value) {
+  	function setIsNew($value) {
   	  $this->is_new = (boolean) $value;
-  	} // setNew
+  	} // setIsNew
+  	
+  	/**
+  	* Return value of $is_loaded variable
+  	*
+  	* @param void
+  	* @return boolean
+  	*/
+  	function isLoaded() {
+  	  return (boolean) $this->is_loaded;
+  	} // isLoaded
+  	
+  	/**
+  	* Set loaded stamp value
+  	*
+  	* @param boolean $value
+  	* @return void
+  	*/
+  	function setIsLoaded($value) {
+  	  $this->is_loaded = (boolean) $value;
+  	  $this->setIsNew(!$this->is_loaded);
+  	} // setIsLoaded
   	
   	/**
   	* Returns true if this object has modified columns
@@ -554,61 +664,41 @@
   	* @param boolean $value New value
   	* @return void
   	*/
-  	function setDeleted($value) {
+  	function setIsDeleted($value) {
   	  $this->is_deleted = (boolean) $value;
-  	} // setDeleted
+  	} // setIsDeleted
   	
   	/**
-  	* Return value of $is_loaded variable
+  	* Returns true if details for this field are loaded
   	*
   	* @param void
   	* @return boolean
   	*/
-  	function isLoaded() {
-  	  return (boolean) $this->is_loaded;
-  	} // isLoaded
+  	private function detailsLoaded() {
+  	  return $this->details_loaded;
+  	} // detailsLoaded
   	
   	/**
-  	* Set loaded stamp value
+  	* Set details loaded flag value
   	*
   	* @param boolean $value
-  	* @return void
+  	* @return null
   	*/
-  	function setLoaded($value) {
-  	  $this->is_loaded = (boolean) $value;
-  	  $this->setNew(!$this->is_loaded);
-  	} // setLoaded
+  	private function setDetailsLoaded($value) {
+  	  $this->details_loaded = (boolean) $value;
+  	} // setDetailsLoaded
   	
   	/**
-  	* Check if this object is modified (one or more column value are modified)
-  	*
-  	* @param void
-  	* @return boolean
-  	*/
-  	function isObjectModified() {
-  	  return (boolean) count($this->modified_fields);
-  	} // isObjectModified
-  	
-  	/**
-  	* Returns true if PK column value is updated
-  	*
-  	* @param void
-  	* @return boolean
-  	*/
-  	function isPkUpdated() {
-  	  return count($this->updated_pks);
-  	} // isPkUpdated
-  	
-  	/**
-  	* Reset modification idicators. Usefull when you use setXXX functions
-  	* but you don't want to modify anything (just loading data from database
-  	* in fresh object using setColumnValue function)
+  	* Reset modification idicators
+  	* 
+  	* Usefull when you use setXXX functions but you don't want to modify anything (just loading data from database in 
+  	* fresh object using setColumnValue function)
   	*
   	* @param void
   	* @return void
   	*/
   	function notModified() {
-  	  $this->modified_columns = array();
+  	  $this->modified_fields = array();
   	  $this->updated_pks = array();
   	} // notModified
   	
@@ -628,7 +718,9 @@
   	*/
   	function validatePresenceOf($field, $trim_string = true) {
   	  $value = $this->getColumnValue($field);
-  	  if(is_string($value) && $trim_string) $value = trim($value);
+  	  if(is_string($value) && $trim_string) {
+  	    $value = trim($value);
+  	  } // if
   	  return !empty($value);
   	} // validatePresenceOf
   	
@@ -663,7 +755,10 @@
   	  // with this value. Else we need to check if there is any other EXCEPT
   	  // this one with that value
   	  if($this->isNew()) {
-  	    $sql = sprintf("SELECT COUNT($escaped_pk) AS 'row_count' FROM %s WHERE %s", $this->getTableName(true), implode(' AND ', $where_parts));
+  	    $sql = sprintf("SELECT COUNT($escaped_pk) AS 'row_count' FROM %s WHERE %s", 
+  	      $this->getTableName(true), 
+  	      implode(' AND ', $where_parts)
+  	    ); // sprintf
   	  } else {
   	    
   	    // Prepare PKs part...
