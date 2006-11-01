@@ -10,7 +10,7 @@
   class Angie_DBA_Object {
     
     /**
-    * Array of primary key columns
+    * Array of primary key fields
     *
     * @var array
     */
@@ -118,7 +118,7 @@
   	private $modified_fields = array();
   	
   	/**
-  	* Array of updated primary key columns with cached old values (used in WHERE on update 
+  	* Array of updated primary key fields with cached old values (used in WHERE on update 
   	* or delete)
   	*
   	* @var array
@@ -156,8 +156,8 @@
   	      if(is_array($this->attr_acceptable) && !in_array($k, $this->attr_acceptable)) {
   	        continue; // not acceptable
   	      } // if
-  	      if($this->columnExists($k)) {
-  	        $this->setFieldValue($k, $attributes[$k]); // column exists, set
+  	      if($this->fieldEXists($k)) {
+  	        $this->setFieldValue($k, $attributes[$k]); // field exists, set
   	      } // if
   	    } // foreach
   	  } // if
@@ -194,7 +194,7 @@
   	} // isModifiedField
   	
   	/**
-  	* Report modified column
+  	* Report modified filed
   	*
   	* @param string $field_name
   	* @return null
@@ -217,7 +217,7 @@
   	  } // if
   	  
   	  return false;
-  	} // isModifiedPrimaryKeyColumn
+  	} // isModifiedPrimaryKeyFiled
   	
   	/**
   	* Check if $field_name is a detail field
@@ -255,7 +255,7 @@
   	*/
   	function isAutoIncrementField($field_name) {
   	  return $this->auto_increment_field == $field_name;
-  	} // isAutoIncrementColumn
+  	} // isAutoIncrementField
   	
   	/**
   	* Return value of specific field
@@ -303,7 +303,7 @@
   		} // if
   		
   		return true;
-  	} // setColumnValue
+  	} // setFieldValue
   	
   	// -------------------------------------------------------------
   	//  Top level manipulation methods
@@ -407,7 +407,8 @@
   		
   		$this->notModified(); // saved!
   		$this->setIsLoaded(true);
-		  return true;
+  		
+  		return isset($insert_id) ? $insert_id : true; // if insert return last insert ID, else return true
   	} // doSave
   	
   	/**
@@ -472,7 +473,7 @@
   	/**
   	* Load details
   	* 
-  	* Load values of detail columns and set them. If there is a value for specific field already set that value will be 
+  	* Load values of detail fields and set them. If there is a value for specific field already set that value will be 
   	* skipped
   	*
   	* @param void
@@ -639,7 +640,7 @@
   	} // setIsLoaded
   	
   	/**
-  	* Returns true if this object has modified columns
+  	* Returns true if this object has modified fields
   	*
   	* @param void
   	* @return boolean
@@ -692,7 +693,7 @@
   	* Reset modification idicators
   	* 
   	* Usefull when you use setXXX functions but you don't want to modify anything (just loading data from database in 
-  	* fresh object using setColumnValue function)
+  	* fresh object using setFieldValue function)
   	*
   	* @param void
   	* @return void
@@ -717,7 +718,7 @@
   	* @return boolean
   	*/
   	function validatePresenceOf($field, $trim_string = true) {
-  	  $value = $this->getColumnValue($field);
+  	  $value = $this->getFieldValue($field);
   	  if(is_string($value) && $trim_string) {
   	    $value = trim($value);
   	  } // if
@@ -733,7 +734,7 @@
   	* @return boolean
   	*/
   	function validateUniquenessOf() {
-  	  // Don't do COUNT(*) if we have one PK column
+  	  // Don't do COUNT(*) if we have one PK field
       $escaped_pk = is_array($pk_columns = $this->getPkColumns()) ? '*' : DB::escapeField($pk_columns);
   	  
   	  // Get columns

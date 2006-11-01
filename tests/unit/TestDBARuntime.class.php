@@ -18,15 +18,15 @@
     function setUp() {
       include $this->test_dir . 'test_description.php';
       
-      require $this->test_dir . 'output/users/base/BaseUser.class.php';
-      require $this->test_dir . 'output/users/base/BaseUsers.class.php';
-      require $this->test_dir . 'output/users/User.class.php';
-      require $this->test_dir . 'output/users/Users.class.php';
+      if(!class_exists('BaseUser')) require $this->test_dir . 'output/users/base/BaseUser.class.php';
+      if(!class_exists('BaseUsers')) require $this->test_dir . 'output/users/base/BaseUsers.class.php';
+      if(!class_exists('User')) require $this->test_dir . 'output/users/User.class.php';
+      if(!class_exists('Users')) require $this->test_dir . 'output/users/Users.class.php';
       
-      require $this->test_dir . 'output/companies/base/BaseCompany.class.php';
-      require $this->test_dir . 'output/companies/base/BaseCompanies.class.php';
-      require $this->test_dir . 'output/companies/Company.class.php';
-      require $this->test_dir . 'output/companies/Companies.class.php';
+      if(!class_exists('BaseCompany')) require $this->test_dir . 'output/companies/base/BaseCompany.class.php';
+      if(!class_exists('BaseCompanies')) require $this->test_dir . 'output/companies/base/BaseCompanies.class.php';
+      if(!class_exists('Company')) require $this->test_dir . 'output/companies/Company.class.php';
+      if(!class_exists('Companies')) require $this->test_dir . 'output/companies/Companies.class.php';
       
       Angie_DB::execute("CREATE TABLE IF NOT EXISTS `generator_companies` (
         `id` smallint(5) unsigned NOT NULL auto_increment,
@@ -75,6 +75,37 @@
       
       $this->assertEqual($loaded_user, null);
     } // testCreation
+    
+    function testFinders() {
+      $activecollab = new Company();
+      $activecollab->setName('activeCollab');
+      $activecollab->save();
+      
+      $ilija = new User();
+      $ilija->setFromAttributes(array(
+        'username' => 'ilija',
+        'email' => 'ilija@activecollab.com',
+        'company_id' => $activecollab->getID()
+      ));
+      
+      $oliver = new User();
+      $oliver->setFromAttributes(array(
+        'username' => 'oliver',
+        'email' => 'oliver@activecollab.com',
+        'company_id' => $activecollab->getID()
+      ));
+      
+      $goran = new User();
+      $goran->setFromAttributes(array(
+        'username' => 'goran',
+        'email' => 'goran@activecollab.com',
+        'company_id' => $activecollab->getID()
+      ));
+      
+      $this->assertTrue($ilija->save());
+      $this->assertTrue($oliver->save());
+      $this->assertTrue($goran->save());
+    } // testFinders
   
   } // TestDBARuntime
 
