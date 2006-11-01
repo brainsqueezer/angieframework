@@ -36,6 +36,13 @@
     * @var string
     */
     private $call_on;
+    
+    /**
+    * Pass caller reference flag
+    *
+    * @var boolean
+    */
+    private $pass_caller;
   
     /**
     * Constructor
@@ -43,9 +50,10 @@
     * @param mixed $field
     * @param string $callback
     * @param string $call_on
+    * @param boolean $pass_caller
     * @return Angie_DBA_Generator_AutoSetter
     */
-    function __construct($field, $callback, $call_on) {
+    function __construct($field, $callback, $call_on, $pass_caller = false) {
       if($field instanceof Angie_DBA_Generator_Field) {
         $this->setField($field);
       } else {
@@ -53,6 +61,7 @@
       } // if
       $this->setCallback($callback);
       $this->setCallOn($call_on);
+      $this->setPassCaller($pass_caller);
     } // __construct
     
     // ---------------------------------------------------
@@ -167,6 +176,26 @@
     function setCallOn($value) {
       $this->call_on = $value;
     } // setCallOn
+    
+    /**
+    * Get pass_caller
+    *
+    * @param null
+    * @return boolean
+    */
+    function getPassCaller() {
+      return $this->pass_caller;
+    } // getPassCaller
+    
+    /**
+    * Set pass_caller value
+    *
+    * @param boolean $value
+    * @return null
+    */
+    function setPassCaller($value) {
+      $this->pass_caller = $value;
+    } // setPassCaller
   
   } // Angie_DBA_Generator_AutoSetter
 

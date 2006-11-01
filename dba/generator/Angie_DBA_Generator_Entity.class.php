@@ -156,8 +156,8 @@
     function __construct($name) {
       $this->setName($name);
       
-      $this->addAutoSetter('created_on', 'get_mysql_now', Angie_DBA_Generator::ON_INSERT);
-      $this->addAutoSetter('updated_on', 'get_mysql_now', Angie_DBA_Generator::ON_UPDATE);
+      $this->addAutoSetter('created_on', 'Angie_DateTime::now', Angie_DBA_Generator::ON_INSERT);
+      $this->addAutoSetter('updated_on', 'Angie_DateTime::now', Angie_DBA_Generator::ON_UPDATE);
     } // __construct
     
     /**
@@ -1056,12 +1056,37 @@
     
     /**
     * Return array of auto-setters
+    * 
+    * $filter can have four possible values:
+    * 
+    * - null - all auto setters will be returned
+    * - Angie_DBA_Generator::ON_SAVE - only on save auto setters will be returned
+    * - Angie_DBA_Generator::ON_INSERT - only on insert auto setters will be returned
+    * - Angie_DBA_Generator::ON_UPDATE - only on update auto setters will be returned
+    * 
+    * If $only_valid is set to true this function will return just setters for existing fields
     *
-    * @param void
+    * @param string $filter
+    * @param boolean $only_valid
     * @return array
     */
-    function getAutoSetters() {
-      return $this->auto_setters;
+    function getAutoSetters($filter = null, $only_valid = false) {
+      if(is_null($filter)) {
+        return $this->auto_setters;
+      } else {
+        $result = array();
+        if(is_foreachable($this->auto_setters)) {
+          foreach($this->auto_setters as $auto_setter) {
+            if($auto_setter->getCallOn() == $filter) {
+              if($only_valid && !($auto_setter->getField() instanceof Angie_DBA_Generator_Field)) {
+                continue;
+              } // if
+              $result[] = $auto_setter;
+            } // if
+          } // foreach
+        } // if
+        return count($result) ? $result : null;
+      } // if
     } // getAutoSetters
     
     /**
@@ -1070,16 +1095,17 @@
     * @param string $field
     * @param string $callback
     * @param string $call_on
+    * @param boolean $pass_caller
     * @return Angie_DBA_Generator_AutoSetter
     */
-    function addAutoSetter($field, $callback, $call_on = Angie_DBA_Generator::ON_SAVE) {
+    function addAutoSetter($field, $callback, $call_on = Angie_DBA_Generator::ON_SAVE, $pass_caller = false) {
       if($field instanceof Angie_DBA_Generator_Field) {
         $field_name = $field->getName();
       } else {
         $field_name = $field;
       } // if
       
-      $setter = new Angie_DBA_Generator_AutoSetter($field, $callback, $call_on);
+      $setter = new Angie_DBA_Generator_AutoSetter($field, $callback, $call_on, $pass_caller);
       $setter->setEntity($this);
       
       $this->auto_setters[$field_name] = $setter;

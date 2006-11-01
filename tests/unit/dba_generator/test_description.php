@@ -10,7 +10,7 @@
   $user->addDateTimeAttribute('updated_on');
   
   $user->protectFields('id', 'created_on', 'updated_on', 'created_by_id', 'updated_by_id');
-  $user->allowFields('username', 'email');
+  $user->allowFields('username', 'email', 'company_id');
   $user->detailFields('email', 'display_name');
   
   $user->addAutoSetter('created_by_id', 'get_logged_user_id', Angie_DBA_Generator::ON_INSERT);

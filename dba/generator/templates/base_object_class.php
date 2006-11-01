@@ -97,6 +97,55 @@
 <?php $block->renderObjectMembers() ?>
 <?php } // foreach ?>
 <?php } // if ?>
+
+<?php if(is_array($entity->getAutoSetters()) && count($entity->getAutoSetters())) { ?>
+    /**
+  	* Save object into database (insert or update)
+  	*
+  	* @param void
+  	* @return boolean
+  	* @throws Angie_DBA_Error_Validation
+  	*/
+    function save() {
+<?php
+  $setters_on_save = $entity->getAutoSetters(Angie_DBA_Generator::ON_SAVE, true);
+  $setters_on_insert = $entity->getAutoSetters(Angie_DBA_Generator::ON_INSERT, true);
+  $setters_on_update = $entity->getAutoSetters(Angie_DBA_Generator::ON_UPDATE, true);
+?>
+<?php if(is_foreachable($setters_on_save)) { ?>
+      // On save auto setters...
+<?php foreach($setters_on_save as $setter) { ?>
+      if(!$this->isModifiedField('<?= $setter->getFieldName() ?>')) {
+        $this->setFieldValue('<?= $setter->getFieldName() ?>', <?= $setter->getCallback() ?>(<?php if($setter->getPassCaller()) { ?>$this<?php } ?>));
+      } // if
+<?php } // foreach?>
+<?php } // if ?>
+<?php if(is_foreachable($setters_on_insert) || is_foreachable($setters_on_update)) { ?>
+      if($this->isNew()) {
+<?php if(is_foreachable($setters_on_insert)) { ?>
+        // On insert auto setters...
+<?php foreach($setters_on_insert as $setter) { ?>
+        if(!$this->isModifiedField('<?= $setter->getFieldName() ?>')) {
+          $this->setFieldValue('<?= $setter->getFieldName() ?>', <?= $setter->getCallback() ?>(<?php if($setter->getPassCaller()) { ?>$this<?php } ?>));
+        } // if
+<?php } // foreach?>
+<?php } // if ?>
+      } else {
+<?php if(is_foreachable($setters_on_update)) { ?>
+        // On update auto setters...
+<?php foreach($setters_on_update as $setter) { ?>
+        if(!$this->isModifiedField('<?= $setter->getFieldName() ?>')) {
+          $this->setFieldValue('<?= $setter->getFieldName() ?>', <?= $setter->getCallback() ?>(<?php if($setter->getPassCaller()) { ?>$this<?php } ?>));
+        } // if
+<?php } // foreach?>
+<?php } // if ?>
+      } // if
+<?php } // if  ?>
+
+      // Inherit...
+      return parent::save();
+    } // save
+<?php } // if ?>
   
   } // <?= $entity->getBaseObjectClassName() ?>
 

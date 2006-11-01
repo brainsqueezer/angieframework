@@ -210,8 +210,11 @@
     */
     function execute($action) {
       try {
-        parent::execute($action);
+        $execution = parent::execute($action);
         if($this->getAutoRender()) {
+          if(is_array($execution)) {
+            $this->assignToView($execution);
+          } // if
           $this->render(); // Auto render?
         } // if
       } catch(Angie_Controller_Error_ActionDnx $e) {

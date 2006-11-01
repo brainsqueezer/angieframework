@@ -110,6 +110,22 @@
     function escape($unescaped);
     
     /**
+    * Escape field name
+    *
+    * @param string $unescaped
+    * @return string
+    */
+    function escapeFieldName($unescaped);
+    
+    /**
+    * Escape table name
+    *
+    * @param string $unescaped
+    * @return string
+    */
+    function escapeTableName($unescaped);
+    
+    /**
     * Prepare string (replace every ? with proper arguemnt value)
     *
     * @param string $string

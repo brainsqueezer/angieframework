@@ -350,6 +350,38 @@
     return $result;
   } // string_to_array
   
+  /**
+  * Extract results of specific method from an array of objects
+  * 
+  * This method will go through all items of an $array and call $method. Results will be agregated into one array that 
+  * will be returned. If $check_if_method_exists is set to true than additional checks will be done on the object 
+  * (slower but safer). $check_if_method_exists is Off by default
+  *
+  * @param array $array
+  * @param string $method
+  * @return array
+  */
+  function objects_array_extract($array, $method, $arguments = null, $check_if_method_exists = false) {
+    if(!is_array($array)) {
+      return null;
+    } // if
+    
+    $result = array();
+    foreach($array as $key => &$element) {
+      $call = array($element, $method);
+      if(is_callable($call, false)) {
+        if(is_array($arguments)) {
+          $result[$key] = call_user_func_array($call, $arguments);
+        } elseif(is_string($arguments)) {
+          $result[$key] = call_user_func($call, $arguments);
+        } else {
+          $result[$key] = call_user_func($call);
+        } // if
+      } // if
+    } // foreach
+    return $result;
+  } // objects_array_extract
+  
   // ---------------------------------------------------
   //  Mist functions
   // ---------------------------------------------------

@@ -122,6 +122,59 @@
       return self::getConnection($connection_name)->rollback();
     } // rollback
     
+    /**
+    * Escape string
+    *
+    * @param string $unescaped
+    * @param string $connection_name
+    * @return string
+    */
+    static function escape($unescaped, $connection_name = null) {
+      return self::getConnection($connection_name)->escape($unescaped);
+    } // escape
+    
+    /**
+    * Return escaped field name
+    *
+    * @param string $unescaped
+    * @param string $connection_name
+    * @return string
+    */
+    static function escapeFieldName($unescaped, $connection_name = null) {
+      return self::getConnection($connection_name)->escapeFieldName($unescaped);
+    } // escapeFieldName
+    
+    /**
+    * Escape table name
+    *
+    * @param string $unescaped
+    * @param string $connection_name
+    * @return string
+    */
+    static function escapeTableName($unescaped, $connection_name = null) {
+      return self::getConnection($connection_name)->escapeTableName($unescaped);
+    } // escapeTableName
+    
+    /**
+    * Prepare string
+    * 
+    * This function will use $string as base and replace every ? with properly escaped argument. Example:
+    * <pre>
+    * Angie_DB::prepareString('username = ? AND homepage = ?', array('Ilija', 'http://www.ilija.biz/'));
+    * // For MySQL it will return: username = 'Ilija' AND homepage = 'http://www.ilija.biz/'
+    * </pre>
+    * 
+    * This function supports all types that are supported by DBA including DateTime, booleans etc.
+    *
+    * @param string $string
+    * @param array $arguments
+    * @param string $connection_name
+    * @return string
+    */
+    static function prepareString($string, $arguments, $connection_name = null) {
+      return self::getConnection($connection_name)->prepareString($string, $arguments);
+    } // prepareString
+    
     // ---------------------------------------------------
     //  Getters and setters
     // ---------------------------------------------------

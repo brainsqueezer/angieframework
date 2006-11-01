@@ -228,12 +228,32 @@
           $escaped_array[] = $this->escape($unescaped_value);
         } // if
         return implode(', ', $escaped_array);
-      } elseif(is_object($unescaped) && ($unescaped instanceof DateTimeValue)) {
+      } elseif(is_object($unescaped) && ($unescaped instanceof Angie_DateTime)) {
         return "'" . mysql_real_escape_string($unescaped->toMySQL(), $this->link) . "'";
       } else {
         return "'" . mysql_real_escape_string($unescaped, $this->link) . "'";
       } // if
     } // escapeString
+    
+    /**
+    * Escape field name
+    *
+    * @param string $unescaped
+    * @return string
+    */
+    function escapeFieldName($unescaped) {
+      return '`' . $unescaped . '`';
+    } // escapeFieldName
+    
+    /**
+    * Escape table name
+    *
+    * @param string $unescaped
+    * @return string
+    */
+    function escapeTableName($unescaped) {
+      return '`' . $unescaped . '`';
+    } // escapeTableName
     
     /**
     * Return last insert ID

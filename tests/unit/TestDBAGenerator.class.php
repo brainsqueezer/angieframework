@@ -82,7 +82,7 @@
         $this->assertTrue(in_array($field, $expected_protected_fields));
       } // foreach
       
-      $expected_allowed_files = array('username', 'email');
+      $expected_allowed_files = array('username', 'email', 'company_id');
       
       $allowed_fields=  Angie_DBA_Generator::getEntity('user')->getAllowedFields();
       $this->assertTrue(is_array($allowed_fields) && count($allowed_fields) == count($expected_allowed_files));

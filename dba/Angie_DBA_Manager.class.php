@@ -96,9 +96,11 @@
       $order_by_string = trim($order_by) == '' ? '' : "ORDER BY $order_by";
       $limit_string = $limit > 0 ? "LIMIT $offset, $limit" : '';
       
-      $sql = "SELECT $fields_list FROM $table_prefix$table_name $where_string $order_by_string $limit_string";
+      $db_connection = Angie_DB::getConnection();
       
-      $rows = Angie_DB::getConnection()->executeAll($sql);
+      $escaped_table_name = $db_connection->escapeTableName($table_prefix . $table_name);
+      
+      $rows = $db_connection->executeAll("SELECT $fields_list FROM $escaped_table_name $where_string $order_by_string $limit_string");
       if(!is_array($rows) || (count($rows) < 1)) {
         return array();
       } // if
@@ -106,6 +108,7 @@
       if($one) {
         return self::loadFromRow($rows[0], $object_class);
       } else {
+        //print_r($rows);
         $objects = array();
         foreach($rows as $row) {
           $object = self::loadFromRow($row, $object_class);
@@ -172,7 +175,10 @@
       $conditions = self::prepareConditions($conditions);
       $where_string = trim($conditions) == '' ? '' : "WHERE $conditions";
       
-      $row = Angie_DB::executeOne("SELECT COUNT($fields) AS 'row_count' FROM $table_prefix$table_name $where_string");
+      $db_connection = Angie_DB::getConnection();
+      $escaped_table_name = $db_connection->escapeTableName($table_prefix . $table_name);
+      
+      $row = $db_connection->executeOne("SELECT COUNT($fields) AS 'row_count' FROM $escaped_table_name $where_string");
       return (integer) array_var($row, 'row_count', 0);
     } // count
     
@@ -186,9 +192,12 @@
     static function delete($conditions, $table_name) {
       $table_prefix = trim(Angie::getConfig('db.table_prefix'));
       
+      $db_connection = Angie_DB::getConnection();
+      $escaped_table_name = $db_connection->escapeTableName($table_prefix . $table_name);
+      
       $conditions = self::prepareConditions($conditions);
       $where_string = trim($conditions) == '' ? '' : "WHERE $conditions";
-      return Angie_DB::execute("DELETE FROM $table_prefix$table_name $where_string");
+      return Angie_DB::execute("DELETE FROM $escaped_table_name $where_string");
     } // delete
     
     /**
