@@ -246,11 +246,14 @@
   
   /**
   * This function will return true if $dir_path is empty
+  * 
+  * If $ignore_hidden is set to true any file or folder witch name starts with . will be ignored 
   *
   * @param string $dir_path
+  * @param boolean $ignore_hidden
   * @return boolean
   */
-  function is_dir_empty($dir_path) {
+  function is_dir_empty($dir_path, $ignore_hidden = false) {
     if(!is_dir($dir_path)) {
       return false;
     } // if
@@ -259,6 +262,9 @@
     if($d) {
   		while(false !== ($entry = $d->read())) {
   		  if(($entry == '.') || ($entry == '..')) {
+  		    continue;
+  		  } // if
+  		  if($ignore_hidden && (substr($entry, 0, 1) == '.')) {
   		    continue;
   		  } // if
   		  return false;

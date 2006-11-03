@@ -26,7 +26,7 @@
     
     function testIsDirEmptyFunction() {
       $this->assertFalse(is_dir_empty($this->test_dir));
-      $this->assertTrue(is_dir_empty($this->test_empty_dir));
+      $this->assertTrue(is_dir_empty($this->test_empty_dir, true));
     } // testIsDirEmptyFunction
   
   } // TestFileFunctions
