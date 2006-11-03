@@ -53,10 +53,10 @@
     * 
     * Function arguments:
     * 
-    * - one - select first row and return object
+    * - one        - select first row and return object
     * - conditions - query conditions
-    * - order - order by string
-    * - offset - limit offset, valid only if limit is present
+    * - order      - order by string
+    * - offset     - limit offset, valid only if limit is present
     * - limit
     * 
     * If 'conditions' argument is an array than first element will be used as a base and 
