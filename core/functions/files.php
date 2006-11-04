@@ -66,16 +66,23 @@
   } // file_is_writable
   
   /**
-  * Return the files from specific directory. This function can filter result
-  * by file extension (accepted param is single extension or array of extensions)
+  * Return the files a from specific directory
+  * 
+  * This function will walk through $dir and read all file names. Result can be filtered by file extension (accepted 
+  * param is single extension or array of extensions). If $recursive is set to true this function will walk recursivlly 
+  * through subfolders.
   *
-  * @example get_files($dir, array('doc', 'pdf', 'xst'))
+  * Example:
+  * <pre>
+  * $files = get_files($dir, array('doc', 'pdf', 'xst'));
+  * foreach($files as $file_path) {
+  *   print $file_path;
+  * } // if
+  * </pre>
   *
-  * @param string $dir Dir that need to be scaned
-  * @param mixed $extension Singe or multiple file extensions that need to be
-  *   mached. If null no check is performed...
-  * @param boolean $recursive Walk recursivlly through directory and return all files
-  *   that match the extension
+  * @param string $dir
+  * @param mixed $extension
+  * @param boolean $recursive
   * @return array
   */
   function get_files($dir, $extension = null, $recursive = false) {
@@ -264,7 +271,7 @@
   		  if(($entry == '.') || ($entry == '..')) {
   		    continue;
   		  } // if
-  		  if($ignore_hidden && (substr($entry, 0, 1) == '.')) {
+  		  if($ignore_hidden && ($entry{0} == '.')) {
   		    continue;
   		  } // if
   		  return false;

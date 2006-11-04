@@ -2,6 +2,9 @@
 
   /**
   * Console command
+  * 
+  * This object is populated by Angie_Console and populated with arguments and options. Parsed information is easily 
+  * available through set of methods.
   *
   * @package Angie.toys
   * @subpackage console

@@ -1,5 +1,16 @@
 <?php
 
+  /**
+  * Console interface
+  * 
+  * This class is used for easy parsing of CLI (Command Line Interface) requests and optaining data from CLI. As a 
+  * result of processing this class returns Angie_Console_Command instance than be used for interaction with arguments 
+  * and options of the input command.
+  *
+  * @package Angie.toys
+  * @subpackage console
+  * @author Ilija Studen <ilija.studen@gmail.com>
+  */
   class Angie_Console {
   
     /**
