@@ -7,9 +7,11 @@
   * it executable. It is used as base for most of Angie console commands because it provides methods that make listing 
   * and implementing commands run through console pretty easy:
   * 
-  * - getDescription() - Returns the desciription of the command and is usually used when we need to list more commands 
-  *   at once with a short description
-  * - getHelp() - Returns command help that is rendered on request
+  * - defineOptions() - Returns the array of possible command options with relations and short option help
+  * - defineDescription() - Returns the desciription of the command and is usually used when we need to list more 
+  *   commands at once with a short description
+  * - defineHelp() - Returns command help that is rendered on request. By default help will be made out of description 
+  *   and options
   * - execute() - Called in order to execute the command. Output object is provided so command can notify user on 
   *   progress
   *

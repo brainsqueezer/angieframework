@@ -29,8 +29,5 @@
   
   $company->hasMany('user');
   $company->belongsTo('user', array('field_name' => 'created_by_id'));
-  
-  Angie_DBA_Generator::setOutputDir(dirname(__FILE__) . '/output');
-  Angie_DBA_Generator::generate(new Angie_Output_Silent());
 
 ?>

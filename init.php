@@ -11,6 +11,7 @@
   */
 
   define('ANGIE_PATH', dirname(__FILE__));
+  define('ANGIE_VERSION', '0.1');
   
   set_include_path(''); // don't rely on include path
   

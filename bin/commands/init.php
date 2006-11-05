@@ -1,5 +1,13 @@
 <?php
 
+  /**
+  * Start Angie project tool
+  *
+  * @package Angie.bin
+  * @subpackage commands
+  * @author Ilija Studen <ilija.studen@gmail.com>
+  */
+
   if(!isset($argv[2])) {
     die('Please provide project path');
   } // if

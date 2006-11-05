@@ -3,8 +3,8 @@
   /**
   * This command will create a new project in a given directory
   *
-  * @package Angei
-  * @subpackage bin
+  * @package Angie.bin
+  * @subpackage commands
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
   

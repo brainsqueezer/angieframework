@@ -6,7 +6,7 @@
   * Top level commands for angie CLI utility are placed in /bin/commands folder. This commands can have subcommands that 
   * are based on a specific subcommand implementation.
   *
-  * @package Angie
+  * @package Angie.bin
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
   

@@ -17,6 +17,8 @@
     } // setUp
     
     function tearDown() {
+      delete_dir(dirname(__FILE__) . '/dba_generator/output/companies');
+      delete_dir(dirname(__FILE__) . '/dba_generator/output/users');
       Angie_DBA_Generator::cleanUp();
     } // tearDown
     
