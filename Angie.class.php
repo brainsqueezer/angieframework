@@ -38,6 +38,13 @@
     static private $template_engine;
     
     /**
+    * Cached array of available console commands
+    *
+    * @var array
+    */
+    static private $available_commands;
+    
+    /**
     * Array of key -> value configuration pairs
     *
     * @var array
@@ -125,6 +132,45 @@
       
       self::setTemplateEngine($template_engine);
     } // useTemplateEngine
+    
+    /**
+    * Return array of available commands
+    * 
+    * This function will return an array of available commands by reading content of angies and projects commands folders. 
+    * Project commands are are read later on so they can override any commands available in framework. Result is an array 
+    * where key is command name and value is file where command handler is defined.
+    *
+    * @param void
+    * @return array
+    */
+    static function getAvailableCommands() {
+      if(is_array(self::$available_commands)) {
+        return self::$available_commands;
+      } // if
+      
+      self::$available_commands = array();
+    
+      $search_in = array(ANGIE_PATH . '/angie/commands/');
+      if(defined('PROJECT_PATH') && is_dir(PROJECT_PATH . '/dev/scripts/commands/')) {
+        $search_in[] = PROJECT_PATH . '/dev/scripts/commands/';
+      } // if
+      
+      foreach($search_in as $path) {
+        $path = with_slash($path);
+        $files = get_files($path, 'php');
+        
+        if(is_foreachable($files)) {
+          foreach($files as $file) {
+            if(str_ends_with($file, '.php')) {
+              $command = substr($file, strlen($path), strlen($file) - strlen($path) - 4);
+              self::$available_commands[$command] = $file;
+            } // if
+          } // foreach
+        } // if
+      } // foreach
+      
+      return self::$available_commands;
+    } // getAvailableCommands
     
     // ---------------------------------------------------
     //  Getters and setters

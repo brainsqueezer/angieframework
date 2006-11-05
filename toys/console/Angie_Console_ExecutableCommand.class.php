@@ -30,24 +30,74 @@
     abstract function execute(Angie_Output $output);
     
     /**
-    * Return command help
+    * Return options definition array
     * 
-    * Return help describing this command, available arguments etc
+    * Single element in options definition array consists of three elements. First element is a short option (one letter 
+    * plus optional colon saying that this option requires an argument), long option name with option colon and help
     *
     * @param void
-    * @return string
+    * @return array
     */
-    abstract function getHelp();
+    abstract function defineOptions();
     
     /**
     * Return command description
-    * 
-    * Return short description that describes this command - usually used when listing available commands
     *
     * @param void
     * @return string
     */
-    abstract function getDescription();
+    abstract function defineDescription();
+    
+    /**
+    * Return help string for this option
+    * 
+    * This function automatically creates a help for the command based on the description and the list of given options. 
+    * Override this method in childclasses to override the default behavior
+    *
+    * @param void
+    * @return string
+    */
+    function defineHelp() {
+      $result = $this->defineDescription() . "\n\nOptions:\n\n";
+      $options = $this->defineOptions();
+      
+      if(is_array($options)) {
+        $longest_long = 0;
+        foreach($options as $option) {
+          $long = $option[1];
+          if($long && (strlen($long) > $longest_long)) {
+            $longest_long = strlen($long);
+          } // if
+        } // foreach
+        
+        foreach($options as $option) {
+          if(!is_array($option)) {
+            $result .= "Invalid option... Skipped\n";
+            continue;
+          } // if
+          
+          list($short, $long, $help) = $option;
+          
+          if($short) {
+            $result .= "  -$short, ";
+          } else {
+            $result .= '      ';
+          } // if
+          
+          if($long) {
+            $result .= "--$long";
+          } // if
+          
+          for($i = strlen($long); $i < ($longest_long + 4); $i++) {
+            $result .= ' ';
+          } // for
+          
+          $result .= $help . "\n";
+        } // foeach
+      } // if
+      
+      return $result;
+    } // defineHelp
   
   } // Angie_Console_ExecutableCommand
 

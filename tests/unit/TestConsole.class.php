@@ -14,6 +14,7 @@
     
     function testShort() {
       $command = Angie_Console::prepareCommand(
+        null,
         explode(' ', 'create-controller my_controller -v -o -d base_directory'),
         array('v', 'o', 'd:'),
         array()
@@ -29,6 +30,7 @@
     
     function testLong() {
       $command = Angie_Console::prepareCommand(
+        null,
         explode(' ', 'create-controller my_controller --verbose --overwrite --dir=base_directory'),
         array(),
         array('verbose', 'overwrite', 'dir:')
@@ -44,6 +46,7 @@
     
     function testCombined() {
       $command = Angie_Console::prepareCommand(
+        null,
         explode(' ', 'create-controller my_controller -v -p password --overwrite --dir=base_directory'),
         array('v', 'p:'),
         array('overwrite', 'dir:')
@@ -59,6 +62,7 @@
     
     function testOptionals() {
       $command = Angie_Console::prepareCommand(
+        null,
         explode(' ', 'do -v'),
         array('v')
       ); // prepareCommand
@@ -69,6 +73,7 @@
       $this->assertFalse($command->getOption('unknown'));
       
       $command = Angie_Console::prepareCommand(
+        null,
         explode(' ', 'do -v'),
         array('v'),
         array('verbose')
@@ -77,6 +82,7 @@
       $this->assertTrue($command->getOption('v', 'verbose'));
       
       $command = Angie_Console::prepareCommand(
+        null,
         explode(' ', 'do --verbose'),
         array('v'),
         array('verbose')
@@ -85,6 +91,7 @@
       $this->assertTrue($command->getOption('v', 'verbose'));
       
       $command = Angie_Console::prepareCommand(
+        null,
         explode(' ', 'do'),
         array('v'),
         array('verbose')

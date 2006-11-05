@@ -12,9 +12,70 @@
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
   class Angie_Console {
-  
+    
     /**
-    * Return command based on input arguments and options string
+    * Return populated console command handler
+    *
+    * @param string $command_class
+    * @param array $from_arguments
+    * @param array $short_options
+    * @param array $long_options
+    * @return Angie_Console_Command
+    * @throws Angie_Core_Error_InvalidParamValue
+    */
+    static function prepareCommand($command_class = null, $from_arguments = null, $short_options = null, $long_options = null) {
+      if(trim($command_class) == '') {
+        $command_class = 'Angie_Console_Command';
+      } else {
+        if(!class_exists($command_class)) {
+          throw new Angie_Core_Error_InvalidParamValue('command_class', $command_class, "Command class '$command_class' does not exist");
+        } // if
+      } // if
+      
+      $command_handler = new $command_class();
+      if(!($command_handler instanceof Angie_Console_Command)) {
+        throw new Angie_Core_Error_InvalidParamValue('command_class', $command_class, "Command class '$command_class' does not inherit Angie_Console_Command");
+      } // if
+      
+      // If we are missing option definitions, but we have an executable command than we can extract defintiions from 
+      // the handler instance...
+      if((is_null($short_options) || is_null($long_options)) && ($command_handler instanceof Angie_Console_ExecutableCommand)) {
+        $handlers_options = $command_handler->defineOptions();
+        
+        $handlers_short_options = array();
+        $handlers_long_options = array();
+        
+        if(is_foreachable($handlers_options)) {
+          foreach($handlers_options as $handlers_option) {
+            list($short, $long, $help) = $handlers_option;
+            if($short) {
+              $handlers_short_options[] = $short;
+            } // if
+            if($long) {
+              $handlers_long_options[] = $long;
+            } // if
+          } // foreach
+        } // if
+        
+        if(is_null($short_options)) {
+          $short_options = $handlers_short_options;
+        } // if
+        
+        if(is_null($long_options)) {
+          $long_options = $handlers_long_options;
+        } // if
+      } // if
+      
+      $process = self::processCommand($from_arguments, $short_options, $long_options);
+      
+      $command_handler->setArguments($process['arguments']);
+      $command_handler->setOptions($process['options']);
+      
+      return $command_handler;
+    } // prepareCommand
+    
+    /**
+    * Extract data from command line argumnets
     * 
     * $arguments is an array of console arguments. If NULL it will be read using readArgv() function
     * 
@@ -22,17 +83,30 @@
     * colon to indicate an option argument is to follow. For example, an option string x recognizes an option -x, and an 
     * option string x: recognizes an option and argument -x argument. It does not matter if an argument has leading 
     * white space.
+    * 
+    * As a result this function returns an array where first element is a set of non-option arguments and the second one 
+    * is the array of options
     *
     * @param array $arguments
     * @param array $short_options
     * @param array $long_options
-    * @return Angie_Console_Command
+    * @return array
+    * @throws Angie_Console_Error_ArgumentRequired
+    * @throws Angie_Console_Error_UnknownOption
     */
-    static function prepareCommand($from_arguments = null, $short_options = array(), $long_options = array()) {
+    static private function processCommand($from_arguments = null, $short_options = null, $long_options = null) {
       if(is_null($from_arguments)) {
         $arguments = self::readArgv();
       } else {
         $arguments = (array) $from_arguments;
+      } // if
+      
+      if(!is_array($short_options)) {
+        $short_options = array();
+      } // if
+      
+      if(!is_array($long_options)) {
+        $long_options = array();
       } // if
       
       $options = array();
@@ -98,9 +172,13 @@
         } // if
       } // foreach
       
-      return new Angie_Console_Command($non_options, $options);
-    } // prepareCommand
-    
+      return array(
+        'arguments' => $non_options,
+        'options'   => $options,
+      ); // array
+    } // processCommand
+  
+   
     /**
     * Safely read the $argv PHP array across different PHP configurations
     * .

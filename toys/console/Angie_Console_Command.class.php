@@ -25,18 +25,6 @@
     * @var array
     */
     private $options;
-  
-    /**
-    * Constructor
-    *
-    * @param array $arguments
-    * @param array $options
-    * @return Angie_Console_Command
-    */
-    function __construct($arguments, $options) {
-      $this->setArguments($arguments);
-      $this->setOptions($options);
-    } // __construct
     
     /**
     * Return argument on a specific possition
@@ -92,7 +80,7 @@
     * @param array $value
     * @return null
     */
-    private function setArguments($value) {
+    function setArguments($value) {
       $this->arguments = $value;
     } // setArguments
     
@@ -112,7 +100,7 @@
     * @param array $value
     * @return null
     */
-    private function setOptions($value) {
+    function setOptions($value) {
       $this->options = $value;
     } // setOptions
   
