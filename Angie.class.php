@@ -172,6 +172,28 @@
       return self::$available_commands;
     } // getAvailableCommands
     
+    /**
+    * Get command handler class based on command name and construct it
+    *
+    * @param string $command
+    * @return Angie_Console_Command
+    * @throws Angie_Core_Error_InvalidParamValue
+    * @throws Angie_Core_Error_InvalidInstance
+    */
+    static function constructCommandHandler($command) {
+      $handler_class_name = 'Angie_Command_' . Angie_Inflector::camelize($command);
+      if(!class_exists($handler_class_name)) {
+        throw new Angie_Core_Error_InvalidParamValue('command', $command, "Command handler for '$command' does not exist");
+      } // if
+      
+      $command_handler = new $handler_class_name();
+      if(!($command_handler instanceof Angie_Console_Command)) {
+        throw new Angie_Core_Error_InvalidInstance('command_handler', $command_handler, "Command class '$handler_class_name' does not inherit Angie_Console_Command");
+      } // if
+      
+      return $command_handler;
+    } // constructCommandHandler
+    
     // ---------------------------------------------------
     //  Getters and setters
     // ---------------------------------------------------

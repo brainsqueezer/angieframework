@@ -16,23 +16,18 @@
     /**
     * Return populated console command handler
     *
-    * @param string $command_class
+    * @param Angie_Console_Command $command_handler
     * @param array $from_arguments
     * @param array $short_options
     * @param array $long_options
     * @return Angie_Console_Command
     * @throws Angie_Core_Error_InvalidParamValue
     */
-    static function prepareCommand($command_class = null, $from_arguments = null, $short_options = null, $long_options = null) {
-      if(trim($command_class) == '') {
-        $command_class = 'Angie_Console_Command';
-      } else {
-        if(!class_exists($command_class)) {
-          throw new Angie_Core_Error_InvalidParamValue('command_class', $command_class, "Command class '$command_class' does not exist");
-        } // if
+    static function prepareCommand($command_handler = null, $from_arguments = null, $short_options = null, $long_options = null) {
+      if(is_null($command_handler)) {
+        $command_handler = new Angie_Console_Command();
       } // if
       
-      $command_handler = new $command_class();
       if(!($command_handler instanceof Angie_Console_Command)) {
         throw new Angie_Core_Error_InvalidParamValue('command_class', $command_class, "Command class '$command_class' does not inherit Angie_Console_Command");
       } // if

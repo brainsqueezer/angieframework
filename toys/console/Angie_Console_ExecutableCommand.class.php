@@ -40,7 +40,11 @@
     * @param void
     * @return array
     */
-    abstract function defineOptions();
+    function defineOptions() {
+      return array(
+        array('h', 'help', 'Show help')
+      ); // array
+    } // defineOptions
     
     /**
     * Return command description
@@ -48,7 +52,9 @@
     * @param void
     * @return string
     */
-    abstract function defineDescription();
+    function defineDescription() {
+      return 'No desscription available for this command';
+    } // defineDescription
     
     /**
     * Return help string for this option
@@ -90,11 +96,11 @@
             $result .= "--$long";
           } // if
           
-          for($i = strlen($long); $i < ($longest_long + 4); $i++) {
+          for($i = strlen($long); $i < ($longest_long + 2); $i++) {
             $result .= ' ';
           } // for
           
-          $result .= $help . "\n";
+          $result .= '- ' . $help . "\n";
         } // foeach
       } // if
       
