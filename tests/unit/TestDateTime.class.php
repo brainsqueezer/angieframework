@@ -88,6 +88,20 @@
       $datetime->advance(-15);
       $this->assertEqual($datetime->getSecond(), 0);
     } // testAdvance
+    
+    function testTimezones() {
+      $timezones = Angie_Timezones::getAll();
+      $this->assertTrue(is_array($timezones) && (count($timezones) == 33));
+      
+      $gmt = Angie_Timezones::getByOffset(0);
+      $this->assertIsA($gmt, 'Angie_Timezone');
+      $this->assertEqual($gmt->getFormattedOffset(), '');
+      
+      $belgrade = Angie_Timezones::getByOffset(3600);
+      $this->assertIsA($belgrade, 'Angie_Timezone');
+      $this->assertEqual($belgrade->getFormattedOffset(), '+01:00');
+      $this->assertEqual($belgrade->getFormattedOffset(''), '+0100');
+    } // testTimezones
   
   } // TestDateTimeValue
 

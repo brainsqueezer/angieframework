@@ -16,6 +16,7 @@
   if(!class_exists('Angie_Console')) {
     require_once ANGIE_PATH . '/toys/console/Angie_Console.class.php';
     require_once ANGIE_PATH . '/toys/console/Angie_Console_Command.class.php';
+    require_once ANGIE_PATH . '/toys/console/Angie_Console_ExecutableCommand.class.php';
   } // if
   
   $subcommand = array_var($argv, 1);

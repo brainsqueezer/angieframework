@@ -394,9 +394,9 @@
   * @return null
   */
   function pre_var_dump($var) {
-    print '<pre>';
+    print "<pre>\n";
     var_dump($var);
-    print '</pre>';
+    print "</pre>\n";
   } // pre_var_dump
   
   /**
