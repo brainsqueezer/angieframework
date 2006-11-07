@@ -83,7 +83,7 @@
           break;
 <?php } // foreach ?>
   	  } // switch
-  	  parent::setFieldValue($field_name, $to_set);
+  	  return parent::setFieldValue($field_name, $to_set);
   	} // setValue
   
 <?php if(is_foreachable($entity->getFields())) { ?>

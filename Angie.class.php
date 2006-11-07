@@ -150,7 +150,7 @@
       
       self::$available_commands = array();
     
-      $search_in = array(ANGIE_PATH . '/angie/commands/');
+      $search_in = array(ANGIE_PATH . '/project/commands/');
       if(defined('PROJECT_PATH') && is_dir(PROJECT_PATH . '/dev/scripts/commands/')) {
         $search_in[] = PROJECT_PATH . '/dev/scripts/commands/';
       } // if
@@ -174,6 +174,10 @@
     
     /**
     * Get command handler class based on command name and construct it
+    * 
+    * Conver command name to expected command class and, if class is loaded, construct the handler object. If class is 
+    * not loaded this function will throw an exception. While detecting if class exists this function will use autoload 
+    * function.
     *
     * @param string $command
     * @return Angie_Console_Command
@@ -182,7 +186,7 @@
     */
     static function constructCommandHandler($command) {
       $handler_class_name = 'Angie_Command_' . Angie_Inflector::camelize($command);
-      if(!class_exists($handler_class_name)) {
+      if(!class_exists($handler_class_name, true)) {
         throw new Angie_Core_Error_InvalidParamValue('command', $command, "Command handler for '$command' does not exist");
       } // if
       

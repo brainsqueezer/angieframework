@@ -19,6 +19,13 @@
   abstract class Angie_DBA_Generator_Relationship extends Angie_DBA_Generator_Block {
     
     /**
+    * Relationship name
+    *
+    * @var string
+    */
+    private $name;
+    
+    /**
     * Relationship target entity
     *
     * @var Angie_DBA_Generator_Entity
@@ -81,6 +88,26 @@
     // ---------------------------------------------------
     //  Getters and setters
     // ---------------------------------------------------
+    
+    /**
+    * Get name
+    *
+    * @param null
+    * @return string
+    */
+    function getName() {
+      return $this->name;
+    } // getName
+    
+    /**
+    * Set name value
+    *
+    * @param string $value
+    * @return null
+    */
+    function setName($value) {
+      $this->name = $value;
+    } // setName
     
     /**
     * Get target_entity

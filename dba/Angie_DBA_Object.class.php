@@ -81,6 +81,13 @@
   	* @var string
   	*/
   	protected $auto_increment_field;
+  	
+  	/**
+  	* Array where relations can store cached values to save load time on next request
+  	*
+  	* @var array
+  	*/
+  	protected $cache = array();
   
     /**
   	* Indicates if this is new object (not saved)
@@ -278,14 +285,21 @@
   	
   	/**
   	* Set specific field value
+  	* 
+  	* Set value of specific field. Value will be set only if it is different than the one we already have. This method 
+  	* is also responsible for marking a field as modfied and taking care that updated primary key values get remembered 
+  	* for further reference
+  	* 
+  	* If field $field_name does not exists invalid param exception will be thrown
   	*
   	* @param string $field_name
   	* @param mixed $value
   	* @return boolean
+  	* @throws Angie_Core_Error_InvalidParamValue
   	*/
   	protected function setFieldValue($field_name, $value) {
   		if(!$this->fieldExists($field_name)) {
-  		  return false;
+  		  throw new Angie_Core_Error_InvalidParamValue('field_name', $field_name, "Field '$field_name' does not exists in this object type");
   		} // if
   		
 		  $old_value = $this->getFieldValue($field_name);
@@ -300,7 +314,7 @@
   		  } // if
   		} // if
   		
-  		return true;
+  		return $value;
   	} // setFieldValue
   	
   	// -------------------------------------------------------------
@@ -877,6 +891,20 @@
   	  
   	  return (boolean) preg_match($pattern, $this->getFieldValue($field_name));
   	} // validateFormatOf
+  	
+  	// ---------------------------------------------------
+  	//  System
+  	// ---------------------------------------------------
+  	
+  	/**
+  	* Go to sleep (on serialization)
+  	*
+  	* @param void
+  	* @return null
+  	*/
+  	function __sleep() {
+  	  $this->cache = array(); // reset cache
+  	} // __sleep
     
   } // Angie_DBA_Object
 

@@ -187,11 +187,17 @@
   
   /**
   * Remove specific directory
+  * 
+  * This function will walk recursivly through $dir and its subdirectories and delete all content
   *
   * @param string $dir Directory path
   * @return boolean
   */
   function delete_dir($dir) {
+    if(!is_dir($dir)) {
+      return false;
+    } // if
+    
   	$dh = opendir($dir);
   	while($file = readdir($dh)) {
   		if(($file != ".") && ($file != "..")) {

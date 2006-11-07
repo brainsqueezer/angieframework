@@ -12,8 +12,9 @@
     * Set value of '<?= $field->getName() ?>' field
     *
     * @param <?= $field->getNativeType() ?> $value
+    * @return <?= $field->getNativeType() ?> 
     */
     function <?= $field->getSetterName() ?>($value) {
-      $this->setFieldValue('<?= $field->getName() ?>', $value);
+      return $this->setFieldValue('<?= $field->getName() ?>', $value);
     } // <?= $field->getSetterName() ?> 
     

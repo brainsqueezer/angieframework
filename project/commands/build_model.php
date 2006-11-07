@@ -11,12 +11,19 @@
     * @return null
     */
     function execute(Angie_Output $output) {
-      require_once PROJECT_PATH . '/dev/model.php';
+      Angie_DBA_Generator::cleanUp();
+      
+      require PROJECT_PATH . '/dev/model.php';
       
       $output_directory = APPLICATION_PATH . '/models';
       
+      $options = array(
+        'force' => (boolean) $this->getOption('force'),
+        'quiet' => (boolean) $this->getOption('q', 'quiet'),
+      ); // array
+      
       Angie_DBA_Generator::setOutputDir($output_directory);
-      Angie_DBA_Generator::generate($output);
+      Angie_DBA_Generator::generate($output, $options);
     } // execute
     
     /**

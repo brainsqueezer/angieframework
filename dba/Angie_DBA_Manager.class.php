@@ -43,6 +43,35 @@
     } // name
     
     /**
+    * Return array of objects or first object that match $sql
+    *
+    * @param string $sql
+    * @param string $object_class
+    * @param boolean $one
+    * @return mixed
+    */
+    static function findBySQL($sql, $object_class, $one) {
+      $rows = Angie_DB::getConnection()->executeAll($sql);
+      if(!is_array($rows) || (count($rows) < 1)) {
+        return array();
+      } // if
+      
+      if($one) {
+        return self::loadFromRow($rows[0], $object_class);
+      } else {
+        //print_r($rows);
+        $objects = array();
+        foreach($rows as $row) {
+          $object = self::loadFromRow($row, $object_class);
+          if($object instanceof $object_class) {
+            $objects[] = $object;
+          } // if
+        } // foreach
+        return count($objects) ? $objects : array();
+      } // if
+    } // findBySQL
+    
+    /**
     * Do a SELECT query over database with specified arguments
     * 
     * This function has three possible results:
@@ -96,28 +125,8 @@
       $order_by_string = trim($order_by) == '' ? '' : "ORDER BY $order_by";
       $limit_string = $limit > 0 ? "LIMIT $offset, $limit" : '';
       
-      $db_connection = Angie_DB::getConnection();
-      
-      $escaped_table_name = $db_connection->escapeTableName($table_prefix . $table_name);
-      
-      $rows = $db_connection->executeAll("SELECT $fields_list FROM $escaped_table_name $where_string $order_by_string $limit_string");
-      if(!is_array($rows) || (count($rows) < 1)) {
-        return array();
-      } // if
-      
-      if($one) {
-        return self::loadFromRow($rows[0], $object_class);
-      } else {
-        //print_r($rows);
-        $objects = array();
-        foreach($rows as $row) {
-          $object = self::loadFromRow($row, $object_class);
-          if($object instanceof $object_class) {
-            $objects[] = $object;
-          } // if
-        } // foreach
-        return count($objects) ? $objects : array();
-      } // if
+      $escaped_table_name = Angie_DB::getConnection()->escapeTableName($table_prefix . $table_name);
+      return self::findBySQL("SELECT $fields_list FROM $escaped_table_name $where_string $order_by_string $limit_string", $object_class, $one);
     }  // find
     
     /**

@@ -69,7 +69,7 @@
     * @return null
     */
     static function generate(Angie_Output $output, $options = null) {
-      $output->printMessage("DBA generator started\n=====================");
+      $quiet = array_var($options, 'quiet');
       
       // Check output directory
       if(!is_dir(self::$output_dir)) {
@@ -80,11 +80,15 @@
         throw new Angie_FileSystem_Error_DirNotWritable(self::$output_dir);
       } // if
       
-      $output->printMessage('Output directory exists and is writable', 'ok');
+      if(!$quiet) {
+        $output->printMessage('Output directory exists and is writable', 'ok');
+      } // if
       
       // Prepare
       self::prepare();
-      $output->printMessage('Model description prepared', 'ok');
+      if(!$quiet) {
+        $output->printMessage('Model description prepared', 'ok');
+      } // if
       
       // Loop through entities
       if(is_foreachable(self::$entities)) {
@@ -92,10 +96,14 @@
           $entity_output_dir = with_slash(self::$output_dir) . $entity->getOutputDir();
           
           if(is_dir($entity_output_dir)) {
-            $output->printMessage("Directory '" . self::relativeToOutput($entity_output_dir) . "' exists");
+            if(!$quiet) {
+              $output->printMessage("Directory '" . self::relativeToOutput($entity_output_dir) . "' exists. Continue.");
+            } // if
           } else {
             if(mkdir($entity_output_dir)) {
-              $output->printMessage("Directory '" . self::relativeToOutput($entity_output_dir) . "' created");
+              if(!$quiet) {
+                $output->printMessage("Directory '" . self::relativeToOutput($entity_output_dir) . "' created");
+              } // if
             } else {
               throw new Angie_FileSystem_Error_DirNotWritable(self::$output_dir);
             } // if
@@ -104,8 +112,6 @@
           $entity->generate($output, $entity_output_dir, $options);
         } // foreach
       } // if
-      
-      $output->printMessage("=====================\nJob done\n");
     } // generate
     
     /**

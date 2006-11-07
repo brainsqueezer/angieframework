@@ -182,13 +182,20 @@
     * @return null
     */
     function generate(Angie_Output $output, $output_dir, $additional_options = null) {
+      $quiet = array_var($additional_options, 'quiet');
+      $force = array_var($additional_options, 'force');
+      
       $base_dir = with_slash($output_dir) . 'base';
       
       if(is_dir($base_dir)) {
-        $output->printMessage("Directory '" . Angie_DBA_Generator::relativeToOutput($base_dir) . "' exists. Continue...");
+        if(!$quiet) {
+          $output->printMessage("Directory '" . Angie_DBA_Generator::relativeToOutput($base_dir) . "' exists. Continue.");
+        } // if
       } else {
         if(mkdir($base_dir)) {
-          $output->printMessage("Directory '" . Angie_DBA_Generator::relativeToOutput($base_dir) . "' created");
+          if(!$quiet) {
+            $output->printMessage("Directory '" . Angie_DBA_Generator::relativeToOutput($base_dir) . "' created");
+          } // if
         } else {
           throw new Angie_FileSystem_Error_DirNotWritable($output_dir);
         } // if
@@ -215,12 +222,19 @@
     * @return null
     */
     private function generateBaseObject(Angie_Output $output, $output_dir, $additional_options = null) {
+      $quiet = array_var($additional_options, 'quiet');
+      
       $output_file = with_slash($output_dir) . $this->getBaseObjectClassName() . '.class.php';
+      $file_exists = file_exists($output_file);
+      
       file_put_contents($output_file, Angie_DBA_Generator::fetchView('base_object_class'));
-      if(file_exists($output_file)) {
-        $output->printMessage("File '" . Angie_DBA_Generator::relativeToOutput($output_file) . "' exists. Overwrite...");
-      } else {
-        $output->printMessage("File '" . Angie_DBA_Generator::relativeToOutput($output_file) . "' created");
+      
+      if(!$quiet) {
+        if($file_exists) {
+          $output->printMessage("File '" . Angie_DBA_Generator::relativeToOutput($output_file) . "' exists. Overwrite.");
+        } else {
+          $output->printMessage("File '" . Angie_DBA_Generator::relativeToOutput($output_file) . "' created");
+        } // if
       } // if
     } // generateBaseObject
     
@@ -233,12 +247,19 @@
     * @return null
     */
     private function generateBaseManager(Angie_Output $output, $output_dir, $additional_options = null) {
+      $quiet = array_var($additional_options, 'quiet');
+      
       $output_file = with_slash($output_dir) . $this->getBaseManagerClassName() . '.class.php';
+      $file_exists = file_exists($output_file);
+      
       file_put_contents($output_file, Angie_DBA_Generator::fetchView('base_manager_class'));
-      if(file_exists($output_file)) {
-        $output->printMessage("File '" . Angie_DBA_Generator::relativeToOutput($output_file) . "' exists. Overwrite...");
-      } else {
-        $output->printMessage("File '" . Angie_DBA_Generator::relativeToOutput($output_file) . "' created");
+      
+      if(!$quiet) {
+        if($file_exists) {
+          $output->printMessage("File '" . Angie_DBA_Generator::relativeToOutput($output_file) . "' exists. Overwrite.");
+        } else {
+          $output->printMessage("File '" . Angie_DBA_Generator::relativeToOutput($output_file) . "' created");
+        } // if
       } // if
     } // generateBaseManager
     
@@ -251,17 +272,28 @@
     * @return null
     */
     private function generateObject(Angie_Output $output, $output_dir, $additional_options = null) {
+      $quiet = array_var($additional_options, 'quiet');
+      $force = array_var($additional_options, 'force');
+      
       $output_file = with_slash($output_dir) . $this->getObjectClassName() . '.class.php';
+      
       if(file_exists($output_file)) {
-        if(!array_var($additional_options, 'force', false)) {
-          $output->printMessage("File '" . Angie_DBA_Generator::relativeToOutput($output_file) . "' exists. Skipping...");
-          return;
+        if($force) {
+          if(!$quiet) {
+            $output->printMessage("File '" . Angie_DBA_Generator::relativeToOutput($output_file) . "' exists. Overwrite.");
+          } // if
         } else {
-          $output->printMessage("File '" . Angie_DBA_Generator::relativeToOutput($output_file) . "' exists. Overwrite...");
+          if(!$quiet) {
+            $output->printMessage("File '" . Angie_DBA_Generator::relativeToOutput($output_file) . "' exists. Skip.");
+          } // if
+          return; // skip here...
         } // if
       } else {
-        $output->printMessage("File '" . Angie_DBA_Generator::relativeToOutput($output_file) . "' created");
+        if(!$quiet) {
+          $output->printMessage("File '" . Angie_DBA_Generator::relativeToOutput($output_file) . "' created");
+        } // if
       } // if
+      
       file_put_contents($output_file, Angie_DBA_Generator::fetchView('object_class'));
     } // generateObject
     
@@ -274,17 +306,28 @@
     * @return null
     */
     private function generateManager(Angie_Output $output, $output_dir, $additional_options = null) {
+      $quiet = array_var($additional_options, 'quiet');
+      $force = array_var($additional_options, 'force');
+      
       $output_file = with_slash($output_dir) . $this->getManagerClassName() . '.class.php';
+      
       if(file_exists($output_file)) {
-        if(!array_var($additional_options, 'force', false)) {
-          $output->printMessage("File '" . Angie_DBA_Generator::relativeToOutput($output_file) . "' exists. Skipping...");
-          return;
+        if($force) {
+          if(!$quiet) {
+            $output->printMessage("File '" . Angie_DBA_Generator::relativeToOutput($output_file) . "' exists. Overwrite.");
+          } // if
         } else {
-          $output->printMessage("File '" . Angie_DBA_Generator::relativeToOutput($output_file) . "' exists. Overwrite...");
+          if(!$quiet) {
+            $output->printMessage("File '" . Angie_DBA_Generator::relativeToOutput($output_file) . "' exists. Skip.");
+          } // if
+          return; // skip here...
         } // if
       } else {
-        $output->printMessage("File '" . Angie_DBA_Generator::relativeToOutput($output_file) . "' created");
+        if(!$quiet) {
+          $output->printMessage("File '" . Angie_DBA_Generator::relativeToOutput($output_file) . "' created");
+        } // if
       } // if
+      
       file_put_contents($output_file, Angie_DBA_Generator::fetchView('manager_class'));
     } // generateManager
     
