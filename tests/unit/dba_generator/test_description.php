@@ -23,12 +23,12 @@
   
   // Set relations
   $user->belongsTo('company'); // getCompany() - by company_id
-  $user->belongsTo('user', array('field_name' => 'created_by_id'));  // getCreatedBy()
-  $user->belongsTo('user', array('field_name' => 'updated_by_id'));  // getUpdatedBy()
-  $user->hasMany('company', array('field_name' => 'created_by_id', 'getter' => 'getOwnedCompanies')); // getOwnedCompanies() - by created_by_id
+  $user->belongsTo('user', array('foreign_key' => 'created_by_id'));  // getCreatedBy()
+  $user->belongsTo('user', array('foreign_key' => 'updated_by_id'));  // getUpdatedBy()
+  $user->hasMany('company', array('name' => 'owned_companies', 'foreign_key' => 'created_by_id')); // getOwnedCompanies() - by created_by_id
   
   $company->hasMany('user');
-  $company->belongsTo('user', array('field_name' => 'created_by_id'));
+  $company->belongsTo('user', array('foreign_key' => 'created_by_id'));
   
   Angie_DBA_Generator::setOutputDir(dirname(__FILE__) . '/output');
   Angie_DBA_Generator::generate(new Angie_Output_Silent());

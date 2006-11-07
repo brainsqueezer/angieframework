@@ -58,7 +58,18 @@
     function __construct(Angie_DBA_Generator_Entity $owner_entity, Angie_DBA_Generator_Entity $target_entity, $options = null) {
       parent::__construct($owner_entity);
       $this->setTargetEntity($target_entity);
-      populate_through_setter($this, $options, get_class_methods('Angie_DBA_Generator_Relationship'));
+      
+      $allowed_methods = array('setName');
+      $protected_methods = get_class_methods('Angie_DBA_Generator_Relationship');
+      if(is_foreachable($protected_methods)) {
+        foreach($protected_methods as $k => $protected_method) {
+          if(in_array($protected_method, $allowed_methods)) {
+            unset($protected_methods[$k]);
+          } // if
+        } // foreach
+      } // if
+      
+      populate_through_setter($this, $options, $protected_methods);
     } // __construct
     
     // ---------------------------------------------------

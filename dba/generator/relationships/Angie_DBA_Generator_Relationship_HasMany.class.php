@@ -95,7 +95,7 @@
     * @return string
     */
     function getGetterName() {
-      return 'get' . Angie_Inflector::camelize($this->getRelationName());
+      return 'get' . Angie_Inflector::camelize($this->getName());
     } // getGetterName
     
     /**
@@ -105,7 +105,7 @@
     * @return string
     */
     function getCounterName() {
-      return 'count' . Angie_Inflector::camelize($this->getRelationName());
+      return 'count' . Angie_Inflector::camelize($this->getName());
     } // getCounterName
     
     /**
@@ -115,8 +115,26 @@
     * @return null
     */
     function getAdderName() {
-      return 'add' . Angie_Inflector::camelize(Angie_Inflector::singularize($this->getRelationName()));
+      return 'add' . Angie_Inflector::camelize(Angie_Inflector::singularize($this->getName()));
     } // getAdderName
+    
+    /**
+    * Return foreign key setter function name
+    *
+    * @param void
+    * @return string
+    */
+    function getForeignKeySetter() {
+      return 'set' . Angie_Inflector::camelize($this->getForeignKey());
+    } // getForeignKeySetter
+    
+    function getEntityPrimaryKeyName() {
+      return array_var($this->getEntity()->getPrimaryKeyFieldNames(), 0);
+    } // getEntityPrimaryKeyName
+    
+    function getEntityPrimaryKeyGetter() {
+      return 'get' . Angie_Inflector::camelize($this->getEntityPrimaryKeyName());
+    } // getEntityPrimaryKeyGetter
     
     // ---------------------------------------------------
     //  Getters and setters

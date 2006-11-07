@@ -342,7 +342,7 @@
     * @return string
     */
     function exportPkFieldNames() {
-      $field_names = array_keys($this->getPrimaryKey());
+      $field_names = $this->getPrimaryKeyFieldNames();
       if(is_foreachable($field_names)) {
         foreach($field_names as $k => $v) {
           $field_names[$k] = "'$v'";
@@ -703,6 +703,16 @@
     function getPrimaryKey() {
       return $this->primary_key;
     } // getPrimaryKey
+    
+    /**
+    * Return names of fields that make the primary key
+    *
+    * @param void
+    * @return array
+    */
+    function getPrimaryKeyFieldNames() {
+      return array_keys($this->primary_key);
+    } // getPrimaryKeyFieldNames
     
     /**
     * Add field to primary key
