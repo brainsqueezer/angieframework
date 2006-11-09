@@ -36,6 +36,8 @@
       Angie_DB::execute("DROP TABLE IF EXISTS `generator_users`");
       Angie_DB::execute("DROP TABLE IF EXISTS `generator_companies`");
       Angie_DB::execute("DROP TABLE IF EXISTS `generator_packages`");
+      Angie_DB::execute("DROP TABLE IF EXISTS `generator_tags`");
+      Angie_DB::execute("DROP TABLE IF EXISTS `generator_companies_tags`");
       
       Angie_DB::execute("CREATE TABLE `generator_companies` (
         `id` smallint(5) unsigned NOT NULL auto_increment,
@@ -63,12 +65,26 @@
         `updated_by_id` smallint(5) unsigned NOT NULL default '0',
         PRIMARY KEY  (`id`)
       )");
+      
+      Angie_DB::execute("CREATE TABLE `generator_tags` (
+        `id` smallint(5) unsigned NOT NULL auto_increment,
+        `name` varchar(100) NOT NULL default '',
+        PRIMARY KEY  (`id`)
+      );");
+      
+      Angie_DB::execute("CREATE TABLE `generator_companies_tags` (
+        `company_id` smallint(5)  NOT NULL,
+        `tag_id` smallint(5) unsigned NOT NULL,
+        PRIMARY KEY (`company_id`, `tag_id`)
+      );");
+      
     } // setUp
     
     function tearDown() {
       delete_dir(dirname(__FILE__) . '/dba_generator/output/companies');
       delete_dir(dirname(__FILE__) . '/dba_generator/output/users');
       delete_dir(dirname(__FILE__) . '/dba_generator/output/packages');
+      delete_dir(dirname(__FILE__) . '/dba_generator/output/tags');
       
       Angie_DBA_Generator::cleanUp();
       Angie_DB::execute("DROP TABLE `generator_users`");
@@ -467,12 +483,9 @@
       
       $this->assertEqual($company->getId(), $package->getCompanyId());
       
-//      $companies = $package->getCompanies();
-//      $this->assertTrue(is_array($companies) && (count($companies) == 1));
-//      $first_company = $companies[0];
-//      $this->assertIsA($first_company, 'Company');
-//      $this->assertNotIdentical($first_company, $company);
-//      $this->assertEqual($first_company->getId(), $company->getId());
+      $company_by_package = $package->getCompany();
+      $this->assertIsA($company_by_package, 'Company');
+      $this->assertEqual($company_by_package->getId(), $company->getId());
     } // testHasOneRelation
     
     function testBelongsTo() {
@@ -500,6 +513,163 @@
     function testHasMany() {
       
     } // testHasMany
+    
+    function testHasAndBelongsToMany() {
+      
+      // Define some tags and companies...
+      $tag_1 = new Tag();
+      $tag_2 = new Tag();
+      $tag_3 = new Tag();
+      
+      $tag_1->save();
+      $tag_2->save();
+      $tag_3->save();
+      
+      $tag_1_id = $tag_1->getId();
+      $tag_2_id = $tag_2->getId();
+      $tag_3_id = $tag_3->getId();
+      
+      $company_1 = new Company();
+      $company_2 = new Company();
+      $company_3 = new Company();
+      
+      $company_1->save();
+      $company_2->save();
+      $company_3->save();
+      
+      $company_1_id = $company_1->getId();
+      $company_2_id = $company_2->getId();
+      $company_3_id = $company_3->getId();
+      
+      // Define relations...
+      
+      $company_1->setTags(array(
+        $tag_1,
+        $tag_2,
+        $tag_3,
+      ));
+      
+      // Check company 1 tags... There should be 3 tags
+      
+      $company_1_tags = $company_1->getTags(true);
+      $this->assertEqual($company_1->countTags(true), 3);
+      $this->assertTrue(is_array($company_1_tags) && (count($company_1_tags) == 3));
+      $this->assertEqual(objects_array_extract($company_1_tags, 'getId'), array($tag_1_id, $tag_2_id, $tag_3_id));
+      
+      // Lets remove one tag... There should be left 2 tags and second tag should not be deleted
+      $company_1->deleteTagRelation($tag_2);
+      
+      $company_1_tags = $company_1->getTags(true);
+      $this->assertEqual($company_1->countTags(true), 2);
+      $this->assertTrue(is_array($company_1_tags) && (count($company_1_tags) == 2));
+      $this->assertEqual(objects_array_extract($company_1_tags, 'getId'), array($tag_1_id, $tag_3_id));
+      
+      $tag_2_reloaded = Tags::findById($tag_2_id);
+      $this->assertIsA($tag_2_reloaded, 'Tag');
+      
+      // Now lets drop all relations. Tags should not be deleted
+      $company_1->deleteTagRelations();
+      
+      $company_1_tags = $company_1->getTags(true);
+      $this->assertEqual($company_1->countTags(true), 0);
+      $this->assertEqual($company_1_tags, null);
+      
+      $tag_1_reloaded = Tags::findById($tag_1_id);
+      $this->assertIsA($tag_1_reloaded, 'Tag');
+      $tag_2_reloaded = Tags::findById($tag_2_id);
+      $this->assertIsA($tag_2_reloaded, 'Tag');
+      $tag_3_reloaded = Tags::findById($tag_3_id);
+      $this->assertIsA($tag_3_reloaded, 'Tag');
+      
+      // Let add back tags, but not clear them...
+      
+      $company_1->setTags(array(
+        $tag_1,
+        $tag_2,
+        $tag_3,
+      ));
+      
+      $company_1->clearTags();
+      
+      $company_1_tags = $company_1->getTags(true);
+      $this->assertEqual($company_1->countTags(true), 0);
+      $this->assertEqual($company_1_tags, null);
+      
+      $tag_1_reloaded = Tags::findById($tag_1_id);
+      $this->assertEqual($tag_1_reloaded, null);
+      $tag_2_reloaded = Tags::findById($tag_2_id);
+      $this->assertEqual($tag_2_reloaded, null);
+      $tag_3_reloaded = Tags::findById($tag_3_id);
+      $this->assertEqual($tag_3_reloaded, null);
+      
+    } // testHasAndBelongsToMany
+    
+    function testRelationshipOnDelete() {
+      
+      // Create company and add multiple users. Company has many users with cascading deletation. When company is 
+      // deleted users whould be dropped as well
+      
+      $company = new Company();
+      $company->setName('Company');
+      
+      $ilija = new User();
+      $ilija->setUsername('Ilija');
+      
+      $oliver = new User();
+      $oliver->setUsername('oliver');
+      
+      $godza = new User();
+      $godza->setUsername('godza');
+      
+      $company->addUser($ilija, true);
+      $company->addUser($oliver, true);
+      $company->addUser($godza, true);
+      
+      $company->save();
+      
+      $this->assertFalse($company->isNew());
+      $this->assertFalse($ilija->isNew());
+      $this->assertFalse($godza->isNew());
+      $this->assertFalse($oliver->isNew());
+      
+      $ilija_id = $ilija->getId();
+      $oliver_id = $oliver->getId();
+      $godza_id = $godza->getId();
+      $company_id = $company->getId();
+      
+      $this->assertEqual(objects_array_extract($company->getUsers(), 'getId'), array($ilija_id, $oliver_id, $godza_id));
+      
+      $company->delete();
+      
+      $this->assertEqual(Companies::findById($company_id), null);
+      $this->assertEqual(Users::findById($ilija_id), null);
+      $this->assertEqual(Users::findById($oliver_id), null);
+      $this->assertEqual(Users::findById($godza_id), null);
+      
+      // Company has one package with nullify connection. When company gets dropped package should be reseted to have 
+      // company ID set to 0
+      
+      $company = new Company();
+      $company->setName('Name');
+      
+      $package = new Package();
+      $package->setName('Nice');
+      
+      $company->setPackage($package, true);
+      $company->save();
+      
+      $this->assertFalse($company->isNew());
+      $this->assertFalse($package->isNew());
+      
+      $company_id = $company->getId();
+      $package_id = $package->getId();
+      
+      $company->delete();
+      
+      $loaded_package = Packages::findById($package_id);
+      $this->assertIsA($loaded_package, 'Package');
+      $this->assertEqual($loaded_package->getCompanyId(), 0);
+    } // testRelationshipOnDelete
   
   } // TestDBARuntime
 

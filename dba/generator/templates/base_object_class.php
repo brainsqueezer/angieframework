@@ -164,7 +164,7 @@
 <?php if($rel instanceof Angie_DBA_Generator_Relationship_HasMany) { ?>
 <?php if($rel->getOnDelete() == Angie_DBA_Generator::ON_DELETE_CASCADE) { ?>
       $related_objects = $this-><?= $rel->getGetterName() ?>();
-      if(is_foreachable($related)) {
+      if(is_foreachable($related_objects)) {
         foreach($related_objects as $related_object) {
           $related_object->delete();
         } // foreach
@@ -185,6 +185,8 @@
 <?php } elseif($rel->getOnDelete() == Angie_DBA_Generator::ON_DELETE_NULLIFY) { ?>
       $this-><?= $rel->getNullifierName() ?>();
 <?php } // if ?>
+<?php } elseif($rel instanceof Angie_DBA_Generator_Relationship_HasAndBelongsToMany) { ?>
+      $this-><?= $rel->getAllRelationsDeleterName() ?>();
 <?php } // if ?>
 <?php } // foreach ?>
       return parent::delete();

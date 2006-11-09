@@ -240,6 +240,23 @@
       )); // in_array
     } // isValidOnDeleteValue
     
+    /**
+    * Return has and belongs to many relation join table name based on owner and target entity
+    *
+    * @param Angie_DBA_Generator_Entity $owner_entity
+    * @param Angie_DBA_Generator_Entity $target_entity
+    * @return string
+    */
+    static function getHABTMJoinTableName(Angie_DBA_Generator_Entity $owner_entity, Angie_DBA_Generator_Entity $target_entity) {
+      $mixer = array(
+        Angie_Inflector::pluralize($owner_entity->getName()),
+        Angie_Inflector::pluralize($target_entity->getName()),
+      ); // array
+      
+      sort($mixer);
+      return implode('_', $mixer);
+    } // getHABTMJoinTableName
+    
     // ---------------------------------------------------
     //  Getters and setters
     // ---------------------------------------------------

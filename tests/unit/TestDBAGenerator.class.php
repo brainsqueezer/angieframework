@@ -20,6 +20,7 @@
       delete_dir(dirname(__FILE__) . '/dba_generator/output/companies');
       delete_dir(dirname(__FILE__) . '/dba_generator/output/users');
       delete_dir(dirname(__FILE__) . '/dba_generator/output/packages');
+      delete_dir(dirname(__FILE__) . '/dba_generator/output/tags');
       
       Angie_DBA_Generator::cleanUp();
     } // tearDown
