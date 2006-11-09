@@ -206,8 +206,40 @@
       
       $conditions = self::prepareConditions($conditions);
       $where_string = trim($conditions) == '' ? '' : "WHERE $conditions";
-      return Angie_DB::execute("DELETE FROM $escaped_table_name $where_string");
+      return $db_connection->execute("DELETE FROM $escaped_table_name $where_string");
     } // delete
+    
+    /**
+    * Update searies of fields in rows that match $conditions
+    * 
+    * $fields is an associative array where key is field and value is new value that needs to be set
+    *
+    * @param array $fields
+    * @param mixed $conditions
+    * @param string $table_name
+    * @return integer
+    */
+    static function update($fields, $conditions, $table_name) {
+      if(!is_foreachable($fields)) {
+        return 0;
+      } // if
+      
+      $table_prefix = trim(Angie::getConfig('db.table_prefix'));
+      
+      $db_connection = Angie_DB::getConnection();
+      $escaped_table_name = $db_connection->escapeTableName($table_prefix . $table_name);
+      
+      $conditions = self::prepareConditions($conditions);
+      $where_string = trim($conditions) == '' ? '' : "WHERE $conditions";
+      
+      $prepared = array();
+      foreach($fields as $field_name => $new_value) {
+        $prepared[] = $db_connection->escapeFieldName($field_name) . ' = ' . $db_connection->escape($new_value);
+      } // foreach
+      $prepared = implode(', ', $prepared);
+      
+      return $db_connection->execute("UPDATE $escaped_table_name SET $prepared $where_string");
+    } // update
     
     /**
     * This function will return paginated result

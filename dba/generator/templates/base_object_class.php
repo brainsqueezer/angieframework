@@ -141,10 +141,54 @@
 <?php } // if ?>
       } // if
 <?php } // if  ?>
-
-      // Inherit...
       return parent::save();
     } // save
+<?php } // if ?>
+
+<?php if(is_foreachable($entity->getRelationships())) { ?>
+    /**
+    * Delete this instance from the database and delete / reset related objects
+    *
+    * Based on description in model definition file relationships can be handled by:
+    *
+    * - walking through an array of related objects and deleting them by calling their delete() method
+    * - using a single delete query to delete them all at once or
+    * - reset foreign key values to 0
+    *
+    * @param void
+    * @return boolean
+  	* @throws Angie_DB_Error_Query
+    */
+    function delete() {
+<?php foreach($entity->getRelationships() as $rel) { ?>
+<?php if($rel instanceof Angie_DBA_Generator_Relationship_HasMany) { ?>
+<?php if($rel->getOnDelete() == Angie_DBA_Generator::ON_DELETE_CASCADE) { ?>
+      $related_objects = $this-><?= $rel->getGetterName() ?>();
+      if(is_foreachable($related)) {
+        foreach($related_objects as $related_object) {
+          $related_object->delete();
+        } // foreach
+      } // if
+<?php } elseif($rel->getOnDelete() == Angie_DBA_Generator::ON_DELETE_DELETE) { ?>
+      $this-><?= $rel->getDeleterName() ?>();
+<?php } elseif($rel->getOnDelete() == Angie_DBA_Generator::ON_DELETE_NULLIFY) { ?>
+      $this-><?= $rel->getNullifierName() ?>();
+<?php } // if ?>
+<?php } elseif($rel instanceof Angie_DBA_Generator_Relationship_HasOne) { ?>
+<?php if($rel->getOnDelete() == Angie_DBA_Generator::ON_DELETE_CASCADE) { ?>
+      $related_object = $this-><?= $rel->getGetterName() ?>();
+      if($related_object instanceof Angie_DBA_Object) {
+        $related_object->delete();
+      } // if
+<?php } elseif($rel->getOnDelete() == Angie_DBA_Generator::ON_DELETE_DELETE) { ?>
+      $this-><?= $rel->getDeleterName() ?>();
+<?php } elseif($rel->getOnDelete() == Angie_DBA_Generator::ON_DELETE_NULLIFY) { ?>
+      $this-><?= $rel->getNullifierName() ?>();
+<?php } // if ?>
+<?php } // if ?>
+<?php } // foreach ?>
+      return parent::delete();
+    } // delete
 <?php } // if ?>
   
   } // <?= $entity->getBaseObjectClassName() ?>

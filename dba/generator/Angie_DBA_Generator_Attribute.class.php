@@ -19,14 +19,35 @@
     /**
     * Constructor
     *
-    * @param Angie_DBA_Generator_Entity $entity
+    * @param Angie_DBA_Generator_Entity $owner_entity
     * @param string $name
     * @return Angie_DBA_Generator_Attribute
     */
-    function __construct(Angie_DBA_Generator_Entity $entity, $name) {
-      parent::__construct($entity);
+    function __construct(Angie_DBA_Generator_Entity $owner_entity, $name) {
+      parent::__construct($owner_entity);
       $this->setName($name);
+      
+      $fields = $this->getFields();
+      if(is_array($fields)) {
+        foreach($fields as $field) {
+          $this->getOwnerEntity()->addField($field, $this);
+        } // foreach
+      } elseif($fields instanceof Angie_DBA_Generator_Field) {
+        $this->getOwnerEntity()->addField($fields, $this);
+      } // if
     } // __construct
+    
+    // ---------------------------------------------------
+    //  Abstract
+    // ---------------------------------------------------
+    
+    /**
+    * Return array or single attribute field
+    *
+    * @param void
+    * @return mixed
+    */
+    abstract function getFields();
     
     // ---------------------------------------------------
     //  Renderer

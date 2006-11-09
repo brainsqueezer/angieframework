@@ -17,36 +17,25 @@
   abstract class Angie_DBA_Generator_Block {
     
     /**
-    * Parent entity
+    * Owner entity
     *
     * @var Angie_DBA_Generator_Entity
     */
-    private $entity;
+    private $owner_entity;
     
     /**
     * Construct the block and set owner entity
     *
-    * @param Angie_DBA_Generator_Entity $entity
+    * @param Angie_DBA_Generator_Entity $owner_entity
     * @return Angie_DBA_Generator_Block
     */
-    function __construct(Angie_DBA_Generator_Entity $entity) {
-      $this->setEntity($entity);
+    function __construct(Angie_DBA_Generator_Entity $owner_entity) {
+      $this->setOwnerEntity($owner_entity);
     } // __construct
     
     // ---------------------------------------------------
     //  Abstract
     // ---------------------------------------------------
-  
-    /**
-    * Return all fields introduced by this block
-    * 
-    * This function needs to return array of entity fields that are introduced when this 
-    * block was added to the entity - relationship fields, complex attributes etc
-    *
-    * @param void
-    * @return array
-    */
-    abstract function getFields();
     
     /**
     * Render object class properties and methods
@@ -69,24 +58,24 @@
     // ---------------------------------------------------
     
     /**
-    * Get entity
+    * Get owner_entity
     *
     * @param null
     * @return Angie_DBA_Generator_Entity
     */
-    function getEntity() {
-      return $this->entity;
-    } // getEntity
+    function getOwnerEntity() {
+      return $this->owner_entity;
+    } // getOwnerEntity
     
     /**
-    * Set entity value
+    * Set owner_entity value
     *
     * @param Angie_DBA_Generator_Entity $value
     * @return null
     */
-    function setEntity($value) {
-      $this->entity = $value;
-    } // setEntity
+    function setOwnerEntity(Angie_DBA_Generator_Entity $value) {
+      $this->owner_entity = $value;
+    } // setOwnerEntity
   
   } // Angie_DBA_Generator_Block
 

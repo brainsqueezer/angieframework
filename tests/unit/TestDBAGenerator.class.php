@@ -68,7 +68,6 @@
         'id', 
         'name', 
         'created_by_id', // relationship
-        'package_id', // relationship
       ); // array
       
       $fields = Angie_DBA_Generator::getEntity('company')->getFields();

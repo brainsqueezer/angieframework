@@ -466,10 +466,13 @@
     * @return Angie_DBA_Generator_IdAttribute
     */
     function addIdAttribute($name, $size = null, $is_auto_increment = true, $is_primary_key = false) {
-      $attribute = $this->addAttribute(new Angie_DBA_Generator_IdAttribute($this, $name, $size, $is_auto_increment));
+      $attribute = new Angie_DBA_Generator_IdAttribute($this, $name, $size, $is_auto_increment);
+      
+      $this->attributes[] = $attribute;
       if($is_primary_key) {
         $this->addToPrimaryKey($attribute->getFields());
       } // if
+      
       return $attribute;
     } // addIdAttribute
     
@@ -483,7 +486,9 @@
     * @return Angie_DBA_Generator_IntegerAttribute
     */
     function addIntAttribute($name, $size = null, $lenght = null, $is_unsigned = false) {
-      return $this->addAttribute(new Angie_DBA_Generator_IntegerAttribute($this, $name, $size, $lenght, $is_unsigned, false));
+      $attribute = new Angie_DBA_Generator_IntegerAttribute($this, $name, $size, $lenght, $is_unsigned, false);
+      $this->attributes[] = $attribute;
+      return $attribute;
     } // addIntAttribute
     
     /**
@@ -494,7 +499,9 @@
     * @return Angie_DBA_Generator_StringAttribute
     */
     function addStringAttribute($name, $lenght) {
-      return $this->addAttribute(new Angie_DBA_Generator_StringAttribute($this, $name, $lenght));
+      $attribute = new Angie_DBA_Generator_StringAttribute($this, $name, $lenght);
+      $this->attributes[] = $attribute;
+      return $attribute;
     } // addStringAttribute
     
     /**
@@ -505,7 +512,9 @@
     * @return Angie_DBA_Generator_TextAttribute
     */
     function addTextAttribute($name, $size) {
-      return $this->addAttribute(new Angie_DBA_Generator_TextAttribute($this, $name, $size));
+      $attribute = new Angie_DBA_Generator_TextAttribute($this, $name, $size);
+      $this->attributes[] = $attribute;
+      return $attribute;
     } // addTextAttribute
     
     /**
@@ -515,7 +524,9 @@
     * @return Angie_DBA_Generator_DateTimeAttribute
     */
     function addDateTimeAttribute($name) {
-      return $this->addAttribute(new Angie_DBA_Generator_DateTimeAttribute($this, $name));
+      $attribute = new Angie_DBA_Generator_DateTimeAttribute($this, $name);
+      $this->attributes[] = $attribute;
+      return $attribute;
     } // addDateTimeAttribute
     
     // ---------------------------------------------------
@@ -1020,7 +1031,8 @@
     * @param Angie_DBA_Generator_Field $field
     * @return Angie_DBA_Generator_Field
     */
-    protected function addField(Angie_DBA_Generator_Field $field) {
+    function addField(Angie_DBA_Generator_Field $field, Angie_DBA_Generator_Block $provider) {
+      
       $this->fields[$field->getName()] = $field;
       return $field;
     } // addField
@@ -1056,28 +1068,6 @@
     } // getAttribute
     
     /**
-    * Add attribute to the entity
-    *
-    * @param Angie_DBA_Generator_Attribute $attribute
-    * @return Angie_DBA_Generator_Attribute
-    */
-    function addAttribute(Angie_DBA_Generator_Attribute $attribute) {
-      $this->blocks[] = $attribute;
-      $this->attributes[$attribute->getName()] = $attribute;
-      
-      $fields = $attribute->getFields();
-      if(is_foreachable($fields)) {
-        foreach($fields as $field) {
-          $this->addField($field);
-        } // foreach
-      } elseif($fields instanceof Angie_DBA_Generator_Field) {
-        $this->addField($fields);
-      } // if
-      
-      return $attribute;
-    } // addAttribute
-    
-    /**
     * Return array of entity relationships
     *
     * @param void
@@ -1096,15 +1086,6 @@
     function addRelationship(Angie_DBA_Generator_Relationship $relationship) {
       $this->blocks[] = $relationship;
       $this->relations[] = $relationship;
-      
-      $fields = $relationship->getFields();
-      if(is_foreachable($fields)) {
-        foreach($fields as $field) {
-          $this->addField($field);
-        } // foreach
-      } elseif($fields instanceof Angie_DBA_Generator_Field) {
-        $this->addField($fields);
-      } // if
       
       return $relationship;
     } // addRelationship

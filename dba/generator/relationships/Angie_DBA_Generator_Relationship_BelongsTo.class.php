@@ -37,27 +37,22 @@
     */
     private $finder_sql;
     
-    // ---------------------------------------------------
-    //  Fields implementation
-    // ---------------------------------------------------
-    
     /**
-    * Return fields that describe this relationship
+    * Construct belongs to relationship
     *
-    * @param void
-    * @return null
+    * @param Angie_DBA_Generator_Entity $owner_entity
+    * @param mixed $target_entity
+    * @return Angie_DBA_Generator_Relationship
     */
-    function getFields() {
-      $owner_entity = $this->getEntity();
-      if($owner_entity instanceof Angie_DBA_Generator_Entity) {
-        $field_name = $this->getForeignKey();
+    function __construct(Angie_DBA_Generator_Entity $owner_entity, Angie_DBA_Generator_Entity $target_entity, $options = null) {
+      parent::__construct($owner_entity, $target_entity, $options);
+      
+      $foreign_key = $this->getForeignKey();
         
-        if(!$owner_entity->fieldExists($field_name)) {
-          return new Angie_DBA_Generator_IntegerField($field_name, true);
-        } // if
+      if(!$owner_entity->fieldExists($foreign_key)) {
+        $owner_entity->addField(new Angie_DBA_Generator_IntegerField($foreign_key, true), $this);
       } // if
-      return null;
-    } // getFields
+    } // __construct
     
     /**
     * Render object class properties and methods
@@ -67,7 +62,7 @@
     */
     function renderObjectMembers() {
       Angie_DBA_Generator::assignToView('relationship', $this);
-      Angie_DBA_Generator::assignToView('entity', $this->getEntity());
+      Angie_DBA_Generator::assignToView('entity', $this->getOwnerEntity());
       Angie_DBA_Generator::assignToView('target_entity', $this->getTargetEntity());
       Angie_DBA_Generator::displayView('belongs_to_relationship');
     } // renderObjectMembers

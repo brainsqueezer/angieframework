@@ -35,6 +35,12 @@
     const ON_INSERT     = 'insert';
     const ON_UPDATE     = 'update';
     const ON_SAVE       = 'save';
+    
+    // Values of on_delete option for has_one and has_many relationships
+    const ON_DELETE_CASCADE = 'cascade';
+    const ON_DELETE_DELETE = 'delete';
+    const ON_DELETE_NULLIFY = 'nullify';
+    const ON_DELETE_DO_NOTHING = 'do_nothing';
   
     /**
     * Array of entities that need to be generated
@@ -214,6 +220,25 @@
     static function displayView($view_name) {
       return self::getTemplateEngine()->displayView(self::getTemplatePath($view_name));
     } // displayView
+    
+    // ---------------------------------------------------
+    //  Helper methods
+    // ---------------------------------------------------
+    
+    /**
+    * Return true if $value is a valid on_delete option value
+    *
+    * @param string $value
+    * @return boolean
+    */
+    static function isValidOnDeleteValue($value) {
+      return in_array($value, array(
+        self::ON_DELETE_CASCADE,
+        self::ON_DELETE_DELETE,
+        self::ON_DELETE_NULLIFY,
+        self::ON_DELETE_DO_NOTHING,
+      )); // in_array
+    } // isValidOnDeleteValue
     
     // ---------------------------------------------------
     //  Getters and setters

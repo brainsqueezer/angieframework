@@ -144,6 +144,20 @@
     } // delete
     
     /**
+    * Update field values in rows that match $conditions
+    *
+    * $fields is an associative array where key is field name and value is new value. Number of affected rows is 
+    * returned as a result
+    *
+    * @param array $fields
+    * @param mixed $conditions
+    * @return integer
+    */
+    static function update($fields, $conditions = null) {
+      return parent::update($fields, $conditions, self::$table_name);
+    } // update
+    
+    /**
     * Return paginated set of <?= $entity->getObjectClassName() ?> objects based on current page and number of objects per page
     *
     * First element of result is array of objects that match the conditions and page limits. Second parametar is 

@@ -39,7 +39,6 @@
       
       Angie_DB::execute("CREATE TABLE `generator_companies` (
         `id` smallint(5) unsigned NOT NULL auto_increment,
-        `package_id` smallint(5) unsigned NOT NULL default '0',
         `name` varchar(100) NOT NULL default '',
         `created_by_id` smallint(5) unsigned NOT NULL default '0',
         PRIMARY KEY  (`id`)
@@ -48,6 +47,7 @@
       Angie_DB::execute("CREATE TABLE `generator_packages` (
         `id` smallint(5) unsigned NOT NULL auto_increment,
         `name` varchar(100) NOT NULL default '',
+        `company_id` smallint(5) unsigned NOT NULL default '0',
         PRIMARY KEY  (`id`)
       );");
 
@@ -101,6 +101,7 @@
       $user->setUsername('Ilija Studen');
       $user->setEmail('ilija.studen@gmail.com');
       $this->assertTrue($user->save());
+      $this->assertFalse($user->isNew());
       $this->assertEqual($user->getId(), 1);
       $this->assertEqual($user->getInitialPkValue(), array('id' => 1));
       
@@ -320,6 +321,9 @@
       //  Has many
       // ---------------------------------------------------
       
+      // We have a company and two user. First is added with save set to true, second with save set to false. On company 
+      // save both users should get a company ID, but only first one should be saved
+      
       $company = new Company();
       $company->setName('A51');
       
@@ -344,6 +348,9 @@
       //  Has one
       // ---------------------------------------------------
       
+      // We have a new company, add a package with $save set to true. When we save a company company ID in package 
+      // should be updated and the package should be saved
+      
       $company = new Company();
       $company->setName('A52');
       
@@ -352,9 +359,12 @@
       
       $company->setPackage($package, true);
       
-      $package->save();
-      $this->assertEqual($company->getPackageId(), $package->getId());
-      $this->assertFalse($company->isNew()); // it should be asved...
+      $company->save();
+      $this->assertEqual($company->getId(), $package->getCompanyId());
+      $this->assertFalse($package->isNew()); // it should be asved...
+      
+      // We have a new company, add a package with $save set to false. When we save a company company ID in package 
+      // should be updated on save, but package itself is not saved
       
       $company = new Company();
       $company->setName('A53');
@@ -364,13 +374,16 @@
       
       $company->setPackage($package, false);
       
-      $package->save();
-      $this->assertEqual($company->getPackageId(), $package->getId());
-      $this->assertTrue($company->isNew()); // it should be new, but with package ID set
+      $company->save();
+      $this->assertEqual($company->getId(), $package->getCompanyId());
+      $this->assertTrue($package->isNew()); // it should be new, but with package ID set
       
       // ---------------------------------------------------
       //  Has one, but reset
       // ---------------------------------------------------
+      
+      // We add a package to the company, and then remove it. On company save the package should not be updated (it 
+      // should been removed from the que)
       
       $company = new Company();
       $company->setName('A52');
@@ -383,11 +396,13 @@
       
       $package->save();
       
-      $this->assertEqual($company->getPackageId(), null);
+      $this->assertEqual($package->getCompanyId(), null);
       
       // ---------------------------------------------------
       //  Belongs to
       // ---------------------------------------------------
+      
+      // User is added to the company with save set to true. On user save company should be updated and saved
       
       $ilija = new User();
       $ilija->setUsername('Ilija');
@@ -401,6 +416,8 @@
       
       $this->assertEqual($company->getCreatedById(), $ilija->getId());
       $this->assertFalse($company->isNew());
+      
+      // User is added to the company with save set to false. On user save company should be updated, but not saved
       
       $ilija = new User();
       $ilija->setUsername('Ilija');
@@ -418,6 +435,9 @@
       // ---------------------------------------------------
       //  Beongs to, but reseted
       // ---------------------------------------------------
+      
+      // User is added to the company, and then removed. On user save company should not be updated (it should been 
+      // removed from the que)
       
       $company = new Company();
       $company->setName('A52');
@@ -445,14 +465,14 @@
       
       $company->setPackage($package);
       
-      $this->assertEqual($company->getPackageId(), $package->getId());
+      $this->assertEqual($company->getId(), $package->getCompanyId());
       
-      $companies = $package->getCompanies();
-      $this->assertTrue(is_array($companies) && (count($companies) == 1));
-      $first_company = $companies[0];
-      $this->assertIsA($first_company, 'Company');
-      $this->assertNotIdentical($first_company, $company);
-      $this->assertEqual($first_company->getId(), $company->getId());
+//      $companies = $package->getCompanies();
+//      $this->assertTrue(is_array($companies) && (count($companies) == 1));
+//      $first_company = $companies[0];
+//      $this->assertIsA($first_company, 'Company');
+//      $this->assertNotIdentical($first_company, $company);
+//      $this->assertEqual($first_company->getId(), $company->getId());
     } // testHasOneRelation
     
     function testBelongsTo() {

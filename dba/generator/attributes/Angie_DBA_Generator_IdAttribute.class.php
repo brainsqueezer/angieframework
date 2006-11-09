@@ -29,17 +29,17 @@
     /**
     * Constructor
     *
-    * @param Angie_DBA_Generator_Entity $entity
+    * @param Angie_DBA_Generator_Entity $owner_entity
     * @param string $name
     * @param integer $size
     * @param boolean $is_auto_increment
     * @return Angie_DBA_Generator_IdAttribute
     */
-    function __construct(Angie_DBA_Generator_Entity $entity, $name, $size = null, $is_auto_increment = false) {
-      parent::__construct($entity, $name);
-      
+    function __construct(Angie_DBA_Generator_Entity $owner_entity, $name, $size = null, $is_auto_increment = false) {
       $this->setSize($size);
       $this->setIsAutoIncrement($is_auto_increment);
+      
+      parent::__construct($owner_entity, $name);
     } // __construct
     
     /**

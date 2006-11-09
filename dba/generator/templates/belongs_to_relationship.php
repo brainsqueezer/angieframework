@@ -20,7 +20,8 @@
       } // if
       
 <?php if($relationship->getFinderSql()) { ?>
-      $this->cache['<?= $relationship->getName() ?>'] = <?= $target_entity->getManagerClassName() ?>::findBySql(<?= var_export($relationship->getFinderSql()) ?>, true);
+      $finder_sql = Angie_DB::prepareString(<?= var_export($relationship->getFinderSql()) ?>, array($this-><?= $relationship->getForeignKeyGetterName() ?>()));
+      $this->cache['<?= $relationship->getName() ?>'] = <?= $target_entity->getManagerClassName() ?>::findBySql($finder_sql, true);
 <?php } else { ?>
 <?php if($relationship->getConditions()) { ?>
       $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escapeFieldName('<?= $relationship->getTargetEntityPrimaryKeyName() ?>') . ' = ? AND ' . <?= var_export($relationship->getConditions()) ?>, array($this-><?= $relationship->getForeignKeyGetterName() ?>()));

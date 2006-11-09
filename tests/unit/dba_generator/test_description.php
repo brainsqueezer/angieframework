@@ -49,7 +49,7 @@
   $company->belongsTo('user', array('foreign_key' => 'created_by_id'));
   
   $company->hasOne('package');
-  $package->hasMany('company');
+  //$package->belongsTo('company');
   
   Angie_DBA_Generator::setOutputDir(dirname(__FILE__) . '/output');
   Angie_DBA_Generator::generate(new Angie_Output_Silent());

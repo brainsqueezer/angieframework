@@ -7,7 +7,9 @@
   * relatinship:
   * 
   * - name            - Relationship name, inherited from base class. If name is not present script will use plural of 
-  *                     target  entity name.
+  *                     target  entity name. Relationship names are use for generating method names. Example: 
+  *                     relationship named 'owned_companies' will result in methods such as getOwnedCompanies(), 
+  *                     addOwnedCompany() etc.
   * - foreign key     - Name of the field in target entity that is for lookup. If it is not set by the user script will 
   *                     use singular of target entity name + '_id' sufix (Examples: user_id, book_id).
   * - conditions      - Additional conditions that are appended to foreign_key = ID condition. This is ignored if user 
@@ -15,6 +17,11 @@
   * - order           - Order part of the extraction SQL. It is ignored if finder SQL is provided.
   * - finder_sql      - Full SQL query that is used for extraction of data.
   * - counter_sql     - Full SQL query that is used for couinting related entities.
+  * - on_delete       - This option determins how will script behave when owner object is deleted. There are four 
+  *                     possible behaviors - cascade (related object will be loaded and deleted by calling their delete 
+  *                     methods), delete (related objects will be deleted using a single delete query, fast but don't 
+  *                     work if an object needs to do some clean-up), nullify (values of foreign keys for related 
+  *                     objects will be reseted to NULL or 0) and do nothing.
   *
   * @package Angie.DBA
   * @subpackage generator.relationships
@@ -57,19 +64,45 @@
     */
     private $counter_sql;
     
-    // ---------------------------------------------------
-    //  Implementation of abstract methods
-    // ---------------------------------------------------
+    /**
+    * Complete SQL statement that is used to delete related object
+    *
+    * @var string
+    */
+    private $deleter_sql;
     
     /**
-    * Return additional fields introduced by this relationship
+    * Complete SQL statement that is used to nullify relation
     *
-    * @param void
-    * @return array
+    * @var string
     */
-    function getFields() {
-      return null;
-    } // getFields
+    private $nullifier_sql;
+    
+    /**
+    * Value of on_delete option
+    * 
+    * See class description for more details on possible values of on_delete option and what they mean
+    *
+    * @var string
+    */
+    private $on_delete;
+    
+    /**
+    * Constructor has many relationship
+    *
+    * @param Angie_DBA_Generator_Entity $owner_entity
+    * @param mixed $target_entity
+    * @return Angie_DBA_Generator_Relationship
+    */
+    function __construct(Angie_DBA_Generator_Entity $owner_entity, Angie_DBA_Generator_Entity $target_entity, $options = null) {
+      parent::__construct($owner_entity, $target_entity, $options);
+      
+      $foreign_key = $this->getForeignKey();
+        
+      if(!$target_entity->fieldExists($foreign_key)) {
+        $target_entity->addField(new Angie_DBA_Generator_IntegerField($foreign_key, true), $this);
+      } // if
+    } // __construct
     
     /**
     * Render object class properties and methods
@@ -79,7 +112,7 @@
     */
     function renderObjectMembers() {
       Angie_DBA_Generator::assignToView('relationship', $this);
-      Angie_DBA_Generator::assignToView('entity', $this->getEntity());
+      Angie_DBA_Generator::assignToView('entity', $this->getOwnerEntity());
       Angie_DBA_Generator::assignToView('target_entity', $this->getTargetEntity());
       Angie_DBA_Generator::displayView('has_many_relationship');
     } // renderObjectMembers
@@ -119,6 +152,26 @@
     } // getAdderName
     
     /**
+    * Return name of the method that is used to delete all related entries
+    *
+    * @param void
+    * @return string
+    */
+    function getDeleterName() {
+      return 'delete' . Angie_Inflector::camelize($this->getName());
+    } // getDeleterName
+    
+    /**
+    * Return name of the method that is used to nullify all related entries
+    *
+    * @param void
+    * @return string
+    */
+    function getNullifierName() {
+      return 'nullify' . Angie_Inflector::camelize($this->getName());
+    } // getNullifierName
+    
+    /**
     * Return foreign key setter function name
     *
     * @param void
@@ -135,7 +188,7 @@
     * @return string
     */
     function getEntityPrimaryKeyName() {
-      return array_var($this->getEntity()->getPrimaryKeyFieldNames(), 0);
+      return array_var($this->getOwnerEntity()->getPrimaryKeyFieldNames(), 0);
     } // getEntityPrimaryKeyName
     
     /**
@@ -183,7 +236,7 @@
       if($this->foreign_key) {
         return $this->foreign_key;
       } else {
-        return $this->getEntity()->getName() . '_id';
+        return $this->getOwnerEntity()->getName() . '_id';
       } // if
     } // getForeignKey
     
@@ -276,6 +329,75 @@
     function setCounterSql($value) {
       $this->counter_sql = $value;
     } // setCounterSql
+    
+    /**
+    * Get deleter_sql
+    *
+    * @param null
+    * @return string
+    */
+    function getDeleterSql() {
+      return $this->deleter_sql;
+    } // getDeleterSql
+    
+    /**
+    * Set deleter_sql value
+    *
+    * @param string $value
+    * @return null
+    */
+    function setDeleterSql($value) {
+      $this->deleter_sql = $value;
+    } // setDeleterSql
+    
+    /**
+    * Get nullifier_sql
+    *
+    * @param null
+    * @return string
+    */
+    function getNullifierSql() {
+      return $this->nullifier_sql;
+    } // getNullifierSql
+    
+    /**
+    * Set nullifier_sql value
+    *
+    * @param string $value
+    * @return null
+    */
+    function setNullifierSql($value) {
+      $this->nullifier_sql = $value;
+    } // setNullifierSql
+    
+    /**
+    * Get on_delete
+    *
+    * @param null
+    * @return string
+    */
+    function getOnDelete() {
+      if($this->on_delete && Angie_DBA_Generator::isValidOnDeleteValue($this->on_delete)) {
+        return $this->on_delete;
+      } else {
+        return Angie_DBA_Generator::ON_DELETE_NULLIFY;
+      } // if
+    } // getOnDelete
+    
+    /**
+    * Set on_delete value
+    *
+    * @param string $value
+    * @return null
+    * @throws Angie_Core_Error_InvalidParamValue if $value is not a valid on_delete option value
+    */
+    function setOnDelete($value) {
+      if(Angie_DBA_Generator::isValidOnDeleteValue($value)) {
+        $this->on_delete = $value;
+      } else {
+        throw new Angie_Core_Error_InvalidParamValue('value', $value, '$value is not a valid on_delete option value');
+      } // if
+    } // setOnDelete
   
   } // Angie_DBA_Generator_Relationship_HasMany
 

@@ -15,12 +15,13 @@
       } // if
       
 <?php if($relationship->getFinderSql()) { ?>
+      $finder_sql = Angie_DB::prepareString(<?= var_export($relationship->getFinderSql()) ?>, array($this-><?= $relationship->getForeignKeyGetterName() ?>()));
       $this->cache['<?= $relationship->getName() ?>'] = <?= $target_entity->getManagerClassName() ?>::findBySql(<?= var_export($relationship->getFinderSql()) ?>, true);
 <?php } else { ?>
 <?php if($relationship->getConditions()) { ?>
-      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escapeFieldName('<?= $relationship->getTargetEntityPrimaryKeyName() ?>') . ' = ? AND ' . <?= var_export($relationship->getConditions()) ?>, array($this-><?= $relationship->getForeignKeyGetterName() ?>()));
+      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ? AND ' . <?= var_export($relationship->getConditions()) ?>, $this->getInitialPkValue());
 <?php } else { ?>
-      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escapeFieldName('<?= $relationship->getTargetEntityPrimaryKeyName() ?>') . ' = ?', array($this-><?= $relationship->getForeignKeyGetterName() ?>()));
+      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ?', $this->getInitialPkValue());
 <?php } // if ?>
       
       $this->cache['<?= $relationship->getName() ?>'] = <?= $target_entity->getManagerClassName() ?>::find(array(
@@ -50,50 +51,74 @@
     */
     function <?= $relationship->getSetterName() ?>($value, $save = true) {
       if(is_null($value)) {
-      
-        // If there is a object set and it is not saved lets forget about previous arangemens (that he'll inform us 
-        // when he gets saved) and put a new value
-        $object_from_cache = $this->cache['<?= $relationship->getName() ?>'];
-        if(($object_from_cache instanceof Angie_DBA_Object) && $object_from_cache->isNew()) {
-          $object_from_cache->removeUnsavedRelatedObject('<?= $relationship->getName() ?>', false, $this);
-        } // if
-      
-        if($this-><?= $relationship->getForeignKeyGetterName() ?>() <> 0) {
-          $this-><?= $relationship->getForeignKeySetterName() ?>(0);
-          $this->cache['<?= $relationship->getName() ?>'] = null;
-        } // if
-        
+        $this->removeUnsavedRelatedObject('<?= $relationship->getForeignKeySetterName() ?>', false, $value);
+        $this->cache['<?= $relationship->getName() ?>'] = null;
       } elseif($value instanceof <?= $target_entity->getObjectClassName() ?>) {
-      
-        // Set this in cache and make sure that $value informs this object when it gets saved
-        if($value->isNew()) {
-          $value->addUnsavedRelatedObject($this, '<?= $relationship->getForeignKeySetterName() ?>', '<?= $relationship->getName() ?>', false, $save);
-          $this->cache['<?= $relationship->getName() ?>'] = $value;
-          
+        if($this->isNew()) {
+          $this->addUnsavedRelatedObject($value, '<?= $relationship->getForeignKeySetterName() ?>', '<?= $relationship->getName() ?>', true, $save);
         } else {
-        
-          // Set $value only if ID-s are different
-          if($this-><?= $relationship->getForeignKeyGetterName() ?>() <> $value-><?= $relationship->getTargetEntityPrimaryKeyGetter() ?>()) {
-            $this-><?= $relationship->getForeignKeySetterName() ?>($value-><?= $relationship->getTargetEntityPrimaryKeyGetter() ?>());
-            $this->cache['<?= $relationship->getName() ?>'] = $value;
+          $value-><?= $relationship->getForeignKeySetterName() ?>($this-><?= $relationship->getEntityPrimaryKeyGetter() ?>());
+          if($save) {
+            $value->save();
           } // if
-          
         } // if
         
       } else {
         throw new Angie_Core_Error_InvalidParamValue('value', $value, '$value should be a NULL or an instance of <?= $target_entity->getObjectClassName() ?> class');
       } // if
       
-      if($save) {
-        if($value instanceof Angie_DBA_Object) {
-          if($value->isLoaded()) {
-            $this->save();
-          } // if
-        } else {
-          $this->save();
-        } // if
-      } // if
-      
       return $value;
     } // <?= $relationship->getSetterName() ?> 
+    
+    /**
+    * Drop related object without calling its delete method
+    *
+    * This function will return number of affected rows. Additional conditions are use in child classes to provide a 
+    * simple way for programming drop methods that use additional filtering
+    *
+    * @param string $additional_conditions
+    * @return integer
+    */
+    protected function <?= $relationship->getDeleterName() ?>($additional_conditions = null) {
+<?php if($relationship->getDeleterSql()) { ?>
+      return Angie_DB::getConnection()->execute(<?= var_export($relationship->getDeleterSql()) ?>, $this->getInitialPkValue());
+<?php } else { ?>
+<?php if($relationship->getConditions()) { ?>
+      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ? AND ' . <?= var_export($relationship->getConditions()) ?>, $this->getInitialPkValue());
+<?php } else { ?>
+      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ?', $this->getInitialPkValue());
+<?php } // if ?>
+      if($additional_conditions) {
+        $conditions = "($conditions) AND ($additional_conditions)";
+      } // if
+      
+      return <?= $target_entity->getManagerClassName() ?>::delete($conditions);
+<?php } // if ?>
+    } // <?= $relationship->getDeleterName() ?> 
+    
+    /**
+    * Reset value of foreign key to 0 for related object
+    *
+    * This function will return number of affected rows. Additional conditions are use in child classes to provide a 
+    * simple way for programming nullify methods that use additional filtering
+    *
+    * @param string $additional_conditions
+    * @return integer
+    */
+    protected function <?= $relationship->getNullifierName() ?>($additional_conditions = null) {
+<?php if($relationship->getNullifierSql()) { ?>
+      return Angie_DB::getConnection()->execute(<?= var_export($relationship->getNullifierSql()) ?>, $this->getInitialPkValue());
+<?php } else { ?>
+<?php if($relationship->getConditions()) { ?>
+      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ? AND ' . <?= var_export($relationship->getConditions()) ?>, $this->getInitialPkValue());
+<?php } else { ?>
+      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ?', $this->getInitialPkValue());
+<?php } // if ?>
+      if($additional_conditions) {
+        $conditions = "($conditions) AND ($additional_conditions)";
+      } // if
+      
+      return <?= $target_entity->getManagerClassName() ?>::update(array('<?= $relationship->getForeignKey() ?>' => 0), $conditions);
+<?php } // if ?>
+    } // <?= $relationship->getNullifierName() ?> 
     
