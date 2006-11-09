@@ -28,13 +28,26 @@
       if(!class_exists('Company')) require $this->test_dir . 'output/companies/Company.class.php';
       if(!class_exists('Companies')) require $this->test_dir . 'output/companies/Companies.class.php';
       
+      if(!class_exists('BasePackage')) require $this->test_dir . 'output/packages/base/BasePackage.class.php';
+      if(!class_exists('BasePackages')) require $this->test_dir . 'output/packages/base/BasePackages.class.php';
+      if(!class_exists('Package')) require $this->test_dir . 'output/packages/Package.class.php';
+      if(!class_exists('Packages')) require $this->test_dir . 'output/packages/Packages.class.php';
+      
       Angie_DB::execute("DROP TABLE IF EXISTS `generator_users`");
       Angie_DB::execute("DROP TABLE IF EXISTS `generator_companies`");
+      Angie_DB::execute("DROP TABLE IF EXISTS `generator_packages`");
       
       Angie_DB::execute("CREATE TABLE `generator_companies` (
         `id` smallint(5) unsigned NOT NULL auto_increment,
+        `package_id` smallint(5) unsigned NOT NULL default '0',
         `name` varchar(100) NOT NULL default '',
         `created_by_id` smallint(5) unsigned NOT NULL default '0',
+        PRIMARY KEY  (`id`)
+      );");
+      
+      Angie_DB::execute("CREATE TABLE `generator_packages` (
+        `id` smallint(5) unsigned NOT NULL auto_increment,
+        `name` varchar(100) NOT NULL default '',
         PRIMARY KEY  (`id`)
       );");
 
@@ -55,6 +68,8 @@
     function tearDown() {
       delete_dir(dirname(__FILE__) . '/dba_generator/output/companies');
       delete_dir(dirname(__FILE__) . '/dba_generator/output/users');
+      delete_dir(dirname(__FILE__) . '/dba_generator/output/packages');
+      
       Angie_DBA_Generator::cleanUp();
       Angie_DB::execute("DROP TABLE `generator_users`");
       Angie_DB::execute("DROP TABLE `generator_companies`");
@@ -87,6 +102,7 @@
       $user->setEmail('ilija.studen@gmail.com');
       $this->assertTrue($user->save());
       $this->assertEqual($user->getId(), 1);
+      $this->assertEqual($user->getInitialPkValue(), array('id' => 1));
       
       $user->setEmail('ilija.studen@activecollab.com');
       $this->assertTrue($user->save());
@@ -297,6 +313,173 @@
       $this->assertTrue($new_ilija->validateMinValueOf('created_on', $past));
       $this->assertFalse($new_ilija->validateMinValueOf('created_on', $future));
     } // testValidators
+    
+    function testUnsavedObjectQue() {
+      
+      // ---------------------------------------------------
+      //  Has many
+      // ---------------------------------------------------
+      
+      $company = new Company();
+      $company->setName('A51');
+      
+      $oliver = new User();
+      $oliver->setUsername('oliver');
+      
+      $ilija = new User();
+      $ilija->setUsername('ilija');
+      
+      $company->addUser($oliver, true);
+      $company->addUser($ilija, false);
+      
+      $company->save();
+      
+      $this->assertEqual($oliver->getCompanyId(), $company->getId());
+      $this->assertEqual($ilija->getCompanyId(), $company->getId());
+      
+      $this->assertFalse($oliver->isNew()); // needs to be saved
+      $this->assertTrue($ilija->isNew()); // needs to be saved
+      
+      // ---------------------------------------------------
+      //  Has one
+      // ---------------------------------------------------
+      
+      $company = new Company();
+      $company->setName('A52');
+      
+      $package = new Package();
+      $package->setName('lite');
+      
+      $company->setPackage($package, true);
+      
+      $package->save();
+      $this->assertEqual($company->getPackageId(), $package->getId());
+      $this->assertFalse($company->isNew()); // it should be asved...
+      
+      $company = new Company();
+      $company->setName('A53');
+      
+      $package = new Package();
+      $package->setName('lite2');
+      
+      $company->setPackage($package, false);
+      
+      $package->save();
+      $this->assertEqual($company->getPackageId(), $package->getId());
+      $this->assertTrue($company->isNew()); // it should be new, but with package ID set
+      
+      // ---------------------------------------------------
+      //  Has one, but reset
+      // ---------------------------------------------------
+      
+      $company = new Company();
+      $company->setName('A52');
+      
+      $package = new Package();
+      $package->setName('lite');
+      
+      $company->setPackage($package, true);
+      $company->setPackage(null);
+      
+      $package->save();
+      
+      $this->assertEqual($company->getPackageId(), null);
+      
+      // ---------------------------------------------------
+      //  Belongs to
+      // ---------------------------------------------------
+      
+      $ilija = new User();
+      $ilija->setUsername('Ilija');
+      
+      $company = new Company();
+      $company->setName('A51');
+      
+      $company->setCreatedBy($ilija, true);
+      
+      $ilija->save();
+      
+      $this->assertEqual($company->getCreatedById(), $ilija->getId());
+      $this->assertFalse($company->isNew());
+      
+      $ilija = new User();
+      $ilija->setUsername('Ilija');
+      
+      $company = new Company();
+      $company->setName('A51');
+      
+      $company->setCreatedBy($ilija, false);
+      
+      $ilija->save();
+      
+      $this->assertEqual($company->getCreatedById(), $ilija->getId());
+      $this->assertTrue($company->isNew());
+      
+      // ---------------------------------------------------
+      //  Beongs to, but reseted
+      // ---------------------------------------------------
+      
+      $company = new Company();
+      $company->setName('A52');
+      
+      $user = new User();
+      $user->setUsername('Ilija');
+      
+      $company->setCreatedBy($user, true);
+      $company->setCreatedBy(null);
+      
+      $user->save();
+      
+      $this->assertEqual($company->getCreatedById(), null);
+      
+    } // testUnsavedObjectQue
+    
+    function testHasOneRelation() {
+      $company = new Company();
+      $company->setName('Company name');
+      $this->assertTrue($company->save());
+      
+      $package = new Package();
+      $package->setName('Some package');
+      $package->save();
+      
+      $company->setPackage($package);
+      
+      $this->assertEqual($company->getPackageId(), $package->getId());
+      
+      $companies = $package->getCompanies();
+      $this->assertTrue(is_array($companies) && (count($companies) == 1));
+      $first_company = $companies[0];
+      $this->assertIsA($first_company, 'Company');
+      $this->assertNotIdentical($first_company, $company);
+      $this->assertEqual($first_company->getId(), $company->getId());
+    } // testHasOneRelation
+    
+    function testBelongsTo() {
+      $user = new User();
+      $user->setUsername('Ilija');
+      $this->assertTrue($user->save());
+      
+      $company = new Company();
+      $company->setName('Company name');
+      $company->setCreatedBy($user);
+      $this->assertTrue($company->save());
+      
+      $owned_companies = $user->getOwnedCompanies();
+      $this->assertTrue(is_array($owned_companies) && (count($owned_companies) == 1));
+      $first_company = $owned_companies[0];
+      
+      $this->assertEqual($first_company->getId(), $company->getId());
+      $created_by = $first_company->getCreatedBy();
+      
+      $this->assertIsA($created_by, 'User');
+      $this->assertNotEqual($created_by, $user);
+      $this->assertEqual($created_by->getId(), $user->getId());
+    } // testBelongsTo
+    
+    function testHasMany() {
+      
+    } // testHasMany
   
   } // TestDBARuntime
 

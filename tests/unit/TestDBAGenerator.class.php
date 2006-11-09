@@ -19,6 +19,8 @@
     function tearDown() {
       delete_dir(dirname(__FILE__) . '/dba_generator/output/companies');
       delete_dir(dirname(__FILE__) . '/dba_generator/output/users');
+      delete_dir(dirname(__FILE__) . '/dba_generator/output/packages');
+      
       Angie_DBA_Generator::cleanUp();
     } // tearDown
     
@@ -65,7 +67,8 @@
       $expected_fields = array(
         'id', 
         'name', 
-        'created_by_id' // relationship
+        'created_by_id', // relationship
+        'package_id', // relationship
       ); // array
       
       $fields = Angie_DBA_Generator::getEntity('company')->getFields();

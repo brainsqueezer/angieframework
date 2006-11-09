@@ -1,16 +1,11 @@
-
+    
     /**
     * Return <?= $target_entity->getObjectClassName() ?> object related by `<?= $relationship->getForeignKey() ?>` field
     *
-    * If $reload is set to true object will be refreshed - loaded from database. If false script will first try too look 
-    * in the cache and laod the object only if it haven't been loaded already and cached
-    *
-    * Set $full to true if you wish to automatically load detail fields
-    *
     * @param boolean $reload
     * @return <?= $target_entity->getObjectClassName() ?> 
-    */
-    function <?= $relationship->getGetterName() ?>($reload = false, $full = false) {
+    */  
+    function <?= $relationship->getGetterName() ?>($reload = false) {
       if(isset($this->cache['<?= $relationship->getName() ?>'])) {
         if($reload) {
           unset($this->cache['<?= $relationship->getName() ?>']);
@@ -37,12 +32,13 @@
 
       return $this->cache['<?= $relationship->getName() ?>'];
     } // <?= $relationship->getGetterName() ?> 
-    
+      
     /**
     * Set related <?= $target_entity->getObjectClassName() ?> object
     *
     * $value can be a valid <?= $target_entity->getObjectClassName() ?> instance or NULL (for reseting relationship). If 
-    * it is not valid Angie_Core_Error_InvalidParamValue will be thrown
+    * it is not valid Angie_Core_Error_InvalidParamValue will be thrown. If $value is new object (not saved) it will be 
+    * saved before it get used
     *
     * If $save is set to true changes will be saved after they are made. If not they will be just made, but its up to 
     * the programmer to actually save them

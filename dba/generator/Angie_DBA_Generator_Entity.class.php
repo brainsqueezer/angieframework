@@ -570,6 +570,7 @@
         $target = Angie_DBA_Generator::getEntity($target_entity);
       } // if
       
+      return $this->addRelationship(new Angie_DBA_Generator_Relationship_HasOne($this, $target, $options));
     } // hasOne
     
     /**
@@ -586,6 +587,7 @@
         $target = Angie_DBA_Generator::getEntity($target_entity);
       } // if
       
+      return $this->addRelationship(new Angie_DBA_Generator_Relationship_HasAndBelongsToMany($this, $target, $options));
     } // hasAndBelongsToMany
     
     // ---------------------------------------------------

@@ -1,13 +1,6 @@
 <?php
 
-  /**
-  * Belongs to relationship
-  *
-  * @package Angie.DBA
-  * @subpackage generator.relationships
-  * @author Ilija Studen <ilija.studen@gmail.com>
-  */
-  class Angie_DBA_Generator_Relationship_BelongsTo extends Angie_DBA_Generator_Relationship {
+  class Angie_DBA_Generator_Relationship_HasOne extends Angie_DBA_Generator_Relationship {
   
     /**
     * Name of the foreign_key field
@@ -69,7 +62,7 @@
       Angie_DBA_Generator::assignToView('relationship', $this);
       Angie_DBA_Generator::assignToView('entity', $this->getEntity());
       Angie_DBA_Generator::assignToView('target_entity', $this->getTargetEntity());
-      Angie_DBA_Generator::displayView('belongs_to_relationship');
+      Angie_DBA_Generator::displayView('has_one_relationship');
     } // renderObjectMembers
     
     // ---------------------------------------------------
@@ -248,6 +241,6 @@
       $this->finder_sql = $value;
     } // setFinderSql
   
-  } // Angie_DBA_Generator_Relationship_BelongsTo
+  } // Angie_DBA_Generator_Relationship_HasOne
 
 ?>

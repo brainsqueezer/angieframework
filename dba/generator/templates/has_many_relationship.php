@@ -29,9 +29,9 @@
 <?php } else { ?>
       // Get conditions string
 <?php if($relationship->getConditions()) { ?>
-      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escape('<?= $relationship->getForeignKey() ?>') . ' = ? AND ' . <?= var_export($relationship->getConditions()) ?>, $this->getInitialPkValue());
+      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ? AND ' . <?= var_export($relationship->getConditions()) ?>, $this->getInitialPkValue());
 <?php } else { ?>
-      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escape('<?= $relationship->getForeignKey() ?>') . ' = ?', $this->getInitialPkValue());
+      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ?', $this->getInitialPkValue());
 <?php } // if ?>
       if($additional_conditions) {
         $conditions = "($conditions) AND ($additional_conditions)";
@@ -76,9 +76,9 @@
 <?php } else { ?>
       // Get conditions string
 <?php if($relationship->getConditions()) { ?>
-      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escape('<?= $relationship->getForeignKey() ?>') . ' = ? AND ' . <?= var_export($relationship->getConditions()) ?>, $this->getInitialPkValue());
+      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ? AND ' . <?= var_export($relationship->getConditions()) ?>, $this->getInitialPkValue());
 <?php } else { ?>
-      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escape('<?= $relationship->getForeignKey() ?>') . ' = ?', $this->getInitialPkValue());
+      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ?', $this->getInitialPkValue());
 <?php } // if ?>
       if($additional_conditions) {
         $conditions = "($conditions) AND ($additional_conditions)";
@@ -100,10 +100,13 @@
     * @return <?= $target_entity->getObjectClassName() ?> 
     */
     function <?= $relationship->getAdderName() ?>(<?= $target_entity->getObjectClassName() ?> $value, $save = true) {
-      $value-><?= $relationship->getForeignKeySetter() ?>($this-><?= $relationship->getEntityPrimaryKeyGetter() ?>());
-      
-      if($save) {
-        $value->save();
+      if($this->isNew()) {
+        $this->addUnsavedRelatedObject($value, '<?= $relationship->getForeignKeySetter() ?>', '<?= $relationship->getName() ?>', true, $save);
+      } else {
+        $value-><?= $relationship->getForeignKeySetter() ?>($this-><?= $relationship->getEntityPrimaryKeyGetter() ?>());
+        if($save) {
+          $value->save();
+        } // if
       } // if
       
       // Clean cache, values in it might be invalid now...

@@ -88,6 +88,19 @@
   	* @var array
   	*/
   	protected $cache = array();
+  	
+  	/**
+  	* Array of unsaved related objects that need to be saved as soon as we save this project and get its ID
+  	* 
+  	* Every element of this array is consisted of three elements:
+  	* 
+  	* - object - instance that need to be updated when we save this object
+  	* - setter - objects method that will be called with this objects ID as a parameter
+  	* - save - save object after it has been updated
+  	*
+  	* @var array
+  	*/
+  	private $unsaved_related_objects = array();
   
     /**
   	* Indicates if this is new object (not saved)
@@ -419,6 +432,7 @@
   		
   		$this->notModified(); // saved!
   		$this->setIsLoaded(true);
+  		$this->saveUnsavedRelatedObjects(); // save related objects...
   		
   		return isset($insert_id) ? $insert_id : true; // if insert return last insert ID, else return true
   	} // doSave
@@ -728,6 +742,89 @@
   	  $this->modified_fields = array();
   	  $this->updated_pks = array();
   	} // notModified
+  	
+  	// ---------------------------------------------------
+  	//  Unsaved objects
+  	// ---------------------------------------------------
+  	
+  	/**
+  	* Add unsaved object
+  	*
+  	* @param Angie_DBA_Object $object
+  	* @param string $setter
+  	* @param string $relationship
+  	* @param $many
+  	* @param boolean $save
+  	* @return null
+  	*/
+  	function addUnsavedRelatedObject(Angie_DBA_Object $object, $setter, $relationship, $many, $save = true) {
+  	  if(!isset($this->unsaved_related_objects[$relationship])) {
+  	    $this->unsaved_related_objects[$relationship] = array();
+  	  } // if
+  	  
+  	  $this->unsaved_related_objects[$relationship][] = array(
+  	    'object' => $object,
+  	    'setter' => $setter,
+  	    'save' => $save,
+  	  ); // array
+  	} // addUnsavedRelatedObject
+  	
+  	/**
+  	* Remove specific object from a specific relationship
+  	*
+  	* $meny determins if relationship is to_one or to_many type. If it is to_one whole array of related objects will be 
+  	* removed.
+  	* 
+  	* @param string $relationship
+  	* @param boolean $many
+  	* @param Angie_DBA_Object
+  	* @return null
+  	*/
+  	function removeUnsavedRelatedObject($relationship, $many, $object = null) {
+  	  if(isset($this->unsaved_related_objects[$relationship])) {
+  	    if($many) {
+  	      if($object instanceof Angie_DBA_Object) {
+  	        foreach($this->unsaved_related_objects[$relationship] as $k => &$unsaved_object) {
+  	          if($unsaved_object == $object) {
+  	            unset($this->unsaved_related_objects[$relationship][$k]);
+  	            break;
+  	          } // if
+  	        } // foreach
+  	      } // if
+  	    } else {
+  	      unset($this->unsaved_related_objects[$relationship]);
+  	    } // if
+  	  } // if
+  	} // removeUnsavedRelatedObject
+  	
+  	/**
+  	* Walk through unsaved object and save them according to params
+  	*
+  	* @param void
+  	* @return null
+  	*/
+  	private function saveUnsavedRelatedObjects() {
+  	  $id = null;
+  	  foreach($this->getPrimaryKey() as $key) {
+  	    $id = $this->getFieldValue($key);
+  	    break;
+  	  } // if
+  	  
+  	  foreach($this->unsaved_related_objects as $relation => $unsaved_objects) {
+  	    foreach($unsaved_objects as &$unsaved_object) {
+    	    $object = $unsaved_object['object'];
+    	    $setter = $unsaved_object['setter'];
+    	    $save = $unsaved_object['save'];
+    	    
+    	    if($object instanceof Angie_DBA_Object)  {
+    	      $object->$setter($id);
+    	      if($save) {
+    	        $object->save();
+    	      } // if
+    	    } // if
+  	    } // if
+  	  } // foreach
+  	} // saveUnsavedRelatedObjects
   	
   	// ---------------------------------------------------------------
   	//  Validators

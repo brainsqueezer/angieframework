@@ -128,10 +128,22 @@
       return 'set' . Angie_Inflector::camelize($this->getForeignKey());
     } // getForeignKeySetter
     
+    /**
+    * Return name of primary key field of owner entity. If PK is complex name of the first field is returned
+    *
+    * @param void
+    * @return string
+    */
     function getEntityPrimaryKeyName() {
       return array_var($this->getEntity()->getPrimaryKeyFieldNames(), 0);
     } // getEntityPrimaryKeyName
     
+    /**
+    * Return getter name for primary key field of owner entity
+    *
+    * @param void
+    * @return string
+    */
     function getEntityPrimaryKeyGetter() {
       return 'get' . Angie_Inflector::camelize($this->getEntityPrimaryKeyName());
     } // getEntityPrimaryKeyGetter
