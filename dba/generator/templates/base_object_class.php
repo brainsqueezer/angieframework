@@ -76,7 +76,7 @@
 <?php foreach($entity->getFields() as $field) { ?>
         case '<?= $field->getName() ?>':
 <?php if($field->getCastFunction()) { ?>
-          $to_set = <?= $field->getCastFunction() ?>($value);
+          $to_set = <?= $field->getCastFunction() ?>($value<?= $field->renderCastFunctionArguments() ?>);
 <?php } else { ?>
           $to_set = $value;
 <?php } // if ?>

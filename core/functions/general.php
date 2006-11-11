@@ -216,7 +216,8 @@
   * @return string
   */
   function clean($str) {
-    $str = preg_replace('/&(?!#[0-9]+;)/s', '&amp;', $str);
+    //$str = preg_replace('/&(?!#[0-9]+;)/s', '&amp;', $str);
+    $str = preg_replace('/&(?!#(?:[0-9]+|x[0-9A-F]+);?)/si', '&amp;', $str);
   	$str = str_replace(array('<', '>', '"'), array('&lt;', '&gt;', '&quot;'), $str);
   
   	return $str;

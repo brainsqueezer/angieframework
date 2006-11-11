@@ -49,6 +49,13 @@
     private $cast_function;
     
     /**
+    * Array of cast function arguments
+    *
+    * @var array
+    */
+    private $cast_function_arguments;
+    
+    /**
     * Primitive field type (varchar, integer, float, text...)
     *
     * @var string
@@ -160,6 +167,24 @@
       return;
     } // renderManagerMembers
     
+    /**
+    * Return cast function arguments, if there are any
+    *
+    * @param void
+    * @return string
+    */
+    function renderCastFunctionArguments() {
+      if(is_array($this->cast_function_arguments)) {
+        $result = '';
+        foreach($this->cast_function_arguments as $argument) {
+          $result .= ', ' . var_export($argument, true);
+        } // foreach
+        return $result;
+      } else {
+        return '';
+      } // if
+    } // renderCastFunctionArguments
+    
     // ---------------------------------------------------
     //  Getters and setters
     // ---------------------------------------------------
@@ -269,6 +294,26 @@
     function setCastFunction($value) {
       $this->cast_function = $value;
     } // setCastFunction
+    
+    /**
+    * Get cast_function_arguments
+    *
+    * @param null
+    * @return array
+    */
+    function getCastFunctionArguments() {
+      return $this->cast_function_arguments;
+    } // getCastFunctionArguments
+    
+    /**
+    * Set cast_function_arguments value
+    *
+    * @param array $value
+    * @return null
+    */
+    function setCastFunctionArguments($value) {
+      $this->cast_function_arguments = $value;
+    } // setCastFunctionArguments
     
     /**
     * Get type

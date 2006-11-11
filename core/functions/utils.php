@@ -61,5 +61,20 @@
       } // if
     } // if
   } // datetimeval
+  
+  /**
+  * Validate value for a specific enumeration
+  *
+  * @param mixed $value
+  * @param mixed 
+  * @return mixed
+  */
+  function enumval($value, $valid_values, $default = null) {
+    if(is_array($valid_values)) {
+      return in_array($value, $valid_values) ? $value : $default;
+    } else {
+      return $default;
+    } // if
+  } // enumval
 
 ?>

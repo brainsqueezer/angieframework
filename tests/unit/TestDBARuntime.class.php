@@ -602,6 +602,43 @@
       $tag_3_reloaded = Tags::findById($tag_3_id);
       $this->assertEqual($tag_3_reloaded, null);
       
+      // Both sides...
+      
+      $company_1->setTags(array(
+        $tag_1,
+        $tag_3,
+      ));
+      
+      $company_2->setTags(array(
+        $tag_1,
+        $tag_2,
+      ));
+      
+      $this->assertEqual($tag_1->countCompanies(true), 2);
+      $tag_1_companies = $tag_1->getCompanies(true);
+      $this->assertEqual(objects_array_extract($tag_1_companies, 'getId'), array($company_1_id, $company_2_id));
+      
+      $this->assertEqual($tag_2->countCompanies(true), 1);
+      $tag_2_companies = $tag_2->getCompanies(true);
+      $this->assertEqual(objects_array_extract($tag_2_companies, 'getId'), array($company_2_id));
+      
+      $this->assertEqual($tag_3->countCompanies(true), 1);
+      $tag_3_companies = $tag_3->getCompanies(true);
+      $this->assertEqual(objects_array_extract($tag_3_companies, 'getId'), array($company_1_id));
+      
+      $company_1->deleteTagRelations();
+      
+      $this->assertEqual($tag_1->countCompanies(true), 1);
+      $tag_1_companies = $tag_1->getCompanies(true);
+      $this->assertEqual(objects_array_extract($tag_1_companies, 'getId'), array($company_2_id));
+      
+      $this->assertEqual($tag_2->countCompanies(true), 1);
+      $tag_2_companies = $tag_2->getCompanies(true);
+      $this->assertEqual(objects_array_extract($tag_2_companies, 'getId'), array($company_2_id));
+      
+      $this->assertEqual($tag_3->countCompanies(true), 0);
+      $this->assertEqual($tag_3->getCompanies(true), null);
+      
     } // testHasAndBelongsToMany
     
     function testRelationshipOnDelete() {

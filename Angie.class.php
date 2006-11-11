@@ -77,7 +77,7 @@
     * @return null
     */
     static function loadRoutes($where_is_it) {
-      $routes_file = with_slash($where_is_it) . 'routes.php';
+      $routes_file = rtrim($where_is_it, '/') . '/routes.php';
       if(!is_file($routes_file)) {
         throw new Angie_FileSystem_Error_FileDnx($routes_file);
       } // if
@@ -86,29 +86,26 @@
     
     /**
     * This function will include project engine, construct it and set it under $engine_name
+    * 
+    * $class_name is the name of the engine class. It is usually camelized project name with Engine sufix but it can 
+    * be changed by user. When engine is constructed it will be set as default engine and returned
     *
-    * @param string $where_is_it Directory where engine class is
-    * @param string $class_name Name of the engine class
-    * @param string $engine_name Save engine under this name. If NULL engine will be set as
-    *   default engine
-    * @return null
+    * @param string $where_is_it
+    * @param string $engine_class
+    * @return Angie_Engine
     * @throws Angie_FileSystem_Error_FileDnx If engine file is not found
     * @throws Angie_Core_Error_InvalidInstance If $class_name is not valid engine class
     */
-    static function setProjectEngine($where_is_it, $class_name, $engine_name = null) {
-      $class_file = with_slash($where_is_it) . $class_name . '.class.php';
-      if(!is_file($class_file)) {
-        throw new Angie_FileSystem_Error_FileDnx($class_file);
-      } // if
+    static function setProjectEngine($where_is_it, $engine_class) {
+      require_once rtrim($where_is_it, '/') . '/engine.php';
       
-      require $class_file;
-      
-      $engine = new $class_name();
+      $engine = new $engine_class();
       if(!($engine instanceof Angie_Engine)) {
         throw new Angie_Core_Error_InvalidInstance('engine', $engine, 'Angie_Engine');
       } // if
       
-      self::setEngine($engine, $engine_name);
+      self::setEngine($engine);
+      return $engine;
     } // setProjectEngine
     
     /**

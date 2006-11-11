@@ -23,6 +23,7 @@
     const TYPE_DATE     = 'DATE';
     const TYPE_TIME     = 'TIME';
     const TYPE_BLOB     = 'BLOB';
+    const TYPE_ENUM     = 'ENUM';
     
     // Sizes
     const SIZE_NORMAL   = '';

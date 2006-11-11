@@ -332,147 +332,25 @@
     } // generateManager
     
     // ---------------------------------------------------
-    //  Generation methods
-    // ---------------------------------------------------
-    
-    /**
-    * Return preapre array (as string) of all primary key fields
-    *
-    * @param void
-    * @return string
-    */
-    function exportPkFieldNames() {
-      $field_names = $this->getPrimaryKeyFieldNames();
-      if(is_foreachable($field_names)) {
-        foreach($field_names as $k => $v) {
-          $field_names[$k] = "'$v'";
-        } // foreach
-      } // if
-      return implode(', ', $field_names);
-    } // exportPkFieldNames
-    
-    /**
-    * Return all field names so they can be easily printed into templates
-    *
-    * @param void
-    * @return string
-    */
-    function exportFieldNames() {
-      $field_names = array_keys($this->getFields());
-      if(is_foreachable($field_names)) {
-        foreach($field_names as $k => $v) {
-          $field_names[$k] = "'$v'";
-        } // foreach
-      } // if
-      return implode(', ', $field_names);
-    } // exportFieldNames
-    
-    /**
-    * Return names of field names without detail fields
-    *
-    * @param void
-    * @return string
-    */
-    function exportFieldNamesWithoutDetails() {
-      $all_field_names = array_keys($this->getFields());
-      $field_names = array();
-      if(is_foreachable($all_field_names)) {
-        foreach($all_field_names as $k => $v) {
-          if(!in_array($v, $this->detail_fields)) {
-            $field_names[] = "'$v'";
-          } // if
-        } // foreach
-      } // if
-      return implode(', ', $field_names);
-    } // exportFieldNamesWithoutDetails
-    
-    /**
-    * return names of protected fields so they can be easiliy printed in templates
-    *
-    * @param void
-    * @return string
-    */
-    function exportProtectedFields() {
-      $field_names = $this->getProtectedFields();
-      if(is_foreachable($field_names)) {
-        foreach($field_names as $k => $v) {
-          $field_names[$k] = "'$v'";
-        } // foreach
-      } // if
-      return implode(', ', $field_names);
-    } // exportProtectedFields
-    
-    /**
-    * Export names of allowed fields so they can be easiliy printed in templates
-    *
-    * @param void
-    * @return string
-    */
-    function exportAllowedFields() {
-      $field_names = $this->getAllowedFields();
-      if(is_foreachable($field_names)) {
-        foreach($field_names as $k => $v) {
-          $field_names[$k] = "'$v'";
-        } // foreach
-      } // if
-      return implode(', ', $field_names);
-    } // exportAllowedFields
-    
-    /**
-    * Export detail field names so they can be easily printed in templates
-    *
-    * @param void
-    * @return string
-    */
-    function exportDetailFieldNames() {
-      $field_names = $this->getDetailFields();
-      if(is_foreachable($field_names)) {
-        foreach($field_names as $k => $v) {
-          $field_names[$k] = "'$v'";
-        } // foreach
-      } // if
-      return implode(', ', $field_names);
-    } // exportDetailFieldNames
-    
-    /**
-    * This function will return the name of auto increment field if that field exists
-    *
-    * @param void
-    * @return string
-    */
-    function getAutoIncrementField() {
-      $fields = $this->getFields();
-      if(is_foreachable($fields)) {
-        foreach($fields as $field) {
-          if($field instanceof Angie_DBA_Generator_IntegerField && $field->getIsAutoIncrement()) {
-            return $field->getName();
-          } // if
-        } // foreah
-      } // if
-      return null;
-    } // getAutoIncrementField
-    
-    // ---------------------------------------------------
     //  Helper methods / Attributes
     // ---------------------------------------------------
     
     /**
     * Add ID attribute to this entity
     *
+    * ID attribute is basicly tables primary key. It is formed out of one field that will use $name as its name. Default 
+    * size is NORMAL with auto_increment set to true (can be changed through function parametars).
+    * 
     * @param string $name
     * @param string $size
     * @param boolean $is_auto_increment
-    * @param boolean $is_primary_key
     * @return Angie_DBA_Generator_IdAttribute
     */
-    function addIdAttribute($name, $size = null, $is_auto_increment = true, $is_primary_key = false) {
+    function addIdAttribute($name, $size = Angie_DBA_Generator::SIZE_NORMAL, $is_auto_increment = true) {
       $attribute = new Angie_DBA_Generator_IdAttribute($this, $name, $size, $is_auto_increment);
-      
       $this->attributes[] = $attribute;
-      if($is_primary_key) {
-        $this->addToPrimaryKey($attribute->getFields());
-      } // if
       
+      $this->addToPrimaryKey($attribute->getFields());
       return $attribute;
     } // addIdAttribute
     
@@ -528,6 +406,23 @@
       $this->attributes[] = $attribute;
       return $attribute;
     } // addDateTimeAttribute
+    
+    /**
+    * Add enumerable attribute to the list of attributes
+    * 
+    * This function will add an attribute that can have one of specified values. $valid_values is an array of valid 
+    * values and default value is default value use if no value is provided
+    *
+    * @param string $name
+    * @param array $valid_values
+    * @param string $default_value
+    * @return Angie_DBA_Generator_Attribute_Enum
+    */
+    function addEnumAttribute($name, $valid_values, $default_value) {
+      $attribute = new Angie_DBA_Generator_Attribute_Enum($this, $name, $valid_values, $default_value);
+      $this->attributes[] = $attribute;
+      return $attribute;
+    } // addEnumAttribute
     
     // ---------------------------------------------------
     //  Helper methods / Relationships
@@ -700,6 +595,127 @@
         } // foreach
       } // if
     } // detailFields
+    
+    // ---------------------------------------------------
+    //  Generation methods
+    // ---------------------------------------------------
+    
+    /**
+    * Return preapre array (as string) of all primary key fields
+    *
+    * @param void
+    * @return string
+    */
+    function exportPkFieldNames() {
+      $field_names = $this->getPrimaryKeyFieldNames();
+      if(is_foreachable($field_names)) {
+        foreach($field_names as $k => $v) {
+          $field_names[$k] = "'$v'";
+        } // foreach
+      } // if
+      return implode(', ', $field_names);
+    } // exportPkFieldNames
+    
+    /**
+    * Return all field names so they can be easily printed into templates
+    *
+    * @param void
+    * @return string
+    */
+    function exportFieldNames() {
+      $field_names = array_keys($this->getFields());
+      if(is_foreachable($field_names)) {
+        foreach($field_names as $k => $v) {
+          $field_names[$k] = "'$v'";
+        } // foreach
+      } // if
+      return implode(', ', $field_names);
+    } // exportFieldNames
+    
+    /**
+    * Return names of field names without detail fields
+    *
+    * @param void
+    * @return string
+    */
+    function exportFieldNamesWithoutDetails() {
+      $all_field_names = array_keys($this->getFields());
+      $field_names = array();
+      if(is_foreachable($all_field_names)) {
+        foreach($all_field_names as $k => $v) {
+          if(!in_array($v, $this->detail_fields)) {
+            $field_names[] = "'$v'";
+          } // if
+        } // foreach
+      } // if
+      return implode(', ', $field_names);
+    } // exportFieldNamesWithoutDetails
+    
+    /**
+    * return names of protected fields so they can be easiliy printed in templates
+    *
+    * @param void
+    * @return string
+    */
+    function exportProtectedFields() {
+      $field_names = $this->getProtectedFields();
+      if(is_foreachable($field_names)) {
+        foreach($field_names as $k => $v) {
+          $field_names[$k] = "'$v'";
+        } // foreach
+      } // if
+      return implode(', ', $field_names);
+    } // exportProtectedFields
+    
+    /**
+    * Export names of allowed fields so they can be easiliy printed in templates
+    *
+    * @param void
+    * @return string
+    */
+    function exportAllowedFields() {
+      $field_names = $this->getAllowedFields();
+      if(is_foreachable($field_names)) {
+        foreach($field_names as $k => $v) {
+          $field_names[$k] = "'$v'";
+        } // foreach
+      } // if
+      return implode(', ', $field_names);
+    } // exportAllowedFields
+    
+    /**
+    * Export detail field names so they can be easily printed in templates
+    *
+    * @param void
+    * @return string
+    */
+    function exportDetailFieldNames() {
+      $field_names = $this->getDetailFields();
+      if(is_foreachable($field_names)) {
+        foreach($field_names as $k => $v) {
+          $field_names[$k] = "'$v'";
+        } // foreach
+      } // if
+      return implode(', ', $field_names);
+    } // exportDetailFieldNames
+    
+    /**
+    * This function will return the name of auto increment field if that field exists
+    *
+    * @param void
+    * @return string
+    */
+    function getAutoIncrementField() {
+      $fields = $this->getFields();
+      if(is_foreachable($fields)) {
+        foreach($fields as $field) {
+          if($field instanceof Angie_DBA_Generator_IntegerField && $field->getIsAutoIncrement()) {
+            return $field->getName();
+          } // if
+        } // foreah
+      } // if
+      return null;
+    } // getAutoIncrementField
     
     // ---------------------------------------------------
     //  Helpers / Primary key
@@ -1027,12 +1043,15 @@
     
     /**
     * Add field to the fields list
+    * 
+    * $provider is just for the reference and easier debugin. When we add a block to this field we must say from where 
+    * it is added (I spent 2 hours hunting a bug because I didn't know what relation and why added specifi field to one 
+    * entity).
     *
     * @param Angie_DBA_Generator_Field $field
     * @return Angie_DBA_Generator_Field
     */
     function addField(Angie_DBA_Generator_Field $field, Angie_DBA_Generator_Block $provider) {
-      
       $this->fields[$field->getName()] = $field;
       return $field;
     } // addField
