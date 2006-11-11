@@ -9,7 +9,7 @@
   * @subpackage generator.attributes
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  class Angie_DBA_Generator_TextAttribute extends Angie_DBA_Generator_Attribute {
+  class Angie_DBA_Generator_Attribute_Text extends Angie_DBA_Generator_Attribute {
     
     /**
     * Field size - tiny, small, medium, normal, big
@@ -24,11 +24,11 @@
     * @param Angie_DBA_Generator_Entity $entity
     * @param string $name
     * @param string $size
-    * @return Angie_DBA_Generator_TextAttribute
+    * @return Angie_DBA_Generator_Attribute_Text
     */
     function __construct(Angie_DBA_Generator_Entity $entity, $name, $size = null) {
-      parent::__construct($entity, $name);
       $this->setSize($size);
+      parent::__construct($entity, $name);
     } // __construct
     
     /**
@@ -38,7 +38,7 @@
     * @return Angie_DBA_Generator_TextField
     */
     function getFields() {
-      return new Angie_DBA_Generator_TextField($this->getName(), $this->getSize());
+      return new Angie_DBA_Generator_Field_Text($this->getName(), $this->getSize());
     } // getFields
     
     // ---------------------------------------------------
@@ -65,6 +65,6 @@
       $this->size = $value;
     } // setSize
   
-  } // Angie_DBA_Generator_TextAttribute
+  } // Angie_DBA_Generator_Attribute_Text
 
 ?>

@@ -7,7 +7,7 @@
   * @subpackage generator.fields
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  class Angie_DBA_Generator_IntegerField extends Angie_DBA_Generator_Field {
+  class Angie_DBA_Generator_Field_Integer extends Angie_DBA_Generator_Field {
   
     /**
     * Constructor
@@ -20,7 +20,7 @@
     * @param boolean $is_auto_increment
     * @param string $size
     * @param mixed $properties
-    * @return Angie_DB_Generator_IntegerField
+    * @return Angie_DBA_Generator_Field_Integer
     */
     function __construct($name, $is_unsigned = false, $is_auto_increment = false, $size = null, $properties = null) {
       parent::__construct($name, $properties);
@@ -35,6 +35,6 @@
       } // if
     } // __construct
   
-  } // Angie_DBA_Generator_IntegerField
+  } // Angie_DBA_Generator_Field_Integer
 
 ?>

@@ -10,7 +10,7 @@
   * @subpackage generator.attributes
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  class Angie_DBA_Generator_IdAttribute extends Angie_DBA_Generator_Attribute {
+  class Angie_DBA_Generator_Attribute_Id extends Angie_DBA_Generator_Attribute {
     
     /**
     * Size of the field
@@ -33,7 +33,7 @@
     * @param string $name
     * @param integer $size
     * @param boolean $is_auto_increment
-    * @return Angie_DBA_Generator_IdAttribute
+    * @return Angie_DBA_Generator_Attribute_Id
     */
     function __construct(Angie_DBA_Generator_Entity $owner_entity, $name, $size = null, $is_auto_increment = false) {
       $this->setSize($size);
@@ -46,10 +46,10 @@
     * Return field that describes this attribute
     *
     * @param void
-    * @return Angie_DBA_Generator_IntegerField
+    * @return Angie_DBA_Generator_Field_Integer
     */
     function getFields() {
-      return new Angie_DBA_Generator_IntegerField($this->getName(), true, $this->getIsAutoIncrement(), $this->getSize());
+      return new Angie_DBA_Generator_Field_Integer($this->getName(), true, $this->getIsAutoIncrement(), $this->getSize());
     } // getFields
     
     // ---------------------------------------------------
@@ -96,6 +96,6 @@
       $this->is_auto_increment = $value;
     } // setIsAutoIncrement
   
-  } // Angie_DBA_Generator_IdAttribute
+  } // Angie_DBA_Generator_Attribute_Id
 
 ?>

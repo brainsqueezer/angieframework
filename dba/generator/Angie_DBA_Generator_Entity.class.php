@@ -347,7 +347,7 @@
     * @return Angie_DBA_Generator_IdAttribute
     */
     function addIdAttribute($name, $size = Angie_DBA_Generator::SIZE_NORMAL, $is_auto_increment = true) {
-      $attribute = new Angie_DBA_Generator_IdAttribute($this, $name, $size, $is_auto_increment);
+      $attribute = new Angie_DBA_Generator_Attribute_Id($this, $name, $size, $is_auto_increment);
       $this->attributes[] = $attribute;
       
       $this->addToPrimaryKey($attribute->getFields());
@@ -364,7 +364,7 @@
     * @return Angie_DBA_Generator_IntegerAttribute
     */
     function addIntAttribute($name, $size = null, $lenght = null, $is_unsigned = false) {
-      $attribute = new Angie_DBA_Generator_IntegerAttribute($this, $name, $size, $lenght, $is_unsigned, false);
+      $attribute = new Angie_DBA_Generator_Attribute_Integer($this, $name, $size, $lenght, $is_unsigned, false);
       $this->attributes[] = $attribute;
       return $attribute;
     } // addIntAttribute
@@ -377,7 +377,7 @@
     * @return Angie_DBA_Generator_StringAttribute
     */
     function addStringAttribute($name, $lenght) {
-      $attribute = new Angie_DBA_Generator_StringAttribute($this, $name, $lenght);
+      $attribute = new Angie_DBA_Generator_Attribute_String($this, $name, $lenght);
       $this->attributes[] = $attribute;
       return $attribute;
     } // addStringAttribute
@@ -390,7 +390,7 @@
     * @return Angie_DBA_Generator_TextAttribute
     */
     function addTextAttribute($name, $size) {
-      $attribute = new Angie_DBA_Generator_TextAttribute($this, $name, $size);
+      $attribute = new Angie_DBA_Generator_Attribute_Text($this, $name, $size);
       $this->attributes[] = $attribute;
       return $attribute;
     } // addTextAttribute
@@ -402,7 +402,7 @@
     * @return Angie_DBA_Generator_DateTimeAttribute
     */
     function addDateTimeAttribute($name) {
-      $attribute = new Angie_DBA_Generator_DateTimeAttribute($this, $name);
+      $attribute = new Angie_DBA_Generator_Attribute_DateTime($this, $name);
       $this->attributes[] = $attribute;
       return $attribute;
     } // addDateTimeAttribute
@@ -709,7 +709,7 @@
       $fields = $this->getFields();
       if(is_foreachable($fields)) {
         foreach($fields as $field) {
-          if($field instanceof Angie_DBA_Generator_IntegerField && $field->getIsAutoIncrement()) {
+          if($field instanceof Angie_DBA_Generator_Field_Integer && $field->getIsAutoIncrement()) {
             return $field->getName();
           } // if
         } // foreah

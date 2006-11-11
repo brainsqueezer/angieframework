@@ -9,7 +9,7 @@
   * @subpackage generator.attributes
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  class Angie_DBA_Generator_StringAttribute extends Angie_DBA_Generator_Attribute {
+  class Angie_DBA_Generator_Attribute_String extends Angie_DBA_Generator_Attribute {
     
     /**
     * Field lenght
@@ -24,11 +24,11 @@
     * @param Angie_DBA_Generator_Entity $entity
     * @param string $name
     * @param integer $lenght
-    * @return Angie_DBA_Generator_StringAttribute
+    * @return Angie_DBA_Generator_Attribute_String
     */
     function __construct(Angie_DBA_Generator_Entity $entity, $name, $lenght) {
-      parent::__construct($entity, $name);
       $this->setLenght($lenght);
+      parent::__construct($entity, $name);
     } // __construct
     
     /**
@@ -38,7 +38,7 @@
     * @return Angie_DBA_Generator_Field
     */
     function getFields() {
-      return new Angie_DBA_Generator_StringField($this->getName(), $this->getLenght());
+      return new Angie_DBA_Generator_Field_String($this->getName(), $this->getLenght());
     } // getFields
     
     // ---------------------------------------------------
@@ -65,6 +65,6 @@
       $this->lenght = $value;
     } // setLenght
   
-  } // Angie_DBA_Generator_StringAttribute
+  } // Angie_DBA_Generator_Attribute_String
 
 ?>

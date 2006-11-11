@@ -10,7 +10,7 @@
   * @subpackage generator.fields
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  class Angie_DBA_Generator_StringField extends Angie_DBA_Generator_Field {
+  class Angie_DBA_Generator_Field_String extends Angie_DBA_Generator_Field {
   
     /**
     * Constructor
@@ -31,6 +31,6 @@
       $this->setLenght($lenght);
     } // __construct
   
-  } // Angie_DBA_Generator_StringField
+  } // Angie_DBA_Generator_Field_String
 
 ?>

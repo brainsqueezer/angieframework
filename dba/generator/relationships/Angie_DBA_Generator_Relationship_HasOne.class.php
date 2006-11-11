@@ -92,7 +92,7 @@
       $foreign_key = $this->getForeignKey();
         
       if(!$target_entity->fieldExists($foreign_key)) {
-        $target_entity->addField(new Angie_DBA_Generator_IntegerField($foreign_key, true), $this);
+        $target_entity->addField(new Angie_DBA_Generator_Field_Integer($foreign_key, true), $this);
       } // if
     } // __construct
     

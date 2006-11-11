@@ -9,7 +9,7 @@
   * @subpackage generator.fields
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  class Angie_DBA_Generator_TextField extends Angie_DBA_Generator_Field {
+  class Angie_DBA_Generator_Field_Text extends Angie_DBA_Generator_Field {
   
     /**
     * Constructor
@@ -19,7 +19,7 @@
     * @param string $name
     * @param string $size
     * @param mixed $properties
-    * @return Angie_DBA_Generator_TextField
+    * @return Angie_DBA_Generator_Field_Text
     */
     function __construct($name, $size = null, $properties = null) {
       parent::__construct($name, $properties);
@@ -32,6 +32,6 @@
       } // if
     } // __construct
   
-  } // Angie_DBA_Generator_TextField
+  } // Angie_DBA_Generator_Field_Text
 
 ?>

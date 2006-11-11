@@ -9,18 +9,18 @@
   * @subpackage generator.attributes
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  class Angie_DBA_Generator_DateTimeAttribute extends Angie_DBA_Generator_Attribute {
+  class Angie_DBA_Generator_Attribute_DateTime extends Angie_DBA_Generator_Attribute {
   
     /**
     * Return fields that describe this attribute
     *
     * @param void
-    * @return Angie_DBA_Generator_DateTimeField
+    * @return Angie_DBA_Generator_Attribute_DateTime
     */
     function getFields() {
-      return new Angie_DBA_Generator_DateTimeField($this->getName());
+      return new Angie_DBA_Generator_Field_DateTime($this->getName());
     } // getFields
   
-  } // Angie_DBA_Generator_DateTimeAttribute
+  } // Angie_DBA_Generator_Attribute_DateTime
 
 ?>

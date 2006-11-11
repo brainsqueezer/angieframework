@@ -10,7 +10,7 @@
   * @subpackage generator.attributes
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  class Angie_DBA_Generator_IntegerAttribute extends Angie_DBA_Generator_Attribute {
+  class Angie_DBA_Generator_Attribute_Integer extends Angie_DBA_Generator_Attribute {
     
     /**
     * Size of the field
@@ -59,28 +59,28 @@
     * @return Angie_DBA_Generator_IntegerAttribute
     */
     function __construct(Angie_DBA_Generator_Entity $entity, $name, $size = null, $lenght = null, $is_unsigned = false, $is_auto_increment = false) {
-      parent::__construct($entity, $name);
-      
       $this->setSize($size);
       $this->setLenght($lenght);
       $this->setIsUnsigned($this->getIsUnsigned());
       $this->setIsAutoIncrement($is_auto_increment);
+      
+      parent::__construct($entity, $name);
     } // __construct
     
     /**
     * Return field that describes this attribute
     *
     * @param void
-    * @return Angie_DBA_Generator_IntegerField
+    * @return Angie_DBA_Generator_Field_Integer
     */
     function getFields() {
-      return new Angie_DBA_Generator_IntegerField(
+      return new Angie_DBA_Generator_Field_Integer(
         $this->getName(), 
         $this->getIsUnsigned(), 
         $this->getIsAutoIncrement(), 
         $this->getSize(), 
         array('lenght' => $this->getLenght())
-      ); // Angie_DBA_Generator_IntegerField
+      ); // Angie_DBA_Generator_Field_Integer
     } // getFields
     
     // ---------------------------------------------------
@@ -167,6 +167,6 @@
       $this->is_auto_increment = $value;
     } // setIsAutoIncrement
   
-  } // Angie_DBA_Generator_IntegerAttribute
+  } // Angie_DBA_Generator_Attribute_Integer
 
 ?>
