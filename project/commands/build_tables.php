@@ -1,13 +1,13 @@
 <?php
 
   /**
-  * Handler that is used to create a specific controller and related files and folders
+  * Handler that is used for building model classes based on model description
   *
   * @package Angie.project
   * @subpackage commands
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  class Angie_Command_Controller extends Angie_Console_ExecutableCommand {
+  class Angie_Command_BuildTables extends Angie_Console_ExecutableCommand {
   
     /**
     * Execute the command
@@ -18,7 +18,19 @@
     * @return null
     */
     function execute(Angie_Output $output) {
+      Angie_DBA_Generator::cleanUp();
       
+      require PROJECT_PATH . '/dev/model.php';
+      
+      //$output_directory = APPLICATION_PATH . '/models';
+      
+      $options = array(
+        'force' => (boolean) $this->getOption('force'),
+        'quiet' => (boolean) $this->getOption('q', 'quiet'),
+      ); // array
+      
+      //Angie_DBA_Generator::setOutputDir($output_directory);
+      //Angie_DBA_Generator::generate($output, $options);
     } // execute
     
     /**
@@ -32,6 +44,7 @@
     */
     function defineOptions() {
       return array(
+        array('', 'force', 'Overwrite all files'),
         array('q', 'quiet', 'Don\'t print progress messages to the console'),
         array('h', 'help', 'Show help')
       ); // array
@@ -44,9 +57,9 @@
     * @return string
     */
     function defineDescription() {
-      return 'Create a new controller class and related directories and files';
+      return 'Use model description from /dev/model.php and rebuild database tables';
     } // defineDescription
   
-  } // CreateControllerCommand
+  } // Angie_Command_BuildModel
 
 ?>

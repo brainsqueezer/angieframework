@@ -363,7 +363,7 @@
     * @param boolean $is_unsigned
     * @return Angie_DBA_Generator_IntegerAttribute
     */
-    function addIntAttribute($name, $size = null, $lenght = null, $is_unsigned = false) {
+    function addIntAttribute($name, $size = Angie_DBA_Generator::SIZE_NORMAL, $lenght = null, $is_unsigned = false) {
       $attribute = new Angie_DBA_Generator_Attribute_Integer($this, $name, $size, $lenght, $is_unsigned, false);
       $this->attributes[] = $attribute;
       return $attribute;
@@ -389,7 +389,7 @@
     * @param string $size
     * @return Angie_DBA_Generator_TextAttribute
     */
-    function addTextAttribute($name, $size) {
+    function addTextAttribute($name, $size = Angie_DBA_Generator::SIZE_NORMAL) {
       $attribute = new Angie_DBA_Generator_Attribute_Text($this, $name, $size);
       $this->attributes[] = $attribute;
       return $attribute;
@@ -442,6 +442,10 @@
         $target = Angie_DBA_Generator::getEntity($target_entity);
       } // if
       
+      if(!($target instanceof Angie_DBA_Generator_Entity)) {
+        throw new Angie_Core_Error_InvalidParamValue('target_entity', $target_entity, '$target_entity should be a name of defined entity or entity instance');
+      } // if
+      
       return $this->addRelationship(new Angie_DBA_Generator_Relationship_BelongsTo($this, $target, $options));
     } // belongsTo
     
@@ -457,6 +461,10 @@
         $target = $target_entity;
       } else {
         $target = Angie_DBA_Generator::getEntity($target_entity);
+      } // if
+      
+      if(!($target instanceof Angie_DBA_Generator_Entity)) {
+        throw new Angie_Core_Error_InvalidParamValue('target_entity', $target_entity, '$target_entity should be a name of defined entity or entity instance');
       } // if
       
       return $this->addRelationship(new Angie_DBA_Generator_Relationship_HasMany($this, $target, $options));
@@ -476,6 +484,10 @@
         $target = Angie_DBA_Generator::getEntity($target_entity);
       } // if
       
+      if(!($target instanceof Angie_DBA_Generator_Entity)) {
+        throw new Angie_Core_Error_InvalidParamValue('target_entity', $target_entity, '$target_entity should be a name of defined entity or entity instance');
+      } // if
+      
       return $this->addRelationship(new Angie_DBA_Generator_Relationship_HasOne($this, $target, $options));
     } // hasOne
     
@@ -491,6 +503,10 @@
         $target = $target_entity;
       } else {
         $target = Angie_DBA_Generator::getEntity($target_entity);
+      } // if
+      
+      if(!($target instanceof Angie_DBA_Generator_Entity)) {
+        throw new Angie_Core_Error_InvalidParamValue('target_entity', $target_entity, '$target_entity should be a name of defined entity or entity instance');
       } // if
       
       return $this->addRelationship(new Angie_DBA_Generator_Relationship_HasAndBelongsToMany($this, $target, $options));

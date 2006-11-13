@@ -1,5 +1,12 @@
 <?php
 
+  /**
+  * Handler that is used for building model classes based on model description
+  *
+  * @package Angie.project
+  * @subpackage commands
+  * @author Ilija Studen <ilija.studen@gmail.com>
+  */
   class Angie_Command_BuildModel extends Angie_Console_ExecutableCommand {
   
     /**

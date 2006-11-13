@@ -1,5 +1,15 @@
 <?php
 
+  /**
+  * Enumerable entity attribute
+  * 
+  * This attribute describes a situation when entity has an attribute that can have only one value of given set of 
+  * values.
+  *
+  * @package Angie.DBA
+  * @subpackage generator.attributes
+  * @author Ilija Studen <ilija.studen@gmail.com>
+  */
   class Angie_DBA_Generator_Attribute_Enum extends Angie_DBA_Generator_Attribute {
     
     /**

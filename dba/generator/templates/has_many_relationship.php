@@ -24,15 +24,17 @@
         } // if
       } // if
       
+      $connection = Angie_DB::getConnection();
+      
 <?php if($relationship->getFinderSql()) { ?>
-      $finder_sql = Angie_DB::prepareString(<?= var_export($relationship->getFinderSql()) ?>, $this->getInitialPkValue());
+      $finder_sql = $connection->prepareString(<?= var_export($relationship->getFinderSql()) ?>, $this->getInitialPkValue());
       $this->cache[$cache_key] = <?= $target_entity->getManagerClassName() ?>::findBySql($finder_sql);
 <?php } else { ?>
       // Get conditions string
 <?php if($relationship->getConditions()) { ?>
-      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ? AND ' . <?= var_export($relationship->getConditions()) ?>, $this->getInitialPkValue());
+      $conditions = $connection->prepareString($connection->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ? AND ' . <?= var_export($relationship->getConditions()) ?>, $this->getInitialPkValue());
 <?php } else { ?>
-      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ?', $this->getInitialPkValue());
+      $conditions = $connection->prepareString($connection->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ?', $this->getInitialPkValue());
 <?php } // if ?>
       if($additional_conditions) {
         $conditions = "($conditions) AND ($additional_conditions)";
@@ -71,14 +73,16 @@
         } // if
       } // if
       
+      $connection = Angie_DB::getConnection();
+      
 <?php if($relationship->getCounterSql()) { ?>
-      $row = Angie_DB::getConnection()->executeOne(<?= var_export($relationship->getCounterSql()) ?>, $this->getInitialPkValue());
+      $row = $connection->executeOne(<?= var_export($relationship->getCounterSql()) ?>, $this->getInitialPkValue());
       $this->cache[$cache_key] = array_var($row, 'row_count', 0);
 <?php } else { ?>
 <?php if($relationship->getConditions()) { ?>
-      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ? AND ' . <?= var_export($relationship->getConditions()) ?>, $this->getInitialPkValue());
+      $conditions = $connection->prepareString($connection->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ? AND ' . <?= var_export($relationship->getConditions()) ?>, $this->getInitialPkValue());
 <?php } else { ?>
-      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ?', $this->getInitialPkValue());
+      $conditions = $connection->prepareString($connection->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ?', $this->getInitialPkValue());
 <?php } // if ?>
       if($additional_conditions) {
         $conditions = "($conditions) AND ($additional_conditions)";
@@ -132,10 +136,11 @@
 <?php if($relationship->getDeleterSql()) { ?>
       return Angie_DB::getConnection()->execute(<?= var_export($relationship->getDeleterSql()) ?>, $this->getInitialPkValue());
 <?php } else { ?>
+      $connection = Angie_DB::getConnection();
 <?php if($relationship->getConditions()) { ?>
-      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ? AND ' . <?= var_export($relationship->getConditions()) ?>, $this->getInitialPkValue());
+      $conditions = $connection->prepareString($connection->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ? AND ' . <?= var_export($relationship->getConditions()) ?>, $this->getInitialPkValue());
 <?php } else { ?>
-      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ?', $this->getInitialPkValue());
+      $conditions = $connection->prepareString($connection->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ?', $this->getInitialPkValue());
 <?php } // if ?>
       if($additional_conditions) {
         $conditions = "($conditions) AND ($additional_conditions)";
@@ -158,10 +163,11 @@
 <?php if($relationship->getNullifierSql()) { ?>
       return Angie_DB::getConnection()->execute(<?= var_export($relationship->getNullifierSql()) ?>, $this->getInitialPkValue());
 <?php } else { ?>
+      $connection = Angie_DB::getConnection();
 <?php if($relationship->getConditions()) { ?>
-      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ? AND ' . <?= var_export($relationship->getConditions()) ?>, $this->getInitialPkValue());
+      $conditions = $connection->prepareString($connection->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ? AND ' . <?= var_export($relationship->getConditions()) ?>, $this->getInitialPkValue());
 <?php } else { ?>
-      $conditions = Angie_DB::prepareString(Angie_DB::getConnection()->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ?', $this->getInitialPkValue());
+      $conditions = $connection->prepareString($connection->escapeFieldName('<?= $relationship->getForeignKey() ?>') . ' = ?', $this->getInitialPkValue());
 <?php } // if ?>
       if($additional_conditions) {
         $conditions = "($conditions) AND ($additional_conditions)";

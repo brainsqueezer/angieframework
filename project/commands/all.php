@@ -1,5 +1,12 @@
 <?php
 
+  /**
+  * Handler that will walk thorugh commands folder and list all awailable angie commands for a specific project
+  *
+  * @package Angie.project
+  * @subpackage commands
+  * @author Ilija Studen <ilija.studen@gmail.com>
+  */
   class Angie_Command_All extends Angie_Console_ExecutableCommand {
   
     /**

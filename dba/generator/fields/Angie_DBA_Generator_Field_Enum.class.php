@@ -1,5 +1,14 @@
 <?php
 
+  /**
+  * Enumerable generator field
+  * 
+  * This field can hold only one of given set of values
+  *
+  * @package Angie.DBA
+  * @subpackage generator.fields
+  * @author Ilija Studen <ilija.studen@gmail.com>
+  */
   class Angie_DBA_Generator_Field_Enum extends Angie_DBA_Generator_Field {
   
     /**

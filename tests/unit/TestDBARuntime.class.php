@@ -44,14 +44,14 @@
         `name` varchar(100) NOT NULL default '',
         `created_by_id` smallint(5) unsigned NOT NULL default '0',
         PRIMARY KEY  (`id`)
-      );");
+      ) ENGINE=MEMORY;");
       
       Angie_DB::execute("CREATE TABLE `generator_packages` (
         `id` smallint(5) unsigned NOT NULL auto_increment,
         `name` varchar(100) NOT NULL default '',
         `company_id` smallint(5) unsigned NOT NULL default '0',
         PRIMARY KEY  (`id`)
-      );");
+      ) ENGINE=MEMORY;");
 
       Angie_DB::execute("CREATE TABLE `generator_users` (
         `id` smallint(5) unsigned NOT NULL auto_increment,
@@ -64,19 +64,19 @@
         `updated_on` datetime NOT NULL default '0000-00-00 00:00:00',
         `updated_by_id` smallint(5) unsigned NOT NULL default '0',
         PRIMARY KEY  (`id`)
-      )");
+      ) ENGINE=MEMORY");
       
       Angie_DB::execute("CREATE TABLE `generator_tags` (
         `id` smallint(5) unsigned NOT NULL auto_increment,
         `name` varchar(100) NOT NULL default '',
         PRIMARY KEY  (`id`)
-      );");
+      ) ENGINE=MEMORY;");
       
       Angie_DB::execute("CREATE TABLE `generator_companies_tags` (
         `company_id` smallint(5)  NOT NULL,
         `tag_id` smallint(5) unsigned NOT NULL,
         PRIMARY KEY (`company_id`, `tag_id`)
-      );");
+      ) ENGINE=MEMORY;");
       
     } // setUp
     
