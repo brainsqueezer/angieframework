@@ -22,15 +22,10 @@
       
       require PROJECT_PATH . '/dev/model.php';
       
-      //$output_directory = APPLICATION_PATH . '/models';
-      
       $options = array(
         'force' => (boolean) $this->getOption('force'),
         'quiet' => (boolean) $this->getOption('q', 'quiet'),
       ); // array
-      
-      //Angie_DBA_Generator::setOutputDir($output_directory);
-      //Angie_DBA_Generator::generate($output, $options);
     } // execute
     
     /**
@@ -44,7 +39,7 @@
     */
     function defineOptions() {
       return array(
-        array('', 'force', 'Overwrite all files'),
+        array('m:', 'mode:', 'Defines the mode of the execution. When a generator find an existing table it will: in "skip" mode skip it and move to the next table, in "sync" mode it will sync constructions by altering table, in "rebuild" mode it will drop existing table and create a new one based on model description'),
         array('q', 'quiet', 'Don\'t print progress messages to the console'),
         array('h', 'help', 'Show help')
       ); // array

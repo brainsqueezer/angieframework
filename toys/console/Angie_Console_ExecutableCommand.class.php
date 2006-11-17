@@ -73,6 +73,10 @@
         $longest_long = 0;
         foreach($options as $option) {
           $long = $option[1];
+          if(str_ends_with($long)) {
+            $long = substr($long, 0, strlen($long) - 1);
+          } // if
+          
           if($long && (strlen($long) > $longest_long)) {
             $longest_long = strlen($long);
           } // if
@@ -87,16 +91,17 @@
           list($short, $long, $help) = $option;
           
           if($short) {
-            $result .= "  -$short, ";
+            $result .= str_ends_with($short, ':') ? '  -' . substr($short, 0, strlen($short) - 1) . ', ' : "  -$short, ";
           } else {
             $result .= '      ';
           } // if
           
           if($long) {
-            $result .= "--$long";
+            $result .= str_ends_with($long, ':') ? '--' . substr($long, 0, strlen($long) - 1) : "--$long";
           } // if
           
-          for($i = strlen($long); $i < ($longest_long + 2); $i++) {
+          $long_lenght = str_ends_with($long, ':') ? strlen($long) - 1 : strlen($long);
+          for($i = $long_lenght; $i < ($longest_long + 2); $i++) {
             $result .= ' ';
           } // for
           
