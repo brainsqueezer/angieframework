@@ -60,14 +60,15 @@
     * mapped routes does not match request string Angie_Router_Error_Match will be thrown
     *
     * @param string $str
+    * @param string $query_string
     * @return array
     * @throws Angie_Router_Error_Match
     */
-    static function match($str) {
+    static function match($str, $query_string) {
       $routes = array_reverse(self::$routes);
       
       foreach($routes as $route_name => $route) {
-        $values = $route->match($str);
+        $values = $route->match($str, $query_string);
         if($values !== false) {
           self::$matched_route_name = $route_name;
           self::$matched_route = $route;
@@ -91,14 +92,14 @@
     * @return string
     * @throws Angie_Router_Error_Assemble
     */
-    static function assemble($name, $data, $absolute = true) {
-      $route = array_var(self::$routes, $name);
-      if(!($route instanceof Angie_Router_Route)) {
-        throw new Angie_Core_Error_InvalidParamValue('name', $name, "Route '$name' is not mapped");
-      } // if
-      
-      return $route->assemble($data, $absolute);
-    } // assemble
+//    static function assemble($name, $data, $absolute = true) {
+//      $route = array_var(self::$routes, $name);
+//      if(!($route instanceof Angie_Router_Route)) {
+//        throw new Angie_Core_Error_InvalidParamValue('name', $name, "Route '$name' is not mapped");
+//      } // if
+//      
+//      return $route->assemble($data, $absolute);
+//    } // assemble
   
     // ---------------------------------------------------
     //  Getters and setters

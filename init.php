@@ -29,8 +29,8 @@
   require_once ANGIE_PATH . '/controller/Angie_Controller.class.php';
   require_once ANGIE_PATH . '/controller/Angie_Request.class.php';
   require_once ANGIE_PATH . '/datetime/Angie_DateTime.class.php';
-  require_once ANGIE_PATH . '/toys/Angie_Inflector.class.php';
-  require_once ANGIE_PATH . '/toys/Angie_AutoLoader.class.php';
+  require_once ANGIE_PATH . '/toys/autoloader/Angie_AutoLoader.class.php';
+  require_once ANGIE_PATH . '/toys/inflector/Angie_Inflector.class.php';
   
   Angie_DateTime::init(); // reset environment timezone and use GMT from now one
 
