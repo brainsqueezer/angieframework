@@ -70,13 +70,6 @@
     private $type_size = '';
     
     /**
-    * Lenght attribute is used for multiple primary types in diferent context - varchars, floats, integers
-    *
-    * @var integer
-    */
-    private $lenght = 100;
-    
-    /**
     * Precission is used only with floating point field types, number of siginificant digits
     *
     * @var integer
@@ -96,21 +89,6 @@
     * @var boolean
     */
     private $is_not_null = false;
-    
-    /**
-    * Unsignt is used with numeric types to mark fields that can have 0 and positive values
-    *
-    * @var boolean
-    */
-    private $is_unsigned = false;
-    
-    /**
-    * If value of auto increment field is not set on insert it is set to the next value in queue to ensure uniqueness. 
-    * Usually used for ID fields
-    *
-    * @var boolan
-    */
-    private $is_auto_increment = false;
   
     /**
     * Constructor
@@ -336,44 +314,24 @@
     } // setType
     
     /**
-    * Get type_site
+    * Get type_size
     *
     * @param null
     * @return string
     */
     function getTypeSize() {
-      return $this->type_site;
+      return $this->type_size;
     } // getTypeSize
     
     /**
-    * Set type_site value
+    * Set type_size value
     *
     * @param string $value
     * @return null
     */
     function setTypeSize($value) {
-      $this->type_site = $value;
+      $this->type_size = $value;
     } // setTypeSize
-    
-    /**
-    * Get lenght
-    *
-    * @param null
-    * @return integer
-    */
-    function getLenght() {
-      return $this->lenght;
-    } // getLenght
-    
-    /**
-    * Set lenght value
-    *
-    * @param integer $value
-    * @return null
-    */
-    function setLenght($value) {
-      $this->lenght = $value;
-    } // setLenght
     
     /**
     * Get precision
@@ -434,46 +392,6 @@
     function setIsNotNull($value) {
       $this->is_not_null = $value;
     } // setIsNotNull
-    
-    /**
-    * Get is_unsigned
-    *
-    * @param null
-    * @return boolean
-    */
-    function getIsUnsigned() {
-      return $this->is_unsigned;
-    } // getIsUnsigned
-    
-    /**
-    * Set is_unsigned value
-    *
-    * @param boolean $value
-    * @return null
-    */
-    function setIsUnsigned($value) {
-      $this->is_unsigned = $value;
-    } // setIsUnsigned
-    
-    /**
-    * Get is_auto_increment
-    *
-    * @param null
-    * @return boolean
-    */
-    function getIsAutoIncrement() {
-      return $this->is_auto_increment;
-    } // getIsAutoIncrement
-    
-    /**
-    * Set is_auto_increment value
-    *
-    * @param boolean $value
-    * @return null
-    */
-    function setIsAutoIncrement($value) {
-      $this->is_auto_increment = $value;
-    } // setIsAutoIncrement
   
   } // Angie_DBA_Generator_Field
 

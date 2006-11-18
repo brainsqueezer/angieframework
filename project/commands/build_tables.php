@@ -8,6 +8,10 @@
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
   class Angie_Command_BuildTables extends Angie_Console_ExecutableCommand {
+    
+    const MODE_SKIP = 'skip';
+    const MODE_SYNC = 'sync';
+    const MODE_REBUILD = 'rebuild';
   
     /**
     * Execute the command
@@ -20,12 +24,57 @@
     function execute(Angie_Output $output) {
       Angie_DBA_Generator::cleanUp();
       
+      $valid_modes = array(self::MODE_SKIP, self::MODE_SYNC, self::MODE_REBUILD);
+      
       require PROJECT_PATH . '/dev/model.php';
       
-      $options = array(
-        'force' => (boolean) $this->getOption('force'),
-        'quiet' => (boolean) $this->getOption('q', 'quiet'),
-      ); // array
+      $quiet = (boolean) $this->getOption('q', 'quiet');
+      $mode = $this->getOption('m', 'mode');
+      if($mode && !in_array($mode, $valid_modes)) {
+        $output->printMessage('Value of mode argument is not valid. Valid values are: ' . implode(', ', $valid_modes));
+        return;
+      } // if
+      
+      $tables = Angie_DBA_Generator::getTables();
+      if(!is_foreachable($tables)) {
+        if(!$quiet) {
+          $output->printMessage('There are no tables in the current model');
+        } // if
+        return;
+      } // if
+      
+      $connection = Angie_DB::getConnection();
+      
+      $table_prefix = Angie::getConfig('db.table_prefix', '');
+      $database_tables = $connection->listTables(); // load list of tables in the database...
+      
+      foreach($tables as $table) {
+        $prefixed_table_name = $table_prefix . $table->getName();
+        if(in_array($prefixed_table_name, $database_tables)) {
+          if($mode == self::MODE_SKIP) {
+            if(!$quiet) {
+              $output->printMessage('Table "' . $table->getName() . '" exsist. Skip.');
+            } // if
+            continue;
+          } elseif($mode == self::MODE_SYNC) {
+            if(!$quiet) {
+              $output->printMessage('Table "' . $table->getName() . '" exsist. Syncing.');
+            } // if
+            $connection->syncTable($table, $table_prefix);
+          } else {
+            if(!$quiet) {
+              $output->printMessage('Table "' . $table->getName() . '" exsist. Rebuilding.');
+            } // if
+            $connection->buildTable($table, $table_prefix);
+          } // if
+        } else {
+          if(!$quiet) {
+            $output->printMessage('Building table "' . $table->getName() . '"');
+          } // if
+          $connection->dropTable($prefixed_table_name, true);
+          $connection->buildTable($table, $table_prefix);
+        } // if
+      } // foreach
     } // execute
     
     /**

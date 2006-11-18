@@ -163,11 +163,12 @@
     * populated Angie_Pagination object that holds the description of the pagination
     *
     * @param mixed $arguments
+    * @param boolean $full
     * @param integer $items_per_page
     * @param integer $current_page
     * @return array
     */
-    static function paginate($arguments = null, $items_per_page = 10, $current_page = 1) {
+    static function paginate($arguments = null, $full = false, $items_per_page = 10, $current_page = 1) {
       if($full) {
         return parent::paginate($arguments, $items_per_page, $current_page, self::$object_class, self::$table_name, self::$primary_key);
       } else {

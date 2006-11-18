@@ -245,7 +245,7 @@
       // Paginate
       list($objects, $pagination) = Users::paginate(array(
         'order' => 'username',
-      ), 2, 1);
+      ), false, 2, 1);
       $this->assertTrue(is_array($objects) && (count($objects) == 2));
       $this->assertEqual(objects_array_extract($objects, 'getId'), array($goran_id, $ilija_id));
       $this->assertIsA($pagination, 'Angie_Pagination');
@@ -254,7 +254,7 @@
       
       list($objects, $pagination) = Users::paginate(array(
         'order' => 'username',
-      ), 2, 2);
+      ), false, 2, 2);
       $this->assertTrue(is_array($objects) && (count($objects) == 1));
       $this->assertEqual(objects_array_extract($objects, 'getId'), array($oliver_id));
       $this->assertIsA($pagination, 'Angie_Pagination');

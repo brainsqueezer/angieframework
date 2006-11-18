@@ -116,6 +116,21 @@
       $this->assertTrue(array_key_exists('created_by_id', $auto_setters));
       $this->assertTrue(array_key_exists('updated_by_id', $auto_setters));
     } // testAutoSetters
+    
+    function testTables() {
+      $expected_tables = array(
+        'users', 'companies', 'packages', 'tags', 'companies_tags',
+      ); // array
+      
+      $tables = Angie_DBA_Generator::getTables();
+      $this->assertTrue(is_array($tables) && (count($tables) == count($expected_tables)));
+      foreach($tables as $table) {
+        $this->assertTrue(in_array($table->getName(), $expected_tables));
+      } // foreach
+      
+      $habtm_table = $tables['companies_tags'];
+      $this->assertEqual(objects_array_extract($habtm_table->getFields(), 'getName'), array('company_id', 'tag_id'));
+    } // testTables
   
   } // TestDBAGenerator
 

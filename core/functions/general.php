@@ -356,31 +356,43 @@
   * 
   * This method will go through all items of an $array and call $method. Results will be agregated into one array that 
   * will be returned. If $check_if_method_exists is set to true than additional checks will be done on the object 
-  * (slower but safer). $check_if_method_exists is Off by default
+  * (slower but safer). $check_if_method_exists is Off by default.
+  * 
+  * If $preserve_keys is true keys will be preserved in the resulting array...
   *
   * @param array $array
   * @param string $method
+  * @param array $arguments
+  * @param boolean $preserve_keys
+  * @param boolean $check_if_method_exists
   * @return array
   */
-  function objects_array_extract($array, $method, $arguments = null, $check_if_method_exists = false) {
+  function objects_array_extract($array, $method, $arguments = null, $preserve_keys = false, $check_if_method_exists = false) {
     if(!is_array($array)) {
       return null;
     } // if
     
-    $result = array();
+    $results = array();
     foreach($array as $key => &$element) {
       $call = array($element, $method);
       if(is_callable($call, false)) {
         if(is_array($arguments)) {
-          $result[$key] = call_user_func_array($call, $arguments);
+          $result = call_user_func_array($call, $arguments);
         } elseif(is_string($arguments)) {
-          $result[$key] = call_user_func($call, $arguments);
+          $result = call_user_func($call, $arguments);
         } else {
-          $result[$key] = call_user_func($call);
+          $result = call_user_func($call);
         } // if
+        
+        if($preserve_keys) {
+          $results[$key] = $result;
+        } else {
+          $results[] = $result;
+        } // if
+        
       } // if
     } // foreach
-    return $result;
+    return $results;
   } // objects_array_extract
   
   // ---------------------------------------------------

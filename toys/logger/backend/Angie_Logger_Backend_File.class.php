@@ -114,7 +114,7 @@
         } // foreach
       } // if
       
-      $output .= "Time since start: " . $session_executed_in . " seconds\n" . self::GROUP_SEPARATOR;
+      $output .= "Time since start: " . $group_executed_in . " seconds\n" . self::GROUP_SEPARATOR;
       return str_replace("\n", self::NEW_LINE, $output);
     } // renderSessionContent
     

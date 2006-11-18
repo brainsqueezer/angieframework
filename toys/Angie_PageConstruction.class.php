@@ -93,7 +93,7 @@
     static function setMetaTag($name, $content, $http_equivalent = false) {
       $meta_name = trim(strtolower($name));
       if(!isset(self::$meta[$meta_name])) {
-        self::$meta[$meta_name] = meta_tag($meta_name, $value, $http_equivalent);
+        self::$meta[$meta_name] = meta_tag($meta_name, $content, $http_equivalent);
       } // if
     } // setMetaTag
     

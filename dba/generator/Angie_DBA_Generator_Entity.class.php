@@ -161,19 +161,6 @@
     } // __construct
     
     /**
-    * Last call before we start process of building classes based on description
-    * 
-    * When generate() method of generator is triggered it will call all entities to prepare 
-    * if they have something left to do.
-    *
-    * @param void
-    * @return null
-    */
-    function prepare() {
-      
-    } // preapre
-    
-    /**
     * Generate classes
     *
     * @param Angie_Output $output

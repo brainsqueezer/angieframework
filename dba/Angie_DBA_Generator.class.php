@@ -65,7 +65,7 @@
     private static $template_engine;
     
     // ---------------------------------------------------
-    //  Util methos
+    //  Util methods
     // ---------------------------------------------------
     
     /**
@@ -89,12 +89,6 @@
       
       if(!$quiet) {
         $output->printMessage('Output directory exists and is writable', 'ok');
-      } // if
-      
-      // Prepare
-      self::prepare();
-      if(!$quiet) {
-        $output->printMessage('Model description prepared', 'ok');
       } // if
       
       // Loop through entities
@@ -122,21 +116,43 @@
     } // generate
     
     /**
-    * Prepare before generation
+    * Return array of database tables produced by this model
     * 
-    * Last call for entities to prepare whatever they need to prepare before we start to build 
-    * classes. This is protected method and it is called from within generate() method
+    * This function will walk through entities array and return tables based on them. It will also construct tables for 
+    * has_and_belongs_to_many relationships if they does not exists.
+    * 
+    * Return array is indexed with table name
     *
     * @param void
-    * @return null
+    * @return array
     */
-    protected static function prepare() {
-      if(is_foreachable(self::$entities)) {
-        foreach(self::$entities as $entity) {
-          $entity->prepare();
+    static function getTables() {
+      $tables = array();
+      if(is_foreachable(self::getEntities())) {
+        foreach(self::getEntities() as $entity) {
+          $tables[$entity->getTableName()] = new Angie_DBA_Generator_Table($entity->getTableName(), $entity->getFields(), $entity->getPrimaryKeyFieldNames());
+          
+          // For has and belongs to many
+          $relationships = $entity->getRelationships();
+          if(is_foreachable($relationships)) {
+            foreach($relationships as $relationship) {
+              if(($relationship instanceof Angie_DBA_Generator_Relationship_HasAndBelongsToMany) && !isset($tables[$relationship->getJoinTable()])) {
+                $tables[$relationship->getJoinTable()] = new Angie_DBA_Generator_Table(
+                  $relationship->getJoinTable(), 
+                  array(
+                    new Angie_DBA_Generator_Field_Integer($relationship->getOwnerKey(), true),
+                    new Angie_DBA_Generator_Field_Integer($relationship->getTargetKey(), true),
+                  ), 
+                  array($relationship->getOwnerKey(), $relationship->getTargetKey())
+                ); // Angie_DBA_Generator
+              } // if
+            } // if
+          } // if
+          
         } // foreach
       } // if
-    } // prepare
+      return $tables;
+    } // getTables
     
     /**
     * Clean up the generator data

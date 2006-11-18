@@ -149,6 +149,49 @@
     * @return integer
     */
     function affectedRows();
+    
+    /**
+    * Return array of all tables in the selected database
+    *
+    * @param void
+    * @return array
+    */
+    function listTables();
+    
+    /**
+    * Return array of fields in a specific table
+    *
+    * @param string $table_name
+    * @return array
+    */
+    function listFilds($table_name);
+    
+    /**
+    * Drop a specific table from database
+    *
+    * @param string $table_name
+    * @param boolean $only_if_exists
+    * @return boolean
+    */
+    function dropTable($table_name, $only_if_exists = false);
+    
+    /**
+    * Syncronise existing table with generator table description
+    *
+    * @param Angie_DBA_Generator_Table $table
+    * @param string $table_prefix
+    * @return null
+    */
+    function syncTable(Angie_DBA_Generator_Table $table, $table_prefix = '');
+    
+    /**
+    * Createa a new table based on a generator table description
+    *
+    * @param Angie_DBA_Generator_Table $table
+    * @param string $table_prefix
+    * @return null
+    */
+    function buildTable(Angie_DBA_Generator_Table $table, $table_prefix = '');
   
   } // Angie_DB_Connection
 
