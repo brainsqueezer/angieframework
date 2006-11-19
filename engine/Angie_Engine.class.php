@@ -3,10 +3,10 @@
   /**
   * Abstract engine
   * 
-  * This class provides stub function and partial implementation of default behaviour. Purpose of 
-  * engine is to tie rest of the system together - to know how to access controllers, how to build 
-  * models, how to init application etc. Every Angie project can override default behaviour and 
-  * implement things specific for that project without hacking the rest of the system
+  * This class provides stub function and partial implementation of default behaviour. Purpose of engine is to tie rest 
+  * of the system together - to know how to access controllers, how to build models, how to init application etc. Every 
+  * Angie project can override default behaviour and implement things specific for that project without hacking the rest 
+  * of the system
   *
   * @package Angie.engines
   * @author Ilija Studen <ilija.studen@gmail.com>
@@ -84,8 +84,52 @@
     } // close
     
     // ---------------------------------------------------
+    //  Some default settings
+    // ---------------------------------------------------
+    
+    /**
+    * Return name of default application
+    *
+    * @param void
+    * @return string
+    */
+    function getDefaultApplicationName() {
+      return Angie::getConfig('system.default_application');
+    } // getDefaultApplicationName
+    
+    /**
+    * Return name fo default controller
+    *
+    * @param void
+    * @return string
+    */
+    function getDefaultControllerName() {
+      return Angie::getConfig('system.default_controller');
+    } // getDefaultControllerName
+    
+    /**
+    * Return name of default action
+    *
+    * @param void
+    * @return string
+    */
+    function getDefaultActionName() {
+      return Angie::getConfig('system.default_action');
+    } // getDefaultActionName
+    
+    // ---------------------------------------------------
     //  Application level paths
     // ---------------------------------------------------
+    
+    /**
+    * Return full path of given application
+    *
+    * @param string $application
+    * @return string
+    */
+    function getApplicationPath($application) {
+      return PROJECT_PATH . "/applications/$application";
+    } // getApplicationPath
     
     /**
     * Return controller file path
@@ -101,12 +145,65 @@
     *
     * @param string $controller
     * @param boolean $is_controller_class
+    * @param $application_name
     * @return string
     */
-    function getControllerPath($controller, $is_controller_class = false) {
+    function getControllerPath($controller, $is_controller_class = false, $application_name = null) {
+      $application = is_null($application_name) ? $this->getRequest()->getApplicationName() : $application_name;
+      
       $controller_class = $is_controller_class ? $controller : $this->getControllerName($controller);
-      return APPLICATION_PATH . "/controllers/$controller_class.class.php";
+      return $this->getApplicationPath($application) . "/controllers/$controller_class.class.php";
     } // getControllerPath
+    
+    /**
+    * Return path of specific layout
+    * 
+    * This function will just return the path, it will not check if layout really exists
+    *
+    * @param string $layout_name
+    * @return string
+    */
+    function getLayoutPath($layout_name, $application_name = null) {
+      $application = is_null($application_name) ? $this->getRequest()->getApplicationName() : $application_name;
+      return $this->getApplicationPath($application) . "/layouts/$layout_name.php";
+    } // getLayoutPath
+    
+    /**
+    * Return path of specific view file
+    * 
+    * If $controller_name value is pressent we will return controller related path (under controller subfolder). 
+    * If it is missing function will assume that you are looking for file that is in /view folder, not inside
+    * any controller related subfolder
+    *
+    * @param string $view_name
+    * @param string $controller_name
+    * @parma string $application_name
+    * @return string
+    */
+    function getViewPath($view_name, $controller_name = null, $application_name = null) {
+      $application = is_null($application_name) ? $this->getRequest()->getApplicationName() : $application_name;
+      
+      if(trim($controller_name) == '') {
+        return $this->getApplicationPath($application) . "/views/$view_name.php";
+      } else {
+        return $this->getApplicationPath($application) . "/views/$controller_name/$view_name.php";
+      } // if
+    } // getViewPath
+    
+    /**
+    * Checks if view exists
+    * 
+    * This function will use getViewPath() method to generate view path and return true if targeted view file exists 
+    * and is readable
+    *
+    * @param string $view_name
+    * @param string $controller_name
+    * @param string $application_name
+    * @return boolean
+    */
+    function viewExists($view_name, $controller_name = null, $application_name = null) {
+      return is_readable($this->getViewPath($view_name, $controller_name, $application_name));
+    } // viewExists
     
     /**
     * Return filesystem path of specific helper ($helper_name). 
@@ -117,7 +214,7 @@
     * @return string
     */
     function getHelperPath($helper_name) {
-      return APPLICATION_PATH . "/helpers/$helper_name.php";
+      return PROJECT_PATH . "/helpers/$helper_name.php";
     } // getHelperPath
     
     /**
@@ -146,51 +243,6 @@
       } // if
       throw new Angie_Controller_Error_HelperDnx($helper_name);
     } // useHelper
-    
-    /**
-    * Return path of specific layout
-    * 
-    * This function will just return the path, it will not check if layout really exists
-    *
-    * @param string $layout_name
-    * @return string
-    */
-    function getLayoutPath($layout_name) {
-      return APPLICATION_PATH . "/layouts/$layout_name.php";
-    } // getLayoutPath
-    
-    /**
-    * Return path of specific view file
-    * 
-    * If $controller_name value is pressent we will return controller related path (under controller subfolder). 
-    * If it is missing function will assume that you are looking for file that is in /view folder, not inside
-    * any controller related subfolder
-    *
-    * @param string $view_name
-    * @param string $controller_name
-    * @return string
-    */
-    function getViewPath($view_name, $controller_name = null) {
-      if(trim($controller_name) == '') {
-        return APPLICATION_PATH . "/views/$view_name.php";
-      } else {
-        return APPLICATION_PATH . "/views/$controller_name/$view_name.php";
-      } // if
-    } // getViewPath
-    
-    /**
-    * Checks if view exists
-    * 
-    * This function will use getViewPath() method to generate view path and return true if targeted view file exists 
-    * and is readable
-    *
-    * @param string $view_name
-    * @param string $controller_name
-    * @return boolean
-    */
-    function viewExists($view_name, $controller_name = null) {
-      return is_readable($this->getViewPath($view_name, $controller_name));
-    } // viewExists
     
     /**
     * Return URL based on wrapper function arguments
@@ -293,26 +345,6 @@
       
       return $controller;
     } // getController
-    
-    /**
-    * Return name of default controller
-    *
-    * @param void
-    * @return string
-    */
-    function getDefaultControllerName() {
-      return Angie::DEFAULT_CONTROLLER_NAME;
-    } // getDefaultControllerName
-    
-    /**
-    * Return name of default action
-    *
-    * @param void
-    * @return string
-    */
-    function getDefaultActionName() {
-      return Angie::DEFAULT_ACTION_NAME;
-    } // getDefaultActionName
     
     /**
     * Return controller name based on controller class

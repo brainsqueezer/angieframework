@@ -20,9 +20,9 @@
     function execute(Angie_Output $output) {
       Angie_DBA_Generator::cleanUp();
       
-      require PROJECT_PATH . '/dev/model.php';
+      require DEVELOPMENT_PATH . '/model.php';
       
-      $output_directory = APPLICATION_PATH . '/models';
+      $output_directory = PROJECT_PATH . '/models';
       
       $options = array(
         'force' => (boolean) $this->getOption('force'),

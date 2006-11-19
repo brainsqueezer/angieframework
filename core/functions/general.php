@@ -396,7 +396,7 @@
   } // objects_array_extract
   
   // ---------------------------------------------------
-  //  Mist functions
+  //  Misc functions
   // ---------------------------------------------------
   
   /**
@@ -474,6 +474,16 @@
     
     return $val;
   } // php_config_value_to_bytes
+  
+  /**
+  * This function will return request string relative to dispatch file
+  *
+  * @param void
+  * @return stirng
+  */
+  function get_request_string() {
+    return substr($_SERVER['REQUEST_URI'], strlen(dirname($_SERVER['PHP_SELF'])));
+  } // get_request_string
   
   /**
   * Compare $value1 and $value2 with $comparision and return boolean result

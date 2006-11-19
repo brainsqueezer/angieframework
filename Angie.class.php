@@ -87,8 +87,8 @@
     /**
     * This function will include project engine, construct it and set it under $engine_name
     * 
-    * $class_name is the name of the engine class. It is usually camelized project name with Engine sufix but it can 
-    * be changed by user. When engine is constructed it will be set as default engine and returned
+    * $class_name is the name of the engine class. It is usually camelized project name with Engine sufix but it can be 
+    * changed by user. When engine is constructed it will be set as default engine and returned
     *
     * @param string $where_is_it
     * @param string $engine_class
@@ -148,8 +148,8 @@
       self::$available_commands = array();
     
       $search_in = array(ANGIE_PATH . '/project/commands/');
-      if(defined('PROJECT_PATH') && is_dir(PROJECT_PATH . '/dev/scripts/commands/')) {
-        $search_in[] = PROJECT_PATH . '/dev/scripts/commands/';
+      if(defined('DEVELOPMENT_PATH') && is_dir(DEVELOPMENT_PATH . '/scripts/commands/')) {
+        $search_in[] = DEVELOPMENT_PATH . '/scripts/commands/';
       } // if
       
       foreach($search_in as $path) {

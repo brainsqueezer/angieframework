@@ -113,12 +113,16 @@
         return false;
       } // if
       
+      if(!isset($values['application'])) {
+        $values['application'] = Angie::engine()->getDefaultApplicationName();
+      } // if
+      
       if(!isset($values['controller'])) {
-        $values['controller'] = Angie::DEFAULT_CONTROLLER_NAME;
+        $values['controller'] = Angie::engine()->getDefaultControllerName();
       } // if
       
       if(!isset($values['action'])) {
-        $values['action'] = Angie::DEFAULT_ACTION_NAME;
+        $values['action'] = Angie::engine()->getDefaultActionName();
       } // if
       
       if($query_string) {
@@ -136,43 +140,18 @@
       } // if
       
       return $values;
-      
-//      $path = explode('/', trim($path, '/'));
-//      if(count($path) <> count($this->parts)) {
-//        return false;
-//      } // if
-//      
-//      foreach($this->parts as $pos => $part) {
-//        $name = isset($part['name']) ? $part['name'] : null;
-//        
-//        if(!isset($path[$pos])) {
-//          if(is_null($name)) {
-//            return false;
-//          } elseif(!array_key_exists($name, $this->defaults)) {
-//            return false;
-//          } // if
-//        } // if
-//        
-//        $regex = self::REGEX_DELIMITER . '^' . $part['regex'] . '$' . self::REGEX_DELIMITER . 'i';
-//        if(preg_match($regex, $path[$pos])) {
-//          if($name) {
-//            $values[$name] = $path[$pos];
-//          } // if
-//        } // if
-//        
-//      } // foreach
     } // match
 
-    /**
-    * Assemle URL based on provided input data
-    * 
-    * This function will use input data and put it into route string. It can return relative path based on the route 
-    * string or absolute URL (PROJECT_URL constant will be used as a base)
-    *
-    * @param array $data
-    * @param boolean
-    * @return string
-    */
+//    /**
+//    * Assemle URL based on provided input data
+//    * 
+//    * This function will use input data and put it into route string. It can return relative path based on the route 
+//    * string or absolute URL (PROJECT_URL constant will be used as a base)
+//    *
+//    * @param array $data
+//    * @param boolean
+//    * @return string
+//    */
 //    function assemble($data = array(), $absolute_url = true) {
 //      $url = array();
 //      

@@ -26,7 +26,7 @@
       
       $valid_modes = array(self::MODE_SKIP, self::MODE_SYNC, self::MODE_REBUILD);
       
-      require PROJECT_PATH . '/dev/model.php';
+      require DEVELOPMENT_PATH . '/model.php';
       
       $quiet = (boolean) $this->getOption('q', 'quiet');
       $mode = $this->getOption('m', 'mode');

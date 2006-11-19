@@ -18,6 +18,13 @@
     private $request_string;
     
     /**
+    * Name of the selected application
+    *
+    * @var string
+    */
+    private $application_name;
+    
+    /**
     * Controller name
     *
     * @var string
@@ -84,6 +91,26 @@
     protected function setRequestString($value) {
       $this->request_string = $value;
     } // setRequestString
+    
+    /**
+    * Get application_name
+    *
+    * @param null
+    * @return string
+    */
+    function getApplicationName() {
+      return $this->application_name;
+    } // getApplicationName
+    
+    /**
+    * Set application_name value
+    *
+    * @param string $value
+    * @return null
+    */
+    function setApplicationName($value) {
+      $this->application_name = $value;
+    } // setApplicationName
     
     /**
     * Get controller_name

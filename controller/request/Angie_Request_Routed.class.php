@@ -16,11 +16,25 @@
     *
     * @param string $request_string
     * @return null
+    * @throws Angie_Router_Error_Match
     */
     protected function process($request_string) {
-      $_GET = (array) Angie_Router::match($request_string);
-      $this->setControllerName(array_var($_GET, 'controller', Angie::DEFAULT_CONTROLLER_NAME));
-      $this->setActionName(array_var($_GET, 'action', Angie::DEFAULT_ACTION_NAME));
+      $request_path = '';
+      $query_string = '';
+      
+      $query_string_pos = strrpos($request_string, '?');
+      if($query_string_pos === false) {
+        $request_path = $request_string;
+      } else {
+        $request_path = substr($request_string, 0, $query_string_pos);
+        $query_string = substr($request_string, $query_string_pos + 1);
+      } // if
+      
+      $_GET = (array) Angie_Router::match($request_path, $query_string);
+      
+      $this->setApplicationName(array_var($_GET, 'application'), Angie::engine()->getDefaultApplicationName());
+      $this->setControllerName(array_var($_GET, 'controller', Angie::engine()->getDefaultControllerName()));
+      $this->setActionName(array_var($_GET, 'action', Angie::engine()->getDefaultActionName()));
     } // process
   
   } // Angie_Request_Routed
