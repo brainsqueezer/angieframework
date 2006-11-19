@@ -132,6 +132,16 @@
     } // getApplicationPath
     
     /**
+    * Return path of application section in public part of the project
+    *
+    * @param void
+    * @return string
+    */
+    function getPublicApplicationPath($application) {
+      return PUBLIC_PATH . "/$application";
+    } // getPublicApplicationPath
+    
+    /**
     * Return controller file path
     * 
     * $controller can be intepreted in two ways:

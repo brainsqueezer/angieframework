@@ -18,12 +18,13 @@
     define('ROOT_PATH', dirname(__FILE__));
   } // if
   
-  define('DEVELOPMENT_PATH', ROOT_PATH . '/development');
-  define('PROJECT_PATH',     ROOT_PATH . '/project');
-  define('PUBLIC_PATH',      ROOT_PATH . '/public');
-  define('VENDOR_PATH',      ROOT_PATH . '/vendor');
-  define('CONFIG_PATH',      PROJECT_PATH . '/config');
-  define('CACHE_PATH',       PROJECT_PATH . '/cache');
+  define('DEVELOPMENT_PATH',  ROOT_PATH . '/development');
+  define('PROJECT_PATH',      ROOT_PATH . '/project');
+  define('PUBLIC_PATH',       ROOT_PATH . '/public');
+  define('VENDOR_PATH',       ROOT_PATH . '/vendor');
+  define('APPLICATIONS_PATH', PROJECT_PATH, '/applications');
+  define('CONFIG_PATH',       PROJECT_PATH . '/config');
+  define('CACHE_PATH',        PROJECT_PATH . '/cache');
   
   // ---------------------------------------------------
   //  Init Angie and other system resources
