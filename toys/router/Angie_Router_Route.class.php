@@ -72,6 +72,7 @@
           ); // array
         } else {
           $this->parts[$pos] = array(
+            'raw' => $part,
             'regex' => preg_quote($part, self::REGEX_DELIMITER)
           ); // array
         } // if
@@ -149,32 +150,48 @@
     * string or absolute URL (PROJECT_URL constant will be used as a base)
     *
     * @param array $data
-    * @param boolean
+    * @param string $url_base
+    * @param string $query_arg_separator
     * @return string
     */
-    function assemble($data = array(), $absolute_url = true) {
-      $url = array();
+    function assemble($data, $url_base, $query_arg_separator) {
+      if(!is_array($data)) {
+        $data = array();
+      } // if
       
+      $path_parts = array();
+      
+      $part_names = array();
       foreach($this->parts as $key => $part) {
         if(isset($part['name'])) {
-          if (isset($data[$part['name']])) {
-            $url[$key] = $data[$part['name']];
-          } elseif (isset($this->defaults[$part['name']])) {
-            $url[$key] = $this->defaults[$part['name']];
+          $part_name = $part['name'];
+          $part_names[] = $part_name;
+          
+          if(isset($data[$part_name])) {
+            $path_parts[$key] = $data[$part_name];
+          } elseif(isset($this->defaults[$part_name])) {
+            $path_parts[$key] = $this->defaults[$part_name];
           } else {
             throw new Angie_Router_Error_Assemble($this->getRouteString(), $data, $this->getDefaults());
           } // if
         } else {
-          $url[$key] = $part['regex'];
+          $path_parts[$key] = $part['regex'];
         } // if
       } // foreach
       
-      $base = '';
-      if($absolute_url) {
-        $base = PROJECT_URL . '/';
+      $query_parts = array();
+      foreach($data as $k => $v) {
+        if(!in_array($k, $part_names)) {
+          $query_parts[$k] = $v;
+        } // if
+      } // foreach
+      
+      $url = with_slash($url_base) . implode('/', $path_parts);
+      if(count($query_parts)) {
+        $url .= '?' . http_build_query($query_parts, '', $query_arg_separator);
       } // if
       
-      return $base . implode('/', $url);
+      return $url;
     } // assemble
     
     // ---------------------------------------------------
