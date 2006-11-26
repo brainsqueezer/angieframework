@@ -38,18 +38,17 @@
     * Map route
     * 
     * This function will create a new route based on route string, default values and additional requirements and save 
-    * it under specific name. Name is used so you can access the route when assembling URL based on data
+    * it under specific name. Name is used so you can access the route when assembling URL based
     *
     * @param string $name
-    * @return null
+    * @param string $route
+    * @param array $defaults
+    * @param array $requirements
+    * @return Angie_Router_Route
     */
-    static function map($route, $defaults = null, $requirements = null, $name = null) {
-      $route = new Angie_Router_Route($route, $defaults, $requirements);
-      if($name) {
-        self::$routes[$name] = $route;
-      } else {
-        self::$routes[] = $route;
-      } // if
+    static function map($name, $route, $defaults = null, $requirements = null) {
+      self::$routes[$name] = new Angie_Router_Route($route, $defaults, $requirements);
+      return self::$routes[$name];
     } // map
     
     /**
@@ -92,14 +91,14 @@
     * @return string
     * @throws Angie_Router_Error_Assemble
     */
-//    static function assemble($name, $data, $absolute = true) {
-//      $route = array_var(self::$routes, $name);
-//      if(!($route instanceof Angie_Router_Route)) {
-//        throw new Angie_Core_Error_InvalidParamValue('name', $name, "Route '$name' is not mapped");
-//      } // if
-//      
-//      return $route->assemble($data, $absolute);
-//    } // assemble
+    static function assemble($name, $data, $absolute = true) {
+      $route = array_var(self::$routes, $name);
+      if(!($route instanceof Angie_Router_Route)) {
+        throw new Angie_Core_Error_InvalidParamValue('name', $name, "Route '$name' is not mapped");
+      } // if
+      
+      return $route->assemble($data, $absolute);
+    } // assemble
   
     // ---------------------------------------------------
     //  Getters and setters

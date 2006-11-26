@@ -132,6 +132,16 @@
     } // getApplicationPath
     
     /**
+    * Check if specific application exists inside of a project
+    *
+    * @param string $application
+    * @return boolean
+    */
+    function applicationExists($application) {
+      return is_dir($this->getApplicationPath($application));
+    } // applicationExists
+    
+    /**
     * Return path of application section in public part of the project
     *
     * @param void
@@ -177,6 +187,18 @@
       $application = is_null($application_name) ? $this->getRequest()->getApplicationName() : $application_name;
       return $this->getApplicationPath($application) . "/layouts/$layout_name.php";
     } // getLayoutPath
+    
+    /**
+    * Return path of view folder for specific controller and application
+    *
+    * @param string $controller_name
+    * @param string $application_name
+    * @return string
+    */
+    function getViewsFolderPath($controller_name, $application_name = null) {
+      $application = is_null($application_name) ? $this->getRequest()->getApplicationName() : $application_name;
+      return $this->getApplicationPath($application) . "/views/$controller_name";
+    } // getViewsFolderPath
     
     /**
     * Return path of specific view file

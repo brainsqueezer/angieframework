@@ -87,7 +87,7 @@
     * @return string
     */
     function defineDescription() {
-      return 'Use model description from /dev/model.php and rebuild model classes';
+      return 'Create a new application inside of a selected project';
     } // defineDescription
   
   } // Angie_Command_Application

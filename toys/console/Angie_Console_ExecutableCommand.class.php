@@ -73,7 +73,7 @@
         $longest_long = 0;
         foreach($options as $option) {
           $long = $option[1];
-          if(str_ends_with($long)) {
+          if(str_ends_with($long, ':')) {
             $long = substr($long, 0, strlen($long) - 1);
           } // if
           

@@ -139,43 +139,43 @@
         
       } // if
       
-      return $values;
+      return new Angie_Router_Match($this, $values);
     } // match
 
-//    /**
-//    * Assemle URL based on provided input data
-//    * 
-//    * This function will use input data and put it into route string. It can return relative path based on the route 
-//    * string or absolute URL (PROJECT_URL constant will be used as a base)
-//    *
-//    * @param array $data
-//    * @param boolean
-//    * @return string
-//    */
-//    function assemble($data = array(), $absolute_url = true) {
-//      $url = array();
-//      
-//      foreach($this->parts as $key => $part) {
-//        if(isset($part['name'])) {
-//          if (isset($data[$part['name']])) {
-//            $url[$key] = $data[$part['name']];
-//          } elseif (isset($this->defaults[$part['name']])) {
-//            $url[$key] = $this->defaults[$part['name']];
-//          } else {
-//            throw new Angie_Router_Error_Assemble($this->getRouteString(), $data, $this->getDefaults());
-//          } // if
-//        } else {
-//          $url[$key] = $part['regex'];
-//        } // if
-//      } // foreach
-//      
-//      $base = '';
-//      if($absolute_url) {
-//        $base = PROJECT_URL . '/';
-//      } // if
-//      
-//      return $base . implode('/', $url);
-//    } // assemble
+    /**
+    * Assemle URL based on provided input data
+    * 
+    * This function will use input data and put it into route string. It can return relative path based on the route 
+    * string or absolute URL (PROJECT_URL constant will be used as a base)
+    *
+    * @param array $data
+    * @param boolean
+    * @return string
+    */
+    function assemble($data = array(), $absolute_url = true) {
+      $url = array();
+      
+      foreach($this->parts as $key => $part) {
+        if(isset($part['name'])) {
+          if (isset($data[$part['name']])) {
+            $url[$key] = $data[$part['name']];
+          } elseif (isset($this->defaults[$part['name']])) {
+            $url[$key] = $this->defaults[$part['name']];
+          } else {
+            throw new Angie_Router_Error_Assemble($this->getRouteString(), $data, $this->getDefaults());
+          } // if
+        } else {
+          $url[$key] = $part['regex'];
+        } // if
+      } // foreach
+      
+      $base = '';
+      if($absolute_url) {
+        $base = PROJECT_URL . '/';
+      } // if
+      
+      return $base . implode('/', $url);
+    } // assemble
     
     // ---------------------------------------------------
     //  Getters and setters

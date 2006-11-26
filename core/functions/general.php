@@ -298,6 +298,8 @@
   function array_var($from, $name, $default = null) {
     if(is_array($from)) {
       return isset($from[$name]) ? $from[$name] : $default;
+    } elseif(is_object($from) && ($from instanceof ArrayAccess)) {
+      return isset($from[$name]) ? $from[$name] : $default;
     } // if
     return $default;
   } // array_var

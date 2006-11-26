@@ -15,11 +15,11 @@
     function testRouting() {
       $query_string = array_var($_SERVER, 'QUERY_STRING');
       
-      Angie_Router::map('/');
-      Angie_Router::map('/:controller');
-      Angie_Router::map('/with_defaults/:controller/:id', array('action' => 'default_action', 'application' => 'frontend'));
-      Angie_Router::map('/ilija/studen/:controller/:action/:id/');
-      Angie_Router::map('/with_query_string/:controller/:action/');
+      Angie_Router::map('homepage', '/');
+      Angie_Router::map('controller', '/:controller');
+      Angie_Router::map('with_detaults', '/with_defaults/:controller/:id', array('action' => 'default_action', 'application' => 'frontend'));
+      Angie_Router::map('longer', '/ilija/studen/:controller/:action/:id/');
+      Angie_Router::map('with_query_string', '/with_query_string/:controller/:action/');
       
       $url_params = Angie_Router::match('/', $query_string);
       $this->assertEqual(array_var($url_params, 'application'), Angie::engine()->getDefaultapplicationName());
