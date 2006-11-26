@@ -18,6 +18,13 @@
     const QUERY_STRING_SWITCH = '*';
     
     /**
+    * Name of the route
+    *
+    * @var string
+    */
+    private $name;
+    
+    /**
     * Input route string that is parsed into parts on construction
     *
     * @var string
@@ -55,9 +62,10 @@
     * @param array $requirements
     * @return Angie_Route
     */
-    function __construct($route, $defaults = array(), $requirements = array()) {
+    function __construct($name, $route, $defaults = array(), $requirements = array()) {
       $route = trim($route, '/');
       
+      $this->name         = $name;
       $this->route_string = $route;
       $this->defaults     = (array) $defaults;
       $this->requirements = (array) $requirements;
@@ -197,6 +205,26 @@
     // ---------------------------------------------------
     //  Getters and setters
     // ---------------------------------------------------
+    
+    /**
+    * Get name
+    *
+    * @param null
+    * @return string
+    */
+    function getName() {
+      return $this->name;
+    } // getName
+    
+    /**
+    * Set name value
+    *
+    * @param string $value
+    * @return null
+    */
+    function setName($value) {
+      $this->name = $value;
+    } // setName
     
     /**
     * Get route_string

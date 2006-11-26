@@ -1,5 +1,15 @@
 <?php
 
+  /**
+  * Route match
+  * 
+  * Match object contains a reference to a matching route and all extracted data. ArrayAccess interface has been 
+  * implemented so this object can be used as an array
+  *
+  * @package Angie.toys
+  * @subpackage router
+  * @author Ilija Studen <ilija.studen@gmail.com>
+  */
   class Angie_Router_Match implements ArrayAccess {
     
     /**

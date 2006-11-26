@@ -21,24 +21,18 @@
     private static $routes = array();
     
     /**
-    * Name of the matched route
+    * Cached match object
     *
-    * @var string
+    * @var Angie_Router_Match
     */
-    private static $matched_route_name;
+    private static $match;
     
     /**
-    * Instance of matched route
-    *
-    * @var Angie_Router_Route
-    */
-    private static $matched_route;
-    
-    /**
-    * Map route
+    * Regiter a new route
     * 
     * This function will create a new route based on route string, default values and additional requirements and save 
-    * it under specific name. Name is used so you can access the route when assembling URL based
+    * it under specific name. Name is used so you can access the route when assembling URL based on a given route. Name 
+    * needs to be unique (if route with a given name is already registered it will be overwriten).
     *
     * @param string $name
     * @param string $route
@@ -47,7 +41,7 @@
     * @return Angie_Router_Route
     */
     static function map($name, $route, $defaults = null, $requirements = null) {
-      self::$routes[$name] = new Angie_Router_Route($route, $defaults, $requirements);
+      self::$routes[$name] = new Angie_Router_Route($name, $route, $defaults, $requirements);
       return self::$routes[$name];
     } // map
     
@@ -67,12 +61,10 @@
       $routes = array_reverse(self::$routes);
       
       foreach($routes as $route_name => $route) {
-        $values = $route->match($str, $query_string);
-        if($values !== false) {
-          self::$matched_route_name = $route_name;
-          self::$matched_route = $route;
-          
-          return $values;
+        $match = $route->match($str, $query_string);
+        if($match instanceof Angie_Router_Match) {
+          self::$match = $match;
+          return $match;
         } // if
       } // foreach
       
@@ -111,11 +103,39 @@
     * @param void
     * @return null
     */
-    function cleanUp() {
+    static function cleanUp() {
       self::$routes = array();
-      self::$matched_route = null;
-      self::$matched_route_name = null;
+      self::$match = null;
     } // cleanUp
+    
+    /**
+    * Return matched route, if route is matched
+    *
+    * @param void
+    * @return Angie_Router_Route
+    */
+    static function getMatchedRoute() {
+      if(self::$match instanceof Angie_Router_Match) {
+        return self::$match->getRoute();
+      } // if
+      return null;
+    } // getMatchedRoute
+    
+    /**
+    * Return name of matched route, if route is matched
+    *
+    * @param void
+    * @return string
+    */
+    static function getMatchedRouteName() {
+      $route = self::getMatchedRoute();
+      
+      if($route instanceof Angie_Router_Route) {
+        return $route->getName();
+      } // if
+      
+      return null;
+    } // getMatchedRouteName
   
     // ---------------------------------------------------
     //  Getters and setters
@@ -127,19 +147,9 @@
     * @param void
     * @return array
     */
-    function getRoutes() {
+    static function getRoutes() {
       return self::$routes;
     } // getRoutes
-    
-    /**
-    * Return name of the matched route
-    *
-    * @param void
-    * @return string
-    */
-    function getMatchedRoute() {
-      return self::$matched_route_name;
-    } // getMatchedRoute
   
   } // Angie_Router
 
