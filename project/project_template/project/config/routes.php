@@ -1,7 +1,7 @@
 <?= '<?php' ?>
 
 
-  Angie_Router::map('/');
-  Angie_Router::map('/:application/:controller/:action/:id');
+  Angie_Router::map('homepage', '/');
+  Angie_Router::map('default', '/:application/:controller/:action/:id');
   
 <?= '?>' ?>

@@ -142,6 +142,29 @@
     } // applicationExists
     
     /**
+    * Return application initialization file path
+    *
+    * @param string $application
+    * @return string
+    */
+    function getApplicationInitfilePath($application) {
+      return $this->getApplicationPath($application) . '/init.php';
+    } // getApplicationInitfilePath
+    
+    /**
+    * Return a classname of application controller
+    * 
+    * Application controller is base controller that all application controllers 
+    * subclass by default.
+    *
+    * @param string $application
+    * @return string
+    */
+    function getApplicationControllerClass($application) {
+      return $this->getControllerClass($application);
+    } // getApplicationControllerClassName
+    
+    /**
     * Return path of application section in public part of the project
     *
     * @param void
@@ -156,12 +179,14 @@
     * 
     * $controller can be intepreted in two ways:
     * 
-    * 1. As a controller name that need to be converted to controller class name if $is_controller_class value
-    *    is false
-    * 2. As a already prepared controller class if $is_controller_class is set to true
+    * 1. As a controller name that need to be converted to controller class 
+    *    name if $is_controller_class value is false
+    * 2. As a already prepared controller class if $is_controller_class is set 
+    *    to true
     * 
-    * This function will not check if controller file actualy exists. It will just generated and return the path
-    * where engine expects to find the controller
+    * This function will not check if controller file actualy exists. It will 
+    * just generated and return the path where engine expects to find the 
+    * controller
     *
     * @param string $controller
     * @param boolean $is_controller_class

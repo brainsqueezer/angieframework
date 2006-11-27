@@ -3,8 +3,8 @@
   /**
   * Controller generator
   * 
-  * Generate a controller in a specific application. This generator will generate controller class, empty layout and a 
-  * folder for views
+  * Generate a controller in a specific application. This generator will 
+  * generate controller class, empty layout and a folder for views
   *
   * @package Angie.project
   * @subpackage commands
@@ -41,11 +41,12 @@
       $quiet = $this->getOption('q', 'quiet');
       $force = $this->getOption('force');
       
+      $app_controller_class  = Angie::engine()->getApplicationControllerClass($application_name);
       $controller_class_name = Angie::engine()->getControllerClass($controller_name);
-      $controller_file_path = Angie::engine()->getControllerPath($controller_class_name, true, $application_name);
-      $helper_file_path = Angie::engine()->getHelperPath($controller_name, $application_name);
-      $layout_file_path = Angie::engine()->getLayoutPath($controller_name, $application_name);
-      $views_folder_path = Angie::engine()->getViewsFolderPath($controller_name, $application_name);
+      $controller_file_path  = Angie::engine()->getControllerPath($controller_class_name, true, $application_name);
+      $helper_file_path      = Angie::engine()->getHelperPath($controller_name, $application_name);
+      $layout_file_path      = Angie::engine()->getLayoutPath($controller_name, $application_name);
+      $views_folder_path     = Angie::engine()->getViewsFolderPath($controller_name, $application_name);
       
       if(is_dir($views_folder_path)) {
         if(!$quiet) {
@@ -63,67 +64,15 @@
       } // if
       
       $template_engine = new Angie_TemplateEngine_Php();
+      $template_engine->assignToView('app_controller_class', $app_controller_class);
       $template_engine->assignToView('controller_name', $controller_name);
       $template_engine->assignToView('controller_class_name', $controller_class_name);
       $template_engine->assignToView('application_name', $application_name);
       $template_engine->assignToView('project_name', Angie::getConfig('project.name'));
       
-      // Create a controller file
-      if(file_exists($controller_file_path)) {
-        if($force) {
-          file_put_contents($controller_file_path, $template_engine->fetchView(ANGIE_PATH . '/project/controller_templates/controller.php'));
-          if(!$quiet) {
-            $output->printMessage("File '" . substr($controller_file_path, strlen(ROOT_PATH)) . "' already exist. Overwrite.");
-          } // if
-        } else {
-          if(!$quiet) {
-            $output->printMessage("File '" . substr($controller_file_path, strlen(ROOT_PATH)) . "' already exist. Skip.");
-          } // if
-        } // if
-      } else {
-        file_put_contents($controller_file_path, $template_engine->fetchView(ANGIE_PATH . '/project/controller_templates/controller.php'));
-        if(!$quiet) {
-          $output->printMessage("File '" . substr($controller_file_path, strlen(ROOT_PATH)) . "' created.");
-        } // if
-      } // if
-      
-      // Create a helper file
-      if(file_exists($helper_file_path)) {
-        if($force) {
-          file_put_contents($helper_file_path, $template_engine->fetchView(ANGIE_PATH . '/project/controller_templates/helper.php'));
-          if(!$quiet) {
-            $output->printMessage("File '" . substr($helper_file_path, strlen(ROOT_PATH)) . "' already exist. Overwrite.");
-          } // if
-        } else {
-          if(!$quiet) {
-            $output->printMessage("File '" . substr($helper_file_path, strlen(ROOT_PATH)) . "' already exist. Skip.");
-          } // if
-        } // if
-      } else {
-        file_put_contents($helper_file_path, $template_engine->fetchView(ANGIE_PATH . '/project/controller_templates/helper.php'));
-        if(!$quiet) {
-          $output->printMessage("File '" . substr($helper_file_path, strlen(ROOT_PATH)) . "' created.");
-        } // if
-      } // if
-      
-      // Create a layout file
-      if(file_exists($layout_file_path)) {
-        if($force) {
-          file_put_contents($layout_file_path, $template_engine->fetchView(ANGIE_PATH . '/project/controller_templates/layout.php'));
-          if(!$quiet) {
-            $output->printMessage("File '" . substr($layout_file_path, strlen(ROOT_PATH)) . "' already exist. Overwrite.");
-          } // if
-        } else {
-          if(!$quiet) {
-            $output->printMessage("File '" . substr($layout_file_path, strlen(ROOT_PATH)) . "' already exist. Skip.");
-          } // if
-        } // if
-      } else {
-        file_put_contents($layout_file_path, $template_engine->fetchView(ANGIE_PATH . '/project/controller_templates/layout.php'));
-        if(!$quiet) {
-          $output->printMessage("File '" . substr($layout_file_path, strlen(ROOT_PATH)) . "' created.");
-        } // if
-      } // if
+      $this->createFile($controller_file_path, $template_engine->fetchView(ANGIE_PATH . '/project/controller_templates/controller.php'), $output, $quiet, $force);
+      $this->createFile($helper_file_path, $template_engine->fetchView(ANGIE_PATH . '/project/controller_templates/helper.php'), $output, $quiet, $force);
+      $this->createFile($layout_file_path, $template_engine->fetchView(ANGIE_PATH . '/project/controller_templates/layout.php'), $output, $quiet, $force);
       
       if(!$quiet) {
         $output->printMessage("Controller '$controller_name' created");
@@ -131,10 +80,42 @@
     } // execute
     
     /**
+    * Create a specific file based on template
+    *
+    * @param string $target_path
+    * @param string $content
+    * @param Angie_Output $output
+    * @param boolean $quiet
+    * @param boolean $force
+    * @return null
+    */
+    private function createFile($target_path, $content, Angie_Output $output, $quiet = false, $force = false) {
+      if(file_exists($target_path)) {
+        if($force) {
+          file_put_contents($target_path, $content);
+          if(!$quiet) {
+            $output->printMessage("File '" . substr($target_path, strlen(ROOT_PATH)) . "' already exist. Overwrite.");
+          } // if
+        } else {
+          if(!$quiet) {
+            $output->printMessage("File '" . substr($target_path, strlen(ROOT_PATH)) . "' already exist. Skip.");
+          } // if
+        } // if
+      } else {
+        file_put_contents($target_path, $content);
+        if(!$quiet) {
+          $output->printMessage("File '" . substr($target_path, strlen(ROOT_PATH)) . "' created.");
+        } // if
+      } // if
+    } // createFile
+    
+    /**
     * Return options definition array
     * 
-    * Single element in options definition array consists of three elements. First element is a short option (one letter 
-    * plus optional colon saying that this option requires an argument), long option name with option colon and help
+    * Single element in options definition array consists of three elements. 
+    * First element is a short option (one letter plus optional colon saying 
+    * that this option requires an argument), long option name with option colon 
+    * and help
     *
     * @param void
     * @return array

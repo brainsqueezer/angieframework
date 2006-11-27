@@ -11,8 +11,8 @@
   */
   
   define('ANGIE_BIN_PATH', dirname(__FILE__));
-  
   require_once realpath(ANGIE_BIN_PATH . '/../init.php');
+  
   if(!class_exists('Angie_Console')) {
     require_once ANGIE_PATH . '/toys/console/Angie_Console.class.php';
     require_once ANGIE_PATH . '/toys/console/Angie_Console_Command.class.php';

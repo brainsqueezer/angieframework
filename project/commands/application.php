@@ -27,6 +27,7 @@
       } // if
       
       $quiet = $this->getOption('q', 'quiet');
+      $force = $this->getOption('force');
       
       $application_path        = with_slash(Angie::engine()->getApplicationPath($application_name));
       $public_application_path = with_slash(Angie::engine()->getPublicApplicationPath($application_name));
@@ -60,10 +61,52 @@
         } // if
       } // foreach
       
+      $app_controller_class     = Angie::engine()->getApplicationControllerClass($application_name);
+      $app_controller_file_path = Angie::engine()->getControllerPath($app_controller_class, true, $application_name);
+      $init_file_path           = Angie::engine()->getApplicationInitfilePath($application_name);
+      
+      $template_engine = new Angie_TemplateEngine_Php();
+      $template_engine->assignToView('application_name', $application_name);
+      $template_engine->assignToView('project_name', Angie::getConfig('project.name'));
+      $template_engine->assignToView('app_controller_class', $app_controller_class);
+      
+      $this->createFile($init_file_path, $template_engine->fetchView(ANGIE_PATH . '/project/application_templates/init.php'), $output, $quiet, $force);
+      $this->createFile($app_controller_file_path, $template_engine->fetchView(ANGIE_PATH . '/project/application_templates/application_conroller.php'), $output, $quiet, $force);
+      
       if(!$quiet) {
         $output->printMessage("Application '$application_name' has been created");
       } // if
     } // execute
+    
+    /**
+    * Create a specific file based on template
+    *
+    * @param string $target_path
+    * @param string $content
+    * @param Angie_Output $output
+    * @param boolean $quiet
+    * @param boolean $force
+    * @return null
+    */
+    private function createFile($target_path, $content, Angie_Output $output, $quiet = false, $force = false) {
+      if(file_exists($target_path)) {
+        if($force) {
+          file_put_contents($target_path, $content);
+          if(!$quiet) {
+            $output->printMessage("File '" . substr($target_path, strlen(ROOT_PATH)) . "' already exist. Overwrite.");
+          } // if
+        } else {
+          if(!$quiet) {
+            $output->printMessage("File '" . substr($target_path, strlen(ROOT_PATH)) . "' already exist. Skip.");
+          } // if
+        } // if
+      } else {
+        file_put_contents($target_path, $content);
+        if(!$quiet) {
+          $output->printMessage("File '" . substr($target_path, strlen(ROOT_PATH)) . "' created.");
+        } // if
+      } // if
+    } // createFile
     
     /**
     * Return options definition array
@@ -76,6 +119,7 @@
     */
     function defineOptions() {
       return array(
+        array('',  'force', 'Force file creation (overwrite files if present)'),
         array('q', 'quiet', 'Don\'t print progress messages to the console'),
         array('h', 'help', 'Show help')
       ); // array
