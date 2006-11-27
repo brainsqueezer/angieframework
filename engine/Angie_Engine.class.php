@@ -243,19 +243,22 @@
     * This function will just return the path, it will not check if it really exists or include it
     *
     * @param string $helper_name
+    * @param string $application_name
     * @return string
     */
-    function getHelperPath($helper_name) {
-      return PROJECT_PATH . "/helpers/$helper_name.php";
+    function getHelperPath($helper_name, $application_name = null) {
+      $application = is_null($application_name) ? $this->getRequest()->getApplicationName() : $application_name;
+      return $this->getApplicationPath($application) . "/helpers/$helper_name.php";
     } // getHelperPath
     
     /**
     * Check if specific helper exists
     *
     * @param string $helper_name
+    * @param string $application_name
     * @return boolean
     */
-    function helperExists($helper_name) {
+    function helperExists($helper_name, $application_name = null) {
       return is_file($this->getHelperPath($helper_name));
     } // helperExists
     
@@ -265,15 +268,19 @@
     * This function will check if helper exists and include it if it does. 
     *
     * @param string $helper_name
+    * @param string $application_name
     * @return string
     * @throws Angie_Controller_Error_HelperDnx If helper $helper_name does not exist
     */
-    function useHelper($helper_name) {
-      if($this->helperExists($helper_name)) {
-        require $this->getHelperPath($helper_name);
+    function useHelper($helper_name, $application_name = null) {
+      $application = is_null($application_name) ? $this->getRequest()->getApplicationName() : $application_name;
+      
+      if($this->helperExists($helper_name, $application)) {
+        require $this->getHelperPath($helper_name, $application);
         return true;
       } // if
-      throw new Angie_Controller_Error_HelperDnx($helper_name);
+      
+      throw new Angie_Controller_Error_HelperDnx($helper_name, $application);
     } // useHelper
     
     /**

@@ -34,6 +34,7 @@
       $folders = array(
         $application_path, 
         $application_path . 'controllers',
+        $application_path . 'helpers',
         $application_path . 'layouts',
         $application_path . 'views',
         $public_application_path,

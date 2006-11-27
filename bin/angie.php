@@ -17,6 +17,8 @@
     require_once ANGIE_PATH . '/toys/console/Angie_Console.class.php';
     require_once ANGIE_PATH . '/toys/console/Angie_Console_Command.class.php';
     require_once ANGIE_PATH . '/toys/console/Angie_Console_ExecutableCommand.class.php';
+    require_once ANGIE_PATH . '/toys/output/Angie_Output.class.php';
+    require_once ANGIE_PATH . '/toys/output/Angie_Output_Console.class.php';
   } // if
   
   $subcommand = array_var($argv, 1);

@@ -21,7 +21,7 @@
     * @return null
     */
     function execute(Angie_Output $output) {
-      $controller_name = trim($this->getArgument(0));
+      $controller_name = trim(strtolower($this->getArgument(0)));
       if($controller_name == '') {
         $output->printMessage('Please insert controller name');
         return;
@@ -43,6 +43,7 @@
       
       $controller_class_name = Angie::engine()->getControllerClass($controller_name);
       $controller_file_path = Angie::engine()->getControllerPath($controller_class_name, true, $application_name);
+      $helper_file_path = Angie::engine()->getHelperPath($controller_name, $application_name);
       $layout_file_path = Angie::engine()->getLayoutPath($controller_name, $application_name);
       $views_folder_path = Angie::engine()->getViewsFolderPath($controller_name, $application_name);
       
@@ -83,6 +84,25 @@
         file_put_contents($controller_file_path, $template_engine->fetchView(ANGIE_PATH . '/project/controller_templates/controller.php'));
         if(!$quiet) {
           $output->printMessage("File '" . substr($controller_file_path, strlen(ROOT_PATH)) . "' created.");
+        } // if
+      } // if
+      
+      // Create a helper file
+      if(file_exists($helper_file_path)) {
+        if($force) {
+          file_put_contents($helper_file_path, $template_engine->fetchView(ANGIE_PATH . '/project/controller_templates/helper.php'));
+          if(!$quiet) {
+            $output->printMessage("File '" . substr($helper_file_path, strlen(ROOT_PATH)) . "' already exist. Overwrite.");
+          } // if
+        } else {
+          if(!$quiet) {
+            $output->printMessage("File '" . substr($helper_file_path, strlen(ROOT_PATH)) . "' already exist. Skip.");
+          } // if
+        } // if
+      } else {
+        file_put_contents($helper_file_path, $template_engine->fetchView(ANGIE_PATH . '/project/controller_templates/helper.php'));
+        if(!$quiet) {
+          $output->printMessage("File '" . substr($helper_file_path, strlen(ROOT_PATH)) . "' created.");
         } // if
       } // if
       
