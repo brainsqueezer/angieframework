@@ -3,10 +3,11 @@
   /**
   * Abstract engine
   * 
-  * This class provides stub function and partial implementation of default behaviour. Purpose of engine is to tie rest 
-  * of the system together - to know how to access controllers, how to build models, how to init application etc. Every 
-  * Angie project can override default behaviour and implement things specific for that project without hacking the rest 
-  * of the system
+  * This class provides stub function and partial implementation of default 
+  * behaviour. Purpose of engine is to tie rest of the system together - to know 
+  * how to access controllers, how to build models, how to init application etc. 
+  * Every Angie project can override default behaviour and implement things 
+  * specific for that project without hacking the rest of the system
   *
   * @package Angie.engines
   * @author Ilija Studen <ilija.studen@gmail.com>
@@ -23,7 +24,8 @@
     /**
     * Construct the engine
     * 
-    * This function will register close() method that will be executed on script shutdown
+    * This function will register close() method that will be executed on script 
+    * shutdown
     *
     * @param void
     * @return Angie_Engine
@@ -35,9 +37,10 @@
     /**
     * Initialization method
     * 
-    * This method is called in init.php before we execute any action. By default this method will connect to the 
-    * database using db. configuration options. If you don't wish that kind of behavior just override this method in 
-    * your project engine class
+    * This method is called in init.php before we execute any action. By default 
+    * this method will connect to the database using db. configuration options. 
+    * If you don't wish that kind of behavior just override this method in your 
+    * project engine class
     *
     * @param void
     * @return null
@@ -57,8 +60,8 @@
     /**
     * Execute request that is constructed in init() method
     * 
-    * This function will use request that is constructed by init() method, extract controller and
-    * action names and execute that action if exists
+    * This function will use request that is constructed by init() method, 
+    * extract controller and action names and execute that action if exists
     *
     * @param void
     * @return null
@@ -73,8 +76,9 @@
     /**
     * Clean up function
     * 
-    * This function is called on script shutdown (works in multiengine environment too). Use it save logs, 
-    * send status emails, update status or whatever need to be done on end of request execution
+    * This function is called on script shutdown (works in multiengine 
+    * environment too). Use it save logs, send status emails, update status or 
+    * whatever need to be done on end of request execution.
     *
     * @param void
     * @return null
@@ -203,7 +207,8 @@
     /**
     * Return path of specific layout
     * 
-    * This function will just return the path, it will not check if layout really exists
+    * This function will just return the path, it will not check if layout 
+    * really exists
     *
     * @param string $layout_name
     * @return string
@@ -228,9 +233,10 @@
     /**
     * Return path of specific view file
     * 
-    * If $controller_name value is pressent we will return controller related path (under controller subfolder). 
-    * If it is missing function will assume that you are looking for file that is in /view folder, not inside
-    * any controller related subfolder
+    * If $controller_name value is pressent we will return controller related 
+    * path (under controller subfolder). If it is missing function will assume 
+    * that you are looking for file that is in /view folder, not inside any 
+    * controller related subfolder
     *
     * @param string $view_name
     * @param string $controller_name
@@ -250,8 +256,8 @@
     /**
     * Checks if view exists
     * 
-    * This function will use getViewPath() method to generate view path and return true if targeted view file exists 
-    * and is readable
+    * This function will use getViewPath() method to generate view path and 
+    * return true if targeted view file exists and is readable
     *
     * @param string $view_name
     * @param string $controller_name
@@ -265,7 +271,8 @@
     /**
     * Return filesystem path of specific helper ($helper_name). 
     * 
-    * This function will just return the path, it will not check if it really exists or include it
+    * This function will return path of a specific application level helper. To 
+    * get path of a system level helper use getSystemHelperPath() method
     *
     * @param string $helper_name
     * @param string $application_name
@@ -275,6 +282,16 @@
       $application = is_null($application_name) ? $this->getRequest()->getApplicationName() : $application_name;
       return $this->getApplicationPath($application) . "/helpers/$helper_name.php";
     } // getHelperPath
+    
+    /**
+    * Return path of a system level helper
+    *
+    * @param string $helper_name
+    * @return string
+    */
+    function getSystemHelperPath($helper_name) {
+      return ANGIE_PATH . "/controller/helpers/$helper_name.php";
+    } // getSystemHelperPath
     
     /**
     * Check if specific helper exists
@@ -288,9 +305,21 @@
     } // helperExists
     
     /**
+    * Check if specific system level helper exists
+    *
+    * @param string $helper_name
+    * @return boolean
+    */
+    function systemHelperExists($helper_name) {
+      return is_file($this->getSystemHelperPath($helper_name));
+    } // systemHelperExists
+    
+    /**
     * Use specific helper
     * 
-    * This function will check if helper exists and include it if it does. 
+    * This function will check if a specific helper exists and include it. If 
+    * application and system level helpers exist both will be included. If no 
+    * helper is included an exception will be thrown.
     *
     * @param string $helper_name
     * @param string $application_name
@@ -300,84 +329,50 @@
     function useHelper($helper_name, $application_name = null) {
       $application = is_null($application_name) ? $this->getRequest()->getApplicationName() : $application_name;
       
-      if($this->helperExists($helper_name, $application)) {
-        require $this->getHelperPath($helper_name, $application);
+      $application_helper_path = $this->getHelperPath($helper_name, $application);
+      $system_helper_path = $this->getSystemHelperPath($helper_name);
+      
+      $helper_included = false;
+      
+      if(is_file($application_helper_path)) {
+        require_once $application_helper_path;
+        $helper_included = true;
+      } // if
+      
+      if(is_file($system_helper_path)) {
+        require_once $system_helper_path;
+        $helper_included = true;
+      }
+      
+      if($helper_included) {
         return true;
       } // if
       
       throw new Angie_Controller_Error_HelperDnx($helper_name, $application);
     } // useHelper
     
-    /**
-    * Return URL based on wrapper function arguments
-    * 
-    * Different projects have different ways how they generate URLs so its good to have this overrideable in 
-    * project engines. By default this function convert this set of params:
-    * 
-    * 0 -> controller
-    * 1 -> action
-    * 2 -> array of params
-    * 3 -> anchor
-    * 
-    * Into:
-    * 
-    * PROJECT_URL/controller/action/param_name-param_value/param_name-param_value/#anchor
-    * 
-    * All elements can are optional. If controller and action values are not present default values will be used.
-    * If there is no params and anchor they will be excluded.
-    *
-    * @param array $arguments
-    * @return string
-    */
-    function getUrlFromArguments($arguments) {
-      $controller_name = trim(array_var($arguments, 0));
-      if($controller_name == '') {
-        $controller_name = Angie::engine()->getDefaultControllerName();
-      } // if
-      $action_name = trim(array_var($arguments, 1));
-      if($action_name == '') {
-        $action_name = Angie::engine()->getDefaultActionName();
-      } // if
-      $params = array_var($arguments, 2);
-      $anchor = trim(array_var($arguments, 3));
-      
-      $result = with_slash(PROJECT_URL) . "$controller_name/$action_name/";
-      
-      $prepared_params = array();
-      if(is_array($params) && count($params)) {
-        foreach($params as $param_name => $param_value) {
-          if(is_bool($param_value)) {
-            $param_value = $param_value ? 1 : 0;
-          } // if
-          
-          $prepared_params[] = urlencode($param_name) . '-' . urlencode($param_value);
-        } // if
-      } // if
-      
-      if(count($prepared_params)) {
-        $result .= implode('/', $prepared_params) . '/';
-      } // if
-      
-      if($anchor) {
-        $result .= "#$anchor";
-      } // if
-      
-      return $result;
-    } // getUrlFromArguments
-    
     // ---------------------------------------------------
     //  Util methods
     // ---------------------------------------------------
     
     /**
-    * Execute $action_name action of $controller_name controller. Both arguments are required
+    * Execute $action_name action of $controller_name controller. 
+    * 
+    * This function will execute a specific action of a specific controller in 
+    * a specific application. If application is not yet initialized its init.php 
+    * will be included. 
+    * 
+    * All arguments are required.
     *
     * @param string $controller_name
     * @param string $action_name
+    * @param string $application_name
     * @return null
     */
-    function executeAction($controller_name, $action_name) {
-      $controller = Angie::engine()->getController($controller_name);
+    function executeAction($controller_name, $action_name, $application_name = null) {
+      $application = is_null($application_name) ? $this->getRequest()->getApplicationName() : $application_name;
+      
+      $controller = Angie::engine()->getController($controller_name, $application_name);
       $controller->execute($action_name);
     } // executeAction
     
@@ -385,11 +380,14 @@
     * Include controller class for $controller_name controller, construct it and return it
     *
     * @param string $controller_name
+    * @param string $application_name
     * @return Angie_Controller
     */
-    function getController($controller_name) {
+    function getController($controller_name, $application_name = null) {
+      $application = is_null($application_name) ? $this->getRequest()->getApplicationName() : $application_name;
+      
       $controller_class = $this->getControllerClass($controller_name);
-      $controller_file = $this->getControllerPath($controller_class, true);
+      $controller_file = $this->getControllerPath($controller_class, true, $application);
       
       if(!is_file($controller_file)) {
         throw new Angie_FileSystem_Error_FileDnx($controller_file);
@@ -413,9 +411,8 @@
     /**
     * Return controller name based on controller class
     * 
-    * Name will be converted to underscore and 'Controller' sufix will be removed.
-    * 
-    * Example:
+    * Name will be converted to underscore and 'Controller' sufix will be 
+    * removed. Example:
     * <pre>
     * MyStuffController => my_stuff
     * TaskController => task

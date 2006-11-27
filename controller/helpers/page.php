@@ -1,9 +1,12 @@
 <?php
 
   /**
-  * This file contains helpers that are useful when you are working with HTML pages - this 
-  * helpers use Angie_PageConstruction class and know where to find stylesheets, images 
-  * and other assets and how to link them up with the page that need to be rendered
+  * Page helpers
+  * 
+  * This file contains helpers that are useful when you are working with HTML 
+  * pages - this helpers use Angie_PageConstruction class and know where to find 
+  * stylesheets, images and other assets and how to link them up with the page 
+  * that need to be rendered.
   *
   * @package Angie.controller
   * @subpackage helpers
@@ -13,12 +16,16 @@
   /**
   * Return page title
   *
-  * @param void
+  * @param string $default
   * @return string
   */
-  function get_page_title() {
+  function get_page_title($default = null) {
+    if($default === null) {
+      $default = Angie::getConfig('project.name');
+    } // if
+    
     $page_title = Angie_PageConstruction::getTitle();
-    return trim($page_title) == '' ? PROJECT_NAME : $page_title;
+    return trim($page_title) == '' ? $default : $page_title;
   } // get_page_title
   
   /**

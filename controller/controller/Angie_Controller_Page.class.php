@@ -193,6 +193,10 @@
       parent::__construct();
       $this->setProtectClassMethods('Angie_Controller_Page');;
       
+      // Use system set of templates
+      $this->addHelper('form', 'format', 'html', 'page', 'pagination');
+      
+      // Use controller template if exists
       if(Angie::engine()->helperExists($this->getControllerName())) {
         $this->addHelper($this->getControllerName());
       } // if
@@ -456,10 +460,7 @@
     * @return string
     */
     function getLayoutPath() {
-      $layout_name = trim($this->getLayout()) == '' ? 
-        $this->getControllerName() : 
-        $this->getLayout();
-      
+      $layout_name = trim($this->getLayout()) == '' ? $this->getControllerName() : $this->getLayout();
       return Angie::engine()->getLayoutPath($layout_name);
     } // getLayoutPath
     

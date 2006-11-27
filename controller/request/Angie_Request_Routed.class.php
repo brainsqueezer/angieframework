@@ -32,7 +32,7 @@
       
       $_GET = (array) Angie_Router::match($request_path, $query_string);
       
-      $this->setApplicationName(array_var($_GET, 'application'), Angie::engine()->getDefaultApplicationName());
+      $this->setApplicationName(array_var($_GET, 'application', Angie::engine()->getDefaultApplicationName()));
       $this->setControllerName(array_var($_GET, 'controller', Angie::engine()->getDefaultControllerName()));
       $this->setActionName(array_var($_GET, 'action', Angie::engine()->getDefaultActionName()));
     } // process

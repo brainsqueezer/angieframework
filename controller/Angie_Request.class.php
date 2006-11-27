@@ -1,9 +1,19 @@
 <?php
 
   /**
-  * Requests are objects that map user input to request that system can understand. Request 
-  * itself need to provide names of the controller and action that user request maps with plus 
-  * to provide access to additional request arguments if available.
+  * Request class
+  * 
+  * Requests are objects contructed based on user input to translate what user 
+  * wants into a form that can be used by the rest of the system to form a 
+  * response and respond.
+  * 
+  * Requests needs to extract three values:
+  * 
+  * - application name
+  * - controller name
+  * - action name
+  * 
+  * It can also extract a number of request arguments but that is optional.
   *
   * @package Angie.controller
   * @author Ilija Studen <ilija.studen@gmail.com>
