@@ -16,6 +16,8 @@
   require ANGIE_PATH . '/vendor/simpletest/unit_tester.php';
   require ANGIE_PATH . '/vendor/simpletest/reporter.php';
   
+  require_once realpath(dirname(__FILE__) . '/../../init.php');
+  
   // Connect to database...
   if(Angie::getConfig('test_db.connect')) {
     Angie_DB::setConnection(new Angie_DB_MySQL_Connection(array(

@@ -18,42 +18,42 @@
     function setUp() {
       include $this->test_dir . 'test_description.php';
       
-      if(!class_exists('BaseUser')) require $this->test_dir . 'output/users/base/BaseUser.class.php';
-      if(!class_exists('BaseUsers')) require $this->test_dir . 'output/users/base/BaseUsers.class.php';
-      if(!class_exists('User')) require $this->test_dir . 'output/users/User.class.php';
-      if(!class_exists('Users')) require $this->test_dir . 'output/users/Users.class.php';
+      require_once $this->test_dir . 'output/users/base/BaseUser.class.php';
+      require_once $this->test_dir . 'output/users/base/BaseUsers.class.php';
+      require_once $this->test_dir . 'output/users/User.class.php';
+      require_once $this->test_dir . 'output/users/Users.class.php';
       
-      if(!class_exists('BaseCompany')) require $this->test_dir . 'output/companies/base/BaseCompany.class.php';
-      if(!class_exists('BaseCompanies')) require $this->test_dir . 'output/companies/base/BaseCompanies.class.php';
-      if(!class_exists('Company')) require $this->test_dir . 'output/companies/Company.class.php';
-      if(!class_exists('Companies')) require $this->test_dir . 'output/companies/Companies.class.php';
+      require_once $this->test_dir . 'output/companies/base/BaseCompany.class.php';
+      require_once $this->test_dir . 'output/companies/base/BaseCompanies.class.php';
+      require_once $this->test_dir . 'output/companies/Company.class.php';
+      require_once $this->test_dir . 'output/companies/Companies.class.php';
       
-      if(!class_exists('BasePackage')) require $this->test_dir . 'output/packages/base/BasePackage.class.php';
-      if(!class_exists('BasePackages')) require $this->test_dir . 'output/packages/base/BasePackages.class.php';
-      if(!class_exists('Package')) require $this->test_dir . 'output/packages/Package.class.php';
-      if(!class_exists('Packages')) require $this->test_dir . 'output/packages/Packages.class.php';
+      require_once $this->test_dir . 'output/packages/base/BasePackage.class.php';
+      require_once $this->test_dir . 'output/packages/base/BasePackages.class.php';
+      require_once $this->test_dir . 'output/packages/Package.class.php';
+      require_once $this->test_dir . 'output/packages/Packages.class.php';
       
-      Angie_DB::execute("DROP TABLE IF EXISTS `generator_users`");
-      Angie_DB::execute("DROP TABLE IF EXISTS `generator_companies`");
-      Angie_DB::execute("DROP TABLE IF EXISTS `generator_packages`");
-      Angie_DB::execute("DROP TABLE IF EXISTS `generator_tags`");
-      Angie_DB::execute("DROP TABLE IF EXISTS `generator_companies_tags`");
+      Angie_DB::execute("DROP TABLE IF EXISTS `ac_users`");
+      Angie_DB::execute("DROP TABLE IF EXISTS `ac_companies`");
+      Angie_DB::execute("DROP TABLE IF EXISTS `ac_packages`");
+      Angie_DB::execute("DROP TABLE IF EXISTS `ac_tags`");
+      Angie_DB::execute("DROP TABLE IF EXISTS `ac_companies_tags`");
       
-      Angie_DB::execute("CREATE TABLE `generator_companies` (
+      Angie_DB::execute("CREATE TABLE `ac_companies` (
         `id` smallint(5) unsigned NOT NULL auto_increment,
         `name` varchar(100) NOT NULL default '',
         `created_by_id` smallint(5) unsigned NOT NULL default '0',
         PRIMARY KEY  (`id`)
       ) ENGINE=MEMORY;");
       
-      Angie_DB::execute("CREATE TABLE `generator_packages` (
+      Angie_DB::execute("CREATE TABLE `ac_packages` (
         `id` smallint(5) unsigned NOT NULL auto_increment,
         `name` varchar(100) NOT NULL default '',
         `company_id` smallint(5) unsigned NOT NULL default '0',
         PRIMARY KEY  (`id`)
       ) ENGINE=MEMORY;");
 
-      Angie_DB::execute("CREATE TABLE `generator_users` (
+      Angie_DB::execute("CREATE TABLE `ac_users` (
         `id` smallint(5) unsigned NOT NULL auto_increment,
         `company_id` smallint(5) unsigned NOT NULL default '0',
         `username` varchar(50) NOT NULL default '',
@@ -66,13 +66,13 @@
         PRIMARY KEY  (`id`)
       ) ENGINE=MEMORY");
       
-      Angie_DB::execute("CREATE TABLE `generator_tags` (
+      Angie_DB::execute("CREATE TABLE `ac_tags` (
         `id` smallint(5) unsigned NOT NULL auto_increment,
         `name` varchar(100) NOT NULL default '',
         PRIMARY KEY  (`id`)
       ) ENGINE=MEMORY;");
       
-      Angie_DB::execute("CREATE TABLE `generator_companies_tags` (
+      Angie_DB::execute("CREATE TABLE `ac_companies_tags` (
         `company_id` smallint(5)  NOT NULL,
         `tag_id` smallint(5) unsigned NOT NULL,
         PRIMARY KEY (`company_id`, `tag_id`)
@@ -87,8 +87,8 @@
       delete_dir(dirname(__FILE__) . '/dba_generator/output/tags');
       
       Angie_DBA_Generator::cleanUp();
-      Angie_DB::execute("DROP TABLE `generator_users`");
-      Angie_DB::execute("DROP TABLE `generator_companies`");
+      Angie_DB::execute("DROP TABLE `ac_users`");
+      Angie_DB::execute("DROP TABLE `ac_companies`");
     } // tearDown
     
     function testProtections() {

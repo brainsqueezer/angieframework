@@ -57,7 +57,7 @@
     * @return string
     */
     function defineDescription() {
-      return 'Use model description from /dev/model.php and rebuild model classes';
+      return 'Use model description rebuild model classes';
     } // defineDescription
   
   } // Angie_Command_BuildModel

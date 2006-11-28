@@ -164,7 +164,15 @@
     * @param string $table_name
     * @return array
     */
-    function listFilds($table_name);
+    function listFields($table_name);
+    
+    /**
+    * Return array of fields from the database with their details
+    *
+    * @param string $table_name
+    * @return array
+    */
+    function describeFields($table_name);
     
     /**
     * Drop a specific table from database

@@ -110,14 +110,17 @@
     */
     function __construct($name, $properties = null) {
       $this->setName($name);
-      if(is_array($properties)) {
-        foreach($properties as $property_name => $property_value) {
-          $setter = 'set' . Angie_Inflector::camelize($property_name);
-          if(method_exists($this, $setter)) {
-            $this->$setter($property_value);
-          } // if
-        } // foreach
+      if($properties) {
+        populate_through_setter($this, $properties);
       } // if
+//      if(is_array($properties)) {
+//        foreach($properties as $property_name => $property_value) {
+//          $setter = 'set' . Angie_Inflector::camelize($property_name);
+//          if(method_exists($this, $setter)) {
+//            $this->$setter($property_value);
+//          } // if
+//        } // foreach
+//      } // if
     } // __construct
     
     // ---------------------------------------------------

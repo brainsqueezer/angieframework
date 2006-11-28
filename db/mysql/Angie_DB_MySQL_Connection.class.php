@@ -50,7 +50,14 @@
     /**
     * Construct connection
     * 
-    * If $params value is present (not NULL) constructor will also try to connect to database
+    * If $params value is present (not NULL) constructor will also try to 
+    * connect to database. Supported parameters:
+    *
+    * - hostname - name of database host, usually localhost
+    * - username - connection username
+    * - password - connection password
+    * - name     - name of the database we'd like to use
+    * - persist  - open a persistant connection 
     *
     * @param array $params
     * @return Angie_DB_MySQL_Connection
@@ -64,14 +71,14 @@
     /**
     * Connect to the database
     * 
-    * This function will use input $params and try to connect to the database. Params are array and can be interpreted 
-    * differently by different connection implementations. Common set of params:
+    * This function will use input $params and try to connect to the database. 
+    * Supported parameters
     * 
     * - hostname - name of database host, usually localhost
     * - username - connection username
     * - password - connection password
-    * - name - name of the database we'd like to use
-    * - persist - open a persistant connection
+    * - name     - name of the database we'd like to use
+    * - persist  - open a persistant connection
     *
     * @param array $params
     * @return null
@@ -335,7 +342,7 @@
     * @param string $table_name
     * @return array
     */
-    function listFilds($table_name) {
+    function listFields($table_name) {
       $fields = array();
       
       $rows = $this->executeAll('SHOW FIELDS FROM ' . $this->escapeTableName($table_name));
@@ -349,7 +356,30 @@
       } // if
       
       return $fields;
-    } // listFilds
+    } // listFields
+    
+    /**
+    * Return list of table fields with their description
+    *
+    * @param string $table_name
+    * @return string
+    */
+    function describeFields($table_name) {
+      $fields = array();
+      
+      $rows = $this->executeAll('SHOW FIELDS FROM ' . $this->escapeTableName($table_name));
+      if(is_foreachable($rows)) {
+        foreach($rows as $row) {
+          var_dump($row);
+          $field_name = array_var($row, 'Field');
+          if($field_name) {
+            $fields[] = $field_name;
+          } // if
+        } // foreach
+      } // if
+      
+      return $fields;
+    } // describeFields
     
     /**
     * Drop a specific table from database

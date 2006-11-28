@@ -135,7 +135,7 @@
     * @return string
     */
     function defineDescription() {
-      return 'Create a specific controller and related files and folder in a specified application';
+      return 'Create a controller and related files and folder';
     } // defineDescription
   
   } // Angie_Command_Controller

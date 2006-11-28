@@ -1,6 +1,8 @@
 <?php
 
   /**
+  * Build tables command
+  * 
   * Handler that is used for building model classes based on model description
   *
   * @package Angie.project
@@ -101,7 +103,7 @@
     * @return string
     */
     function defineDescription() {
-      return 'Use model description from /dev/model.php and rebuild database tables';
+      return 'Use model description and rebuild database tables';
     } // defineDescription
   
   } // Angie_Command_BuildModel
