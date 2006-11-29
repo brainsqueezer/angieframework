@@ -11,7 +11,7 @@
   * @subpackage fields
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  class Angie_DB_Field_Integer {
+  class Angie_DB_Field_Integer extends Angie_DB_Field {
   
     /**
     * Unsigned flag

@@ -3,8 +3,8 @@
   /**
   * Generator table description
   * 
-  * Class used to describe a table. Based on this description connection will be able to produce a valid create or alter 
-  * statement.
+  * Class used to describe a table. Based on this description connection will be 
+  * able to produce a valid create or alter statement.
   *
   * @package Angie.DBA
   * @subpackage generator
@@ -20,7 +20,7 @@
     private $name;
     
     /**
-    * Array of table fields (Angie_DBA_Generator_Field objects)
+    * Array of table fields (Angie_DB_Field objects)
     *
     * @var array
     */
@@ -87,10 +87,10 @@
     /**
     * Add a single field to the table
     *
-    * @param Angie_DBA_Generator_Field $field
-    * @return Angie_DBA_Generator_Field
+    * @param Angie_DB_Field $field
+    * @return Angie_DB_Field
     */
-    function addField(Angie_DBA_Generator_Field $field) {
+    function addField(Angie_DB_Field $field) {
       $this->fields[$field->getName()] = $field;
       return $field;
     } // addField
@@ -105,10 +105,10 @@
       $this->fields = array();
       if(is_foreachable($fields)) {
         foreach($fields as $field) {
-          if($field instanceof Angie_DBA_Generator_Field) {
+          if($field instanceof Angie_DB_Field) {
             $this->addField($field);
           } else {
-            throw new Angie_Core_Error_InvalidParamValue('fields', $fields, '$fields should be an array of Angie_DBA_Generator_Field objects');
+            throw new Angie_Core_Error_InvalidParamValue('fields', $fields, '$fields should be an array of Angie_DB_Field objects');
           } // if
         } // foreach
       } // if

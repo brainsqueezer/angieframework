@@ -10,91 +10,19 @@
   * @subpackage generator.attributes
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  class Angie_DBA_Generator_Attribute_Id extends Angie_DBA_Generator_Attribute {
-    
-    /**
-    * Size of the field
-    *
-    * @var string
-    */
-    private $size = null;
-    
-    /**
-    * Is this ID auto increment
-    *
-    * @var integer
-    */
-    private $is_auto_increment = null;
+  class Angie_DBA_Generator_Attribute_Id extends Angie_DBA_Generator_Attribute_Integer {
   
     /**
     * Constructor
     *
     * @param Angie_DBA_Generator_Entity $owner_entity
     * @param string $name
-    * @param integer $size
-    * @param boolean $is_auto_increment
+    * @param boolean $auto_increment
     * @return Angie_DBA_Generator_Attribute_Id
     */
-    function __construct(Angie_DBA_Generator_Entity $owner_entity, $name, $size = null, $is_auto_increment = false) {
-      $this->setSize($size);
-      $this->setIsAutoIncrement($is_auto_increment);
-      
-      parent::__construct($owner_entity, $name);
+    function __construct(Angie_DBA_Generator_Entity $owner_entity, $name, $auto_increment = true) {
+      parent::__construct($owner_entity, $name, null, true, true, $auto_increment);
     } // __construct
-    
-    /**
-    * Return field that describes this attribute
-    *
-    * @param void
-    * @return Angie_DBA_Generator_Field_Integer
-    */
-    function getFields() {
-      return new Angie_DBA_Generator_Field_Integer($this->getName(), true, $this->getIsAutoIncrement(), $this->getSize());
-    } // getFields
-    
-    // ---------------------------------------------------
-    //  Getters and setters
-    // ---------------------------------------------------
-    
-    /**
-    * Get size
-    *
-    * @param null
-    * @return string
-    */
-    function getSize() {
-      return $this->size;
-    } // getSize
-    
-    /**
-    * Set size value
-    *
-    * @param string $value
-    * @return null
-    */
-    function setSize($value) {
-      $this->size = $value;
-    } // setSize
-    
-    /**
-    * Get is_auto_increment
-    *
-    * @param null
-    * @return boolean
-    */
-    function getIsAutoIncrement() {
-      return $this->is_auto_increment;
-    } // getIsAutoIncrement
-    
-    /**
-    * Set is_auto_increment value
-    *
-    * @param boolean $value
-    * @return null
-    */
-    function setIsAutoIncrement($value) {
-      $this->is_auto_increment = $value;
-    } // setIsAutoIncrement
   
   } // Angie_DBA_Generator_Attribute_Id
 

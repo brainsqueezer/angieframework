@@ -92,20 +92,6 @@
     private $primary_key = array();
     
     /**
-    * Array of all entity fields populated as we add new blocks to the entity
-    *
-    * @var array
-    */
-    private $fields = null;
-    
-    /**
-    * Array of building blocks
-    *
-    * @var array
-    */
-    private $blocks = array();
-    
-    /**
     * Array of entity attributes
     *
     * @var array
@@ -333,27 +319,39 @@
     * @param boolean $is_auto_increment
     * @return Angie_DBA_Generator_IdAttribute
     */
-    function addIdAttribute($name, $size = Angie_DBA_Generator::SIZE_NORMAL, $is_auto_increment = true) {
-      $attribute = new Angie_DBA_Generator_Attribute_Id($this, $name, $size, $is_auto_increment);
-      $this->attributes[] = $attribute;
+    function addIdAttribute($name, $auto_increment = true) {
+      $attribute = new Angie_DBA_Generator_Attribute_Id($this, $name, $auto_increment);
+      
+      $this->addAttribute($attribute);
       
       $this->addToPrimaryKey($attribute->getFields());
       return $attribute;
     } // addIdAttribute
     
     /**
+    * Add foreign key attribute to this entity
+    *
+    * @param string $name
+    * @param mixed $default_value
+    * @return Angie_DBA_Generator_Attribute_ForeignKey
+    */
+    function addFkAttribute($name, $default_value = null) {
+      $attribute = new Angie_DBA_Generator_Attribute_ForeignKey($this, $name, $default_value);
+      return $this->addAttribute($attribute);
+    } // addFkAttribute
+    
+    /**
     * Add integer attribute to this entity
     *
     * @param string $name
-    * @param string $size
-    * @param integer $lenght
-    * @param boolean $is_unsigned
+    * @param mixed $default_value
+    * @param boolean $required
+    * @param boolean $unsigned
     * @return Angie_DBA_Generator_IntegerAttribute
     */
-    function addIntAttribute($name, $size = Angie_DBA_Generator::SIZE_NORMAL, $lenght = null, $is_unsigned = false) {
-      $attribute = new Angie_DBA_Generator_Attribute_Integer($this, $name, $size, $lenght, $is_unsigned, false);
-      $this->attributes[] = $attribute;
-      return $attribute;
+    function addIntAttribute($name, $unsigned = false, $default_value = null, $required = false) {
+      $attribute = new Angie_DBA_Generator_Attribute_Integer($this, $name, $default_value, $required, $unsigned, false);
+      return $this->addAttribute($attribute);
     } // addIntAttribute
     
     /**
@@ -361,37 +359,39 @@
     *
     * @param string $name
     * @param integer $lenght
+    * @param mixed $default_value
+    * @param boolean $required
     * @return Angie_DBA_Generator_StringAttribute
     */
-    function addStringAttribute($name, $lenght) {
-      $attribute = new Angie_DBA_Generator_Attribute_String($this, $name, $lenght);
-      $this->attributes[] = $attribute;
-      return $attribute;
+    function addStringAttribute($name, $lenght, $default_value = null, $required = false) {
+      $attribute = new Angie_DBA_Generator_Attribute_String($this, $name, $default_value, $required, $lenght);
+      return $this->addAttribute($attribute);
     } // addStringAttribute
     
     /**
     * Add text (multiline, long string) to this entity
     *
     * @param string $name
-    * @param string $size
+    * @param mixed $default_value
+    * @param boolean $required
     * @return Angie_DBA_Generator_TextAttribute
     */
-    function addTextAttribute($name, $size = Angie_DBA_Generator::SIZE_NORMAL) {
-      $attribute = new Angie_DBA_Generator_Attribute_Text($this, $name, $size);
-      $this->attributes[] = $attribute;
-      return $attribute;
+    function addTextAttribute($name, $default_value = null, $required = false) {
+      $attribute = new Angie_DBA_Generator_Attribute_Text($this, $name, $default_value, $required);
+      return $this->addAttribute($attribute);
     } // addTextAttribute
     
     /**
     * Add date time attribute to this entity
     *
     * @param string $name
+    * @param mixed $default_value
+    * @param boolean $required
     * @return Angie_DBA_Generator_DateTimeAttribute
     */
-    function addDateTimeAttribute($name) {
-      $attribute = new Angie_DBA_Generator_Attribute_DateTime($this, $name);
-      $this->attributes[] = $attribute;
-      return $attribute;
+    function addDateTimeAttribute($name, $default_value = null, $required = false) {
+      $attribute = new Angie_DBA_Generator_Attribute_DateTime($this, $name, $default_value, $required);
+      return $this->addAttribute($attribute);
     } // addDateTimeAttribute
     
     /**
@@ -401,14 +401,14 @@
     * values and default value is default value use if no value is provided
     *
     * @param string $name
-    * @param array $valid_values
+    * @param array $possible_values
     * @param string $default_value
+    * @param boolean $required
     * @return Angie_DBA_Generator_Attribute_Enum
     */
-    function addEnumAttribute($name, $valid_values, $default_value) {
-      $attribute = new Angie_DBA_Generator_Attribute_Enum($this, $name, $valid_values, $default_value);
-      $this->attributes[] = $attribute;
-      return $attribute;
+    function addEnumAttribute($name, $possible_values, $default_value = null, $required = false) {
+      $attribute = new Angie_DBA_Generator_Attribute_Enum($this, $name, $default_value , $required, $possible_values);
+      return $this->addAttribute($attribute);
     } // addEnumAttribute
     
     // ---------------------------------------------------
@@ -712,7 +712,7 @@
       $fields = $this->getFields();
       if(is_foreachable($fields)) {
         foreach($fields as $field) {
-          if($field instanceof Angie_DBA_Generator_Field_Integer && $field->getIsAutoIncrement()) {
+          if($field instanceof Angie_DB_Field && $field->getAutoIncrement()) {
             return $field->getName();
           } // if
         } // foreah
@@ -776,7 +776,7 @@
             } // foreach
             
           // Single field instance
-          } elseif($argument instanceof Angie_DBA_Generator_Field) {
+          } elseif($argument instanceof Angie_DB_Field) {
             if($this->fieldExists($argument->getName())) {
               $this->primary_key[$argument->getName()] = $argument;
             } // if 
@@ -784,7 +784,7 @@
           // Single field name
           } elseif(is_string($argument)) {
             $field = $this->getField($argument);
-            if($field instanceof Angie_DBA_Generator_Field) {
+            if($field instanceof Angie_DB_Field) {
               $this->primary_key[$field->getName()] = $field;
             } // if
           } // if
@@ -1018,7 +1018,17 @@
     * @return array
     */
     function getBlocks() {
-      return $this->blocks;
+      $result = array();
+      
+      if(is_array($this->getAttributes())) {
+        $result = array_merge($result, $this->getAttributes());
+      } // if
+      
+      if(is_array($this->getRelationships())) {
+        $result = array_merge($result, $this->getRelationships());
+      } // if
+      
+      return $result;
     } // getBlocks
     
     /**
@@ -1031,33 +1041,31 @@
     * @return array
     */
     function getFields() {
-      return $this->fields;
+      $fields = array();
+      if(is_foreachable($this->getAttributes())) {
+        foreach($this->getAttributes() as $attribute) {
+          $attribute_fields = $attribute->getFields();
+          if(is_array($attribute_fields)) {
+            foreach($attribute_fields as $attribute_field) {
+              $fields[$attribute_field->getName()] = $attribute_field;
+            } // if
+          } elseif($attribute_fields instanceof Angie_DB_Field) {
+            $fields[$attribute_fields->getName()] = $attribute_fields;
+          } // if
+        } // foreach
+      } // if
+      return $fields;
     } // getFields
     
     /**
     * Return entity field by name
     *
     * @param void
-    * @return Angie_DBA_Generator_Field
+    * @return Angie_DB_Field
     */
     function getField($name) {
-      return array_var($this->fields, $name);
+      return array_var($this->getFields(), $name);
     } // getField
-    
-    /**
-    * Add field to the fields list
-    * 
-    * $provider is just for the reference and easier debugin. When we add a block to this field we must say from where 
-    * it is added (I spent 2 hours hunting a bug because I didn't know what relation and why added specifi field to one 
-    * entity).
-    *
-    * @param Angie_DBA_Generator_Field $field
-    * @return Angie_DBA_Generator_Field
-    */
-    function addField(Angie_DBA_Generator_Field $field, Angie_DBA_Generator_Block $provider) {
-      $this->fields[$field->getName()] = $field;
-      return $field;
-    } // addField
     
     /**
     * This function will return true if field $field_name exists in this entity
@@ -1066,8 +1074,19 @@
     * @return boolean
     */
     function fieldExists($field_name) {
-      return is_array($this->fields) && isset($this->fields[$field_name]);
+      return $this->getField($field_name) instanceof Angie_DB_Field;
     } // fieldExists
+    
+    /**
+    * Add a single attribute to the list of attributes
+    *
+    * @param Angie_DBA_Generator_Attribute $attribute
+    * @return Angie_DBA_Generator_Attribute
+    */
+    function addAttribute(Angie_DBA_Generator_Attribute $attribute) {
+      $this->attributes[$attribute->getName()] = $attribute;
+      return $attribute;
+    } // addAttribute
     
     /**
     * Return all entity attributes
@@ -1106,9 +1125,7 @@
     * @return Angie_DBA_Generator_Relationship
     */
     function addRelationship(Angie_DBA_Generator_Relationship $relationship) {
-      $this->blocks[] = $relationship;
       $this->relations[] = $relationship;
-      
       return $relationship;
     } // addRelationship
     
@@ -1136,7 +1153,7 @@
         if(is_foreachable($this->auto_setters)) {
           foreach($this->auto_setters as $auto_setter) {
             if($auto_setter->getCallOn() == $filter) {
-              if($only_valid && !($auto_setter->getField() instanceof Angie_DBA_Generator_Field)) {
+              if($only_valid && !($auto_setter->getAttribute() instanceof Angie_DBA_Generator_Attribute)) {
                 continue;
               } // if
               $result[] = $auto_setter;
@@ -1150,23 +1167,24 @@
     /**
     * Add auto-setter to this entity
     *
-    * @param string $field
+    * @param string $attribute
     * @param string $callback
     * @param string $call_on
     * @param boolean $pass_caller
     * @return Angie_DBA_Generator_AutoSetter
     */
-    function addAutoSetter($field, $callback, $call_on = Angie_DBA_Generator::ON_SAVE, $pass_caller = false) {
-      if($field instanceof Angie_DBA_Generator_Field) {
-        $field_name = $field->getName();
+    function addAutoSetter($attribute, $callback, $call_on = Angie_DBA_Generator::ON_SAVE, $pass_caller = false) {
+      if($attribute instanceof Angie_DBA_Generator_Attribute) {
+        $attribute_name = $attribute->getName();
       } else {
-        $field_name = $field;
+        $attribute_name = $attribute;
       } // if
       
-      $setter = new Angie_DBA_Generator_AutoSetter($field, $callback, $call_on, $pass_caller);
+      $setter = new Angie_DBA_Generator_AutoSetter($attribute_name, $callback, $call_on, $pass_caller);
       $setter->setEntity($this);
       
-      $this->auto_setters[$field_name] = $setter;
+      $this->auto_setters[$attribute_name] = $setter;
+      //var_dump($setter->getFieldName());
       
       return $setter;
     } // addAutoSetter

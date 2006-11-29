@@ -137,12 +137,15 @@
           if(is_foreachable($relationships)) {
             foreach($relationships as $relationship) {
               if(($relationship instanceof Angie_DBA_Generator_Relationship_HasAndBelongsToMany) && !isset($tables[$relationship->getJoinTable()])) {
+                $owner_key_field = new Angie_DB_Field_Integer($relationship->getOwnerKey(), null, true);
+                $owner_key_field->setUnsigned(true);
+                
+                $target_key_field = new Angie_DB_Field_Integer($relationship->getTargetKey(), null, true);
+                $target_key_field->setUnsigned(true);
+                
                 $tables[$relationship->getJoinTable()] = new Angie_DBA_Generator_Table(
                   $relationship->getJoinTable(), 
-                  array(
-                    new Angie_DBA_Generator_Field_Integer($relationship->getOwnerKey(), true),
-                    new Angie_DBA_Generator_Field_Integer($relationship->getTargetKey(), true),
-                  ), 
+                  array($owner_key_field, $target_key_field), 
                   array($relationship->getOwnerKey(), $relationship->getTargetKey())
                 ); // Angie_DBA_Generator
               } // if

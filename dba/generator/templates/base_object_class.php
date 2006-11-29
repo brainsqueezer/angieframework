@@ -75,22 +75,20 @@
   	  switch($field_name) {
 <?php foreach($entity->getFields() as $field) { ?>
         case '<?= $field->getName() ?>':
-<?php if($field->getCastFunction()) { ?>
-          $to_set = <?= $field->getCastFunction() ?>($value<?= $field->renderCastFunctionArguments() ?>);
+<?php if($field instanceof Angie_DB_Field_Integer) { ?>
+          $to_set = (integer) $value;
+<?php } elseif($field instanceof Angie_DB_Field_DateTime) { ?>
+          $to_set = datetimeval($value);
+<?php } elseif($field instanceof Angie_DB_Field_Enum) { ?>
+          $to_set = enumval($value, <?= var_export($field->getPossibleValues()) ?>, <?= var_export($field->getDefaultValue()) ?>);
 <?php } else { ?>
-          $to_set = $value;
+          $to_set = (string) $value;
 <?php } // if ?>
           break;
 <?php } // foreach ?>
   	  } // switch
   	  return parent::setFieldValue($field_name, $to_set);
   	} // setValue
-  
-<?php if(is_foreachable($entity->getFields())) { ?>
-<?php foreach($entity->getFields() as $field) { ?>
-<?php $field->renderObjectMembers() ?>
-<?php } // foreach ?>
-<?php } // if ?>
   
 <?php if(is_foreachable($entity->getBlocks())) { ?>
 <?php foreach($entity->getBlocks() as $block) { ?>
@@ -108,7 +106,7 @@
   	*/
     function save() {
 <?php
-  $setters_on_save = $entity->getAutoSetters(Angie_DBA_Generator::ON_SAVE, true);
+  $setters_on_save   = $entity->getAutoSetters(Angie_DBA_Generator::ON_SAVE, true);
   $setters_on_insert = $entity->getAutoSetters(Angie_DBA_Generator::ON_INSERT, true);
   $setters_on_update = $entity->getAutoSetters(Angie_DBA_Generator::ON_UPDATE, true);
 ?>

@@ -10,15 +10,22 @@
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
   class Angie_DBA_Generator_Attribute_DateTime extends Angie_DBA_Generator_Attribute {
+    
+    /**
+    * Native (PHP) type. This value is used in generated docs for accessors
+    *
+    * @var string
+    */
+    protected $native_type = 'Angie_DateTime';
   
     /**
     * Return fields that describe this attribute
     *
     * @param void
-    * @return Angie_DBA_Generator_Attribute_DateTime
+    * @return Angie_DB_Field_DateTime
     */
     function getFields() {
-      return new Angie_DBA_Generator_Field_DateTime($this->getName());
+      return new Angie_DB_Field_DateTime($this->getName(), $this->getDefaultValue(), $this->getRequired());
     } // getFields
   
   } // Angie_DBA_Generator_Attribute_DateTime

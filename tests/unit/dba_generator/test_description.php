@@ -6,7 +6,7 @@
   
   $user = Angie_DBA_Generator::addEntity('user');
   
-  $user->addIdAttribute('id', Angie_DBA_Generator::SIZE_TINY, true, true);
+  $user->addIdAttribute('id');
   $user->addStringAttribute('username', 50);
   $user->addStringAttribute('email', 150);
   $user->addStringAttribute('display_name', 150);
@@ -25,7 +25,7 @@
   // ---------------------------------------------------
   
   $company = Angie_DBA_Generator::addEntity('company');
-  $company->addIdAttribute('id', Angie_DBA_Generator::SIZE_TINY, true, true);
+  $company->addIdAttribute('id');
   $company->addStringAttribute('name', 50);
   
   // ---------------------------------------------------
@@ -33,7 +33,7 @@
   // ---------------------------------------------------
   
   $package = Angie_DBA_Generator::addEntity('package');
-  $package->addIdAttribute('id', Angie_DBA_Generator::SIZE_TINY , true, true);
+  $package->addIdAttribute('id');
   $package->addStringAttribute('name', 50);
   
   // ---------------------------------------------------
@@ -41,7 +41,7 @@
   // ---------------------------------------------------
   
   $tag = Angie_DBA_Generator::addEntity('tag');
-  $tag->addIdAttribute('id', null, true, true);
+  $tag->addIdAttribute('id');
   $tag->addStringAttribute('name', 50);
   
   // ---------------------------------------------------

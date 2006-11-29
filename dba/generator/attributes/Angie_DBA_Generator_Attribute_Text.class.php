@@ -12,58 +12,21 @@
   class Angie_DBA_Generator_Attribute_Text extends Angie_DBA_Generator_Attribute {
     
     /**
-    * Field size - tiny, small, medium, normal, big
+    * Native (PHP) type. This value is used in generated docs for accessors
     *
     * @var string
     */
-    private $size;
-  
-    /**
-    * Constructor
-    *
-    * @param Angie_DBA_Generator_Entity $entity
-    * @param string $name
-    * @param string $size
-    * @return Angie_DBA_Generator_Attribute_Text
-    */
-    function __construct(Angie_DBA_Generator_Entity $entity, $name, $size = null) {
-      $this->setSize($size);
-      parent::__construct($entity, $name);
-    } // __construct
+    protected $native_type = 'string';
     
     /**
     * Return fields that are used for storing this attribute
     *
     * @param void
-    * @return Angie_DBA_Generator_TextField
+    * @return Angie_DB_Field_Text
     */
     function getFields() {
-      return new Angie_DBA_Generator_Field_Text($this->getName(), $this->getSize());
+      return new Angie_DB_Field_Text($this->getName(), $this->getDefaultValue(), $this->getRequired());
     } // getFields
-    
-    // ---------------------------------------------------
-    //  Getters and setters
-    // ---------------------------------------------------
-    
-    /**
-    * Get size
-    *
-    * @param null
-    * @return string
-    */
-    function getSize() {
-      return $this->size;
-    } // getSize
-    
-    /**
-    * Set size value
-    *
-    * @param string $value
-    * @return null
-    */
-    function setSize($value) {
-      $this->size = $value;
-    } // setSize
   
   } // Angie_DBA_Generator_Attribute_Text
 

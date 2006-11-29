@@ -10,18 +10,18 @@
     private $entity;
     
     /**
-    * Field that is set by this auto setter
+    * Owner attribute
     *
-    * @var Angie_DBA_Generator_Field
+    * @var Angie_DBA_Generator_Attribute
     */
-    private $field;
+    private $attribute;
     
     /**
-    * Name of the field that will be set by this auto setter
+    * Name of the owner attribute that will be set by this auto setter
     *
     * @var string
     */
-    private $field_name;
+    private $attribute_name;
     
     /**
     * Name of the callback function
@@ -53,16 +53,41 @@
     * @param boolean $pass_caller
     * @return Angie_DBA_Generator_AutoSetter
     */
-    function __construct($field, $callback, $call_on, $pass_caller = false) {
-      if($field instanceof Angie_DBA_Generator_Field) {
-        $this->setField($field);
+    function __construct($attribute, $callback, $call_on, $pass_caller = false) {
+      if($attribute instanceof Angie_DBA_Generator_Attribute) {
+        $this->setAttribute($attribute);
       } else {
-        $this->setFieldName($field);
+        $this->setAttributeName($attribute);
       } // if
       $this->setCallback($callback);
       $this->setCallOn($call_on);
       $this->setPassCaller($pass_caller);
     } // __construct
+    
+    // ---------------------------------------------------
+    //  Util methods
+    // ---------------------------------------------------
+    
+    /**
+    * Return name of the field
+    *
+    * @param void
+    * @return string
+    */
+    function getFieldName() {
+      $attribute = $this->getAttribute();
+      
+      $fields = $attribute->getFields();
+      if(is_array($fields)) {
+        foreach($fields as $field) {
+          return $field->getName();
+        } // if
+      } elseif($fields instanceof Angie_DB_Field) {
+        return $fields->getName();
+      } // if
+      
+      return '';
+    } // getFieldName
     
     // ---------------------------------------------------
     //  Getters and setters
@@ -89,53 +114,54 @@
     } // setEntity
     
     /**
-    * Get field
+    * Get attribute
     *
     * @param null
-    * @return Angie_DBA_Generator_Field
+    * @return Angie_DBA_Generator_Attribute
     */
-    function getField() {
-      if(is_null($this->field)) {
+    function getAttribute() {
+      if(!($this->attribute instanceof Angie_DBA_Generator_Attribute)) {
         $entity = $this->getEntity();
         if($entity instanceof Angie_DBA_Generator_Entity) {
-          $field = $entity->getField($this->getFieldName());
-          if($field instanceof Angie_DBA_Generator_Field) {
-            $this->field = $field;
+          $attribute = $entity->getAttribute($this->getAttributeName());
+          if($attribute instanceof Angie_DBA_Generator_Attribute) {
+            $this->attribute = $attribute;
           } // if
         } // if
       } // if
-      return $this->field;
-    } // getField
+      return $this->attribute;
+    } // getAttribute
     
     /**
-    * Set field value
+    * Set attribute value
     *
-    * @param Angie_DBA_Generator_Field $value
+    * @param Angie_DBA_Generator_Attribute $value
     * @return null
     */
-    function setField($value) {
-      $this->field = $value;
-    } // setField
+    function setAttribute(Angie_DBA_Generator_Attribute $value) {
+      $this->attribute = $value;
+      $this->attribute_name = $value->getName();
+    } // setAttribute
     
     /**
-    * Get field_name
+    * Get attribute_name
     *
     * @param null
     * @return string
     */
-    function getFieldName() {
-      return $this->field_name;
-    } // getFieldName
+    function getAttributeName() {
+      return $this->attribute_name;
+    } // getAttributeName
     
     /**
-    * Set field_name value
+    * Set attribute_name value
     *
     * @param string $value
     * @return null
     */
-    function setFieldName($value) {
-      $this->field_name = $value;
-    } // setFieldName
+    function setAttributeName($value) {
+      $this->attribute_name = $value;
+    } // setAttributeName
     
     /**
     * Get callback

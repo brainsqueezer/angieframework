@@ -29,6 +29,13 @@
     * @var boolean
     */
     private $requred = false;
+    
+    /**
+    * Native (PHP) type. This value is used in generated docs for accessors
+    *
+    * @var string
+    */
+    protected $native_type = 'mixed';
   
     /**
     * Constructor
@@ -45,15 +52,6 @@
       $this->setName($name);
       $this->setDefaultValue($default_value);
       $this->setRequired($required);
-      
-//      $fields = $this->getFields();
-//      if(is_array($fields)) {
-//        foreach($fields as $field) {
-//          $this->getOwnerEntity()->addField($field, $this);
-//        } // foreach
-//      } elseif($fields instanceof Angie_DBA_Generator_Field) {
-//        $this->getOwnerEntity()->addField($fields, $this);
-//      } // if
     } // __construct
     
     // ---------------------------------------------------
@@ -68,19 +66,16 @@
     */
     abstract function getFields();
     
-    // ---------------------------------------------------
-    //  Renderer
-    // ---------------------------------------------------
-    
     /**
     * Render object class properties and methods
     *
     * @param void
     * @return null
     */
-//    function renderObjectMembers() {
-//      return;
-//    } // renderObjectMembers
+    function renderObjectMembers() {
+      Angie_DBA_Generator::assignToView('attribute', $this);
+      Angie_DBA_Generator::displayView('attribute_object_members');
+    } // renderObjectMembers
     
     /**
     * Render manager class fields and methods
@@ -88,9 +83,33 @@
     * @param void
     * @return null
     */
-//    function renderManagerMembers() {
-//      return;
-//    } // renderManagerMembers
+    function renderManagerMembers() {
+      return;
+    } // renderManagerMembers
+    
+    // ---------------------------------------------------
+    //  Util methods
+    // ---------------------------------------------------
+    
+    /**
+    * Return getter name
+    *
+    * @param void
+    * @return string
+    */
+    function getGetterName() {
+      return 'get' . Angie_Inflector::camelize($this->getName());
+    } // getGetterName
+    
+    /**
+    * Return setter name
+    *
+    * @param void
+    * @return string
+    */
+    function getSetterName() {
+      return 'set' . Angie_Inflector::camelize($this->getName());
+    } // getSetterName
     
     // ---------------------------------------------------
     //  Getters and setters
@@ -155,6 +174,16 @@
     function setRequired($value) {
       $this->required = $value;
     } // setRequired
+    
+    /**
+    * Return name of the native type
+    *
+    * @param void
+    * @return string
+    */
+    function getNativeType() {
+      return $this->native_type;
+    } // getNativeType
   
   } // Angie_DBA_Generator_Attribute
 

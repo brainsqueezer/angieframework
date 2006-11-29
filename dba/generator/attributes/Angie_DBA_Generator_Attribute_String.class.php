@@ -12,6 +12,13 @@
   class Angie_DBA_Generator_Attribute_String extends Angie_DBA_Generator_Attribute {
     
     /**
+    * Native (PHP) type. This value is used in generated docs for accessors
+    *
+    * @var string
+    */
+    protected $native_type = 'string';
+    
+    /**
     * Field lenght
     *
     * @var integer
@@ -26,19 +33,22 @@
     * @param integer $lenght
     * @return Angie_DBA_Generator_Attribute_String
     */
-    function __construct(Angie_DBA_Generator_Entity $entity, $name, $lenght) {
+    function __construct(Angie_DBA_Generator_Entity $owner_entity, $name, $default_value = null, $required = false, $lenght = 100) {
+      parent::__construct($owner_entity, $name, $default_value, $required);
       $this->setLenght($lenght);
-      parent::__construct($entity, $name);
     } // __construct
     
     /**
     * Return fields that represent this attribute
     *
     * @param void
-    * @return Angie_DBA_Generator_Field
+    * @return Angie_DB_Field_String
     */
     function getFields() {
-      return new Angie_DBA_Generator_Field_String($this->getName(), $this->getLenght());
+      $string_field = new Angie_DB_Field_String($this->getName(), $this->getDefaultValue(), $this->getRequired());
+      $string_field->setLenght($this->getLenght());
+      
+      return $string_field;
     } // getFields
     
     // ---------------------------------------------------

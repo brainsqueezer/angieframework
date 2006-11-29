@@ -13,18 +13,18 @@
   class Angie_DBA_Generator_Attribute_Enum extends Angie_DBA_Generator_Attribute {
     
     /**
+    * Native (PHP) type. This value is used in generated docs for accessors
+    *
+    * @var string
+    */
+    protected $native_type = 'string';
+    
+    /**
     * Array of valid attribute values
     *
     * @var array
     */
-    private $valid_values = array();
-    
-    /**
-    * Default value
-    *
-    * @var string
-    */
-    private $default_value;
+    private $possible_values = array();
   
     /**
     * Constructor
@@ -35,21 +35,22 @@
     * @param string $default_value
     * @return Angie_DBA_Generator_Attribute_Enum
     */
-    function __construct(Angie_DBA_Generator_Entity $owner_entity, $name, $valid_values, $default_value) {
-      $this->setValidValues($valid_values);
-      $this->setDefaultValue($default_value);
-      
-      parent::__construct($owner_entity, $name);
+    function __construct(Angie_DBA_Generator_Entity $owner_entity, $name, $default_value = null, $required = false, $possible_values = null) {
+      parent::__construct($owner_entity, $name, $default_value, $required);
+      $this->setPossibleValues($possible_values);
     } // __construct
     
     /**
     * Return array of fields that describe this attribute
     *
     * @param void
-    * @return Angie_DBA_Generator_Field
+    * @return Angie_DB_Field_Enum
     */
     function getFields() {
-      return new Angie_DBA_Generator_Field_Enum($this->getName(), $this->getValidValues(), $this->getDefaultValue());
+      $enum_field = new Angie_DB_Field_Enum($this->getName(), $this->getDefaultValue(), $this->getRequired());
+      $enum_field->setPossibleValues($this->getPossibleValues());
+      
+      return $enum_field;
     } // getFields
     
     // ---------------------------------------------------
@@ -57,44 +58,28 @@
     // ---------------------------------------------------
     
     /**
-    * Get valid_values
+    * Get possible_values
     *
     * @param null
     * @return array
     */
-    function getValidValues() {
-      return $this->valid_values;
-    } // getValidValues
+    function getPossibleValues() {
+      return $this->possible_values;
+    } // getPossibleValues
     
     /**
-    * Set valid_values value
+    * Set possible_values value
     *
     * @param array $value
-    * @return array
-    */
-    function setValidValues($values) {
-      $this->valid_values = $values;
-    } // setValidValues
-    
-    /**
-    * Get default_value
-    *
-    * @param null
-    * @return string
-    */
-    function getDefaultValue() {
-      return $this->default_value;
-    } // getDefaultValue
-    
-    /**
-    * Set default_value value
-    *
-    * @param string $value
     * @return null
     */
-    function setDefaultValue($value) {
-      $this->default_value = $value;
-    } // setDefaultValue
+    function setPossibleValues($value) {
+      if(is_array($value)) {
+        $this->possible_values = $value;
+      } else {
+        $this->possible_values = array();
+      } // if
+    } // setPossibleValues
   
   } // Angie_DBA_Generator_Attribute_Enum
 

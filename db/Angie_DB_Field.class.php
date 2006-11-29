@@ -20,10 +20,12 @@
     
     /**
     * Primitive field type (varchar, integer, float, text...)
+    * 
+    * Protected field that needs to be overriden in subclasses
     *
     * @var string
     */
-    private $type = Angie_DBA_Generator::TYPE_VARCHAR;
+    protected  $type = Angie_DBA_Generator::TYPE_VARCHAR;
     
     /**
     * Default field value. If false it is ignored
@@ -42,14 +44,15 @@
     /**
     * Constructor
     *
-    * @param void
+    * @param sting $name
+    * @param mixed $default_value
+    * @param boolean $not_null
     * @return Angie_DB_Field
     */
-    function __construct($name, $properties = null) {
+    function __construct($name, $default_value = null, $not_null = false) {
       $this->setName($name);
-      if($properties) {
-        populate_through_setter($this, $properties);
-      } // if
+      $this->setDefaultValue($default_value);
+      $this->setNotNull($not_null);
     } // __construct
     
     // ---------------------------------------------------
@@ -85,36 +88,6 @@
     function getType() {
       return $this->type;
     } // getType
-    
-    /**
-    * Set type value
-    *
-    * @param string $value
-    * @return null
-    */
-    function setType($value) {
-      $this->type = $value;
-    } // setType
-    
-    /**
-    * Get size
-    *
-    * @param null
-    * @return string
-    */
-    function getSize() {
-      return $this->size;
-    } // getSize
-    
-    /**
-    * Set size value
-    *
-    * @param string $value
-    * @return null
-    */
-    function setSize($value) {
-      $this->size = $value;
-    } // setSize
     
     /**
     * Get default_value
