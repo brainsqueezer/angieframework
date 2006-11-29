@@ -1,19 +1,18 @@
 <?php
 
   /**
-  * Generator table description
+  * Database table description
   * 
-  * Class used to describe a table. Based on this description connection will be 
-  * able to produce a valid create or alter statement.
+  * This class is used to describe a construction of a given database table. It 
+  * supports definition of fields, primary key and naming of a table
   *
-  * @package Angie.DBA
-  * @subpackage generator
+  * @package Angie.DB
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  class Angie_DBA_Generator_Table {
+  class Angie_DB_Table {
     
     /**
-    * Table name
+    * Name of the table
     *
     * @var string
     */
@@ -38,7 +37,8 @@
     *
     * @param string $name
     * @param array $fields
-    * @return Angie_DBA_Generator_Table
+    * @param array $primary_key
+    * @return Angie_DB_Table
     */
     function __construct($name, $fields, $primary_key) {
       $this->setName($name);
@@ -133,7 +133,7 @@
     function setPrimaryKey($value) {
       $this->primary_key = $value;
     } // setPrimaryKey
-  
-  } // Angie_DBA_Generator_Table
+    
+  } // Angie_DB_Table
 
 ?>

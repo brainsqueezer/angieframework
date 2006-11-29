@@ -130,7 +130,11 @@
       $tables = array();
       if(is_foreachable(self::getEntities())) {
         foreach(self::getEntities() as $entity) {
-          $tables[$entity->getTableName()] = new Angie_DBA_Generator_Table($entity->getTableName(), $entity->getFields(), $entity->getPrimaryKeyFieldNames());
+          $tables[$entity->getTableName()] = new Angie_DB_Table(
+            $entity->getTableName(), 
+            $entity->getFields(), 
+            $entity->getPrimaryKeyFieldNames()
+          ); // new table
           
           // For has and belongs to many
           $relationships = $entity->getRelationships();
@@ -143,7 +147,7 @@
                 $target_key_field = new Angie_DB_Field_Integer($relationship->getTargetKey(), null, true);
                 $target_key_field->setUnsigned(true);
                 
-                $tables[$relationship->getJoinTable()] = new Angie_DBA_Generator_Table(
+                $tables[$relationship->getJoinTable()] = new Angie_DB_Table(
                   $relationship->getJoinTable(), 
                   array($owner_key_field, $target_key_field), 
                   array($relationship->getOwnerKey(), $relationship->getTargetKey())
