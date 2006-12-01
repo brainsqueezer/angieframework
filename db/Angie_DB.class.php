@@ -12,6 +12,17 @@
   */
   class Angie_DB {
     
+    const TYPE_INTEGER  = 'INT';
+    const TYPE_FLOAT    = 'FLOAT';
+    const TYPE_CHAR     = 'CHAR';
+    const TYPE_VARCHAR  = 'VARCHAR';
+    const TYPE_TEXT     = 'TEXT';
+    const TYPE_DATETIME = 'DATETIME';
+    const TYPE_DATE     = 'DATE';
+    const TYPE_TIME     = 'TIME';
+    const TYPE_BLOB     = 'BLOB';
+    const TYPE_ENUM     = 'ENUM';
+    
     /**
     * Default database connection
     *

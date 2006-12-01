@@ -122,7 +122,7 @@
         'users', 'companies', 'packages', 'tags', 'companies_tags',
       ); // array
       
-      $tables = Angie_DBA_Generator::getTables();
+      $tables = Angie_DBA_Generator::getTables(Angie_DB::getConnection());
       $this->assertTrue(is_array($tables) && (count($tables) == count($expected_tables)));
       foreach($tables as $table) {
         $this->assertTrue(in_array($table->getName(), $expected_tables));

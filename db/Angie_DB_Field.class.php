@@ -25,7 +25,7 @@
     *
     * @var string
     */
-    protected  $type = Angie_DBA_Generator::TYPE_VARCHAR;
+    protected  $type = Angie_DB::TYPE_VARCHAR;
     
     /**
     * Default field value. If false it is ignored
@@ -40,6 +40,13 @@
     * @var boolean
     */
     private $not_null = false;
+    
+    /**
+    * Table object, if this field belongs to a table
+    *
+    * @var Angie_DB_Table
+    */
+    private $table;
   
     /**
     * Constructor
@@ -128,6 +135,35 @@
     function setNotNull($value) {
       $this->not_null = $value;
     } // setNotNull
+    
+    /**
+    * Get table
+    *
+    * @param null
+    * @return Angie_DB_Table
+    */
+    function getTable() {
+      return $this->table;
+    } // getTable
+    
+    /**
+    * Set table value
+    * 
+    * Value can be instance of Angie_DB_Table class or null for reseting 
+    * relation. In case of invalid value exception will be thrown
+    *
+    * @param Angie_DB_Table $value
+    * @return Angie_DB_Table
+    * @throws Angie_Core_Error_InvalidParamValue
+    */
+    function setTable($value) {
+      if(is_null($value) || ($value instanceof Angie_DB_Table)) {
+        $this->table = $value;
+        return $value;
+      } else {
+        throw new Angie_Core_Error_InvalidParamValue('value', $value, '$value can be NULL or instance of Angie_DB_Table class');
+      } // if
+    } // setTable
   
   } // Angie_DB_Field
 

@@ -26,7 +26,11 @@
     function execute(Angie_Output $output) {
       Angie_DBA_Generator::cleanUp();
       
-      $valid_modes = array(self::MODE_SKIP, self::MODE_SYNC, self::MODE_REBUILD);
+      $valid_modes = array(
+        self::MODE_SKIP, 
+        self::MODE_SYNC, 
+        self::MODE_REBUILD
+      ); // array
       
       require DEVELOPMENT_PATH . '/model.php';
       
@@ -37,7 +41,10 @@
         return;
       } // if
       
-      $tables = Angie_DBA_Generator::getTables();
+      $connection = Angie_DB::getConnection();
+      $table_prefix = Angie::getConfig('db.table_prefix', '');
+      
+      $tables = Angie_DBA_Generator::getTables($connection, $table_prefix);
       if(!is_foreachable($tables)) {
         if(!$quiet) {
           $output->printMessage('There are no tables in the current model');
@@ -45,13 +52,10 @@
         return;
       } // if
       
-      $connection = Angie_DB::getConnection();
-      
-      $table_prefix = Angie::getConfig('db.table_prefix', '');
       $database_tables = $connection->listTables(); // load list of tables in the database...
       
       foreach($tables as $table) {
-        $prefixed_table_name = $table_prefix . $table->getName();
+        $prefixed_table_name = $table->getPrefixedName();
         if(in_array($prefixed_table_name, $database_tables)) {
           if($mode == self::MODE_SKIP) {
             if(!$quiet) {
@@ -67,13 +71,13 @@
             if(!$quiet) {
               $output->printMessage('Table "' . $table->getName() . '" exsist. Rebuilding.');
             } // if
+            $connection->dropTable($prefixed_table_name, true);
             $connection->buildTable($table, $table_prefix);
           } // if
         } else {
           if(!$quiet) {
             $output->printMessage('Building table "' . $table->getName() . '"');
           } // if
-          $connection->dropTable($prefixed_table_name, true);
           $connection->buildTable($table, $table_prefix);
         } // if
       } // foreach

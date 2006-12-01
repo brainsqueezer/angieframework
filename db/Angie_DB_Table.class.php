@@ -19,6 +19,13 @@
     private $name;
     
     /**
+    * Table name prefix
+    *
+    * @var string
+    */
+    private $prefix;
+    
+    /**
     * Array of table fields (Angie_DB_Field objects)
     *
     * @var array
@@ -51,6 +58,20 @@
     } // __construct
     
     // ---------------------------------------------------
+    //  Utils
+    // ---------------------------------------------------
+    
+    /**
+    * Generate prefixed name
+    *
+    * @param void
+    * @return string
+    */
+    function getPrefixedName() {
+      return trim($this->getPrefix()) . trim($this->getName());
+    } // getPrefixedName
+    
+    // ---------------------------------------------------
     //  Getters and setters
     // ---------------------------------------------------
     
@@ -75,6 +96,26 @@
     } // setName
     
     /**
+    * Get prefix
+    *
+    * @param null
+    * @return string
+    */
+    function getPrefix() {
+      return $this->prefix;
+    } // getPrefix
+    
+    /**
+    * Set prefix value
+    *
+    * @param string $value
+    * @return null
+    */
+    function setPrefix($value) {
+      $this->prefix = $value;
+    } // setPrefix
+    
+    /**
     * Get fields
     *
     * @param null
@@ -92,6 +133,7 @@
     */
     function addField(Angie_DB_Field $field) {
       $this->fields[$field->getName()] = $field;
+      $field->setTable($this);
       return $field;
     } // addField
     

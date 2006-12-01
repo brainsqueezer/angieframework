@@ -10,7 +10,7 @@
   * @subpackage mysql
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  class Angie_DB_MySQL_Connection implements Angie_DB_Connection {
+  class Angie_DB_MySQL_Connection extends Angie_DB_Connection {
     
     /**
     * Name of the database host
@@ -337,6 +337,17 @@
     } // listTables
     
     /**
+    * Return table description for a given table
+    *
+    * @param string $table_name
+    * @return Angie_DB_Table
+    */
+    function describeTable($table_name) {
+      $row = $this->executeOne("SHOW TABLE STATUS LIKE ?", $table_name);
+      var_dump($row);
+    } // describeTable
+    
+    /**
     * Return array of fields in a specific table
     *
     * @param string $table_name
@@ -357,29 +368,6 @@
       
       return $fields;
     } // listFields
-    
-    /**
-    * Return list of table fields with their description
-    *
-    * @param string $table_name
-    * @return string
-    */
-    function describeFields($table_name) {
-      $fields = array();
-      
-      $rows = $this->executeAll('SHOW FIELDS FROM ' . $this->escapeTableName($table_name));
-      if(is_foreachable($rows)) {
-        foreach($rows as $row) {
-          var_dump($row);
-          $field_name = array_var($row, 'Field');
-          if($field_name) {
-            $fields[] = $field_name;
-          } // if
-        } // foreach
-      } // if
-      
-      return $fields;
-    } // describeFields
     
     /**
     * Drop a specific table from database
@@ -409,17 +397,23 @@
     } // syncTable
     
     /**
-    * Createa a new table based on a generator table description
+    * Createa a new table based on a table description
     *
-    * @param Angie_DBA_Generator_Table $table
+    * @param Angie_DB_MySQL_Table $table
     * @param string $table_prefix
     * @return null
     */
-    function buildTable(Angie_DBA_Generator_Table $table, $table_prefix = '') {
-      $escaped_table_name = $this->escapeTableName($table_prefix . $table->getName());
+    function buildTable(Angie_DB_Table $table, $table_prefix = '') {
+      $table->setPrefix($table_prefix);
+      
+      $escaped_table_name = $this->escapeTableName($table->getPrefixedName());
       
       $mysql_version = mysql_get_client_info();
+      
       $engine = 'ENGINE=' . Angie::getConfig('mysql.default_engine', 'MyISAM');
+      $default_charset = '';
+      $default_collation = '';
+      
       if(version_compare($mysql_version, '4.1') >= 0) {
         $default_charset = Angie::getConfig('mysql.default_charset');
         if($default_charset) {
@@ -444,72 +438,41 @@
       
       foreach($table->getFields() as $field) {
         $field_name = $this->escapeFieldName($field->getName());
+        $not_null = $field->getNotNull() ? 'NOT NULL' : 'NULL';
+        $default_value = $field->getDefaultValue() ? 'DEFAULT ' . $this->escape($field->getDefaultValue()) : '';
         
         // Integer
-        if($field instanceof Angie_DBA_Generator_Field_Integer) {
+        if($field instanceof Angie_DB_Field_Integer) {
           $unsigned = $field->getIsUnsigned() ? 'UNSIGNED' : '';
           $auto_increment = $field->getIsAutoIncrement() ? 'auto_increment' : '';
-          switch($field->getTypeSize()) {
-            case Angie_DBA_Generator::SIZE_TINY:
-              $type = 'TINYINT';
-              break;
-            case Angie_DBA_Generator::SIZE_SMALL:
-              $type = 'SMALLINT';
-              break;
-            case Angie_DBA_Generator::SIZE_MEDIUM:
-              $type = 'MEDIUMINT';
-              break;
-            case Angie_DBA_Generator::SIZE_BIG:
-              $type = 'BIGINT';
-              break;
-            default:
-              $type = 'INT';
-          } // switch
-          
-          $fields_code[] = "$field_name $type $unsigned NOT NULL $auto_increment";
+          $fields_code[] = "$field_name INT $unsigned $not_null $default_value $auto_increment";
           
         // Varchar
-        } elseif($field instanceof Angie_DBA_Generator_Field_String) {
+        } elseif($field instanceof Angie_DB_Field_String) {
           $lenght = $field->getLenght();
           
-          $fields_code[] = "$field_name VARCHAR($lenght) NOT NULL";
+          $fields_code[] = "$field_name VARCHAR($lenght) $not_null $default_value";
           
         // Text
-        } elseif($field instanceof Angie_DBA_Generator_Field_Text) {
-          switch($field->getTypeSize()) {
-            case Angie_DBA_Generator::SIZE_TINY:
-              $type = 'TINYTEXT';
-              break;
-            case Angie_DBA_Generator::SIZE_SMALL:
-              $type = 'TEXT';
-              break;
-            case Angie_DBA_Generator::SIZE_MEDIUM:
-              $type = 'MEDIUMTEXT';
-              break;
-            case Angie_DBA_Generator::SIZE_BIG:
-              $type = 'LONGTEXT';
-              break;
-            default:
-              $type = 'TEXT';
-          } // swtich
+        } elseif($field instanceof Angie_DB_Field_Text) {
           
-          $fields_code[] = "$field_name $type NOT NULL";
+          
+          $fields_code[] = "$field_name TEXT $not_null $default_value";
           
         // Datetime
-        } elseif($field instanceof Angie_DBA_Generator_Field_DateTime) {
-          $fields_code[] = "$field_name DATETIME NOT NULL";
+        } elseif($field instanceof Angie_DB_Field_DateTime) {
+          $fields_code[] = "$field_name DATETIME $not_null $default_value";
           
         // Enum
-        } elseif($field instanceof Angie_DBA_Generator_Field_Enum) {
+        } elseif($field instanceof Angie_DB_Field_Enum) {
           $escaped_possible_values = array();
           foreach($field->getPossibleValues() as $possible_value) {
-            $escaped_possible_values[] = "'" . str_replace(array('\\', "'"), array('\\\\', "\'"), $possible_value) . "'";
+            $escaped_possible_values[] = $this->escape($possible_value);
+            //$escaped_possible_values[] = "'" . str_replace(array('\\', "'"), array('\\\\', "\'"), $possible_value) . "'";
           } // foreach
           $escaped_possible_values = implode(', ', $escaped_possible_values);
           
-          $default_value = "'" . str_replace(array('\\', "'"), array('\\\\', "\'"), $field->getDefaultValue()) . "'";
-          
-          $fields_code[] = "$field_name ENUM($escaped_possible_values) DEFAULT $default_value NOT NULL";
+          $fields_code[] = "$field_name ENUM($escaped_possible_values) $not_null $default_value";
         } else {
           throw new Angie_Core_Error_InvalidParamValue('field', $field, '$field is not supported type by this database engine');
         } // if
@@ -517,6 +480,18 @@
       
       return $this->execute("CREATE TABLE $escaped_table_name (\n" . implode($fields_code, ",\n") . ",\n$primary_key\n) $engine $default_charset $default_collation");
     } // buildTable
+    
+    /**
+    * Construct a connection specific type of table
+    *
+    * @param string $name
+    * @param array $fields
+    * @param array $primary_key
+    * @return Angie_DB_Table
+    */
+    function produceTable($name, $fields, $primary_key) {
+      return new Angie_DB_MySQL_Table($name, $fields, $primary_key);
+    } // produceTable
     
     // ---------------------------------------------------
     //  Getters and setters

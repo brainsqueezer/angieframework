@@ -13,25 +13,6 @@
   */
   final class Angie_DBA_Generator {
     
-    // Types
-    const TYPE_INTEGER  = 'INT';
-    const TYPE_FLOAT    = 'FLOAT';
-    const TYPE_CHAR     = 'CHAR';
-    const TYPE_VARCHAR  = 'VARCHAR';
-    const TYPE_TEXT     = 'TEXT';
-    const TYPE_DATETIME = 'DATETIME';
-    const TYPE_DATE     = 'DATE';
-    const TYPE_TIME     = 'TIME';
-    const TYPE_BLOB     = 'BLOB';
-    const TYPE_ENUM     = 'ENUM';
-    
-    // Sizes
-    const SIZE_NORMAL   = '';
-    const SIZE_TINY     = 'TINY';
-    const SIZE_SMALL    = 'SMALL';
-    const SIZE_MEDIUM   = 'MEDIUM';
-    const SIZE_BIG      = 'BIG';
-    
     // Call callback function on
     const ON_INSERT     = 'insert';
     const ON_UPDATE     = 'update';
@@ -123,18 +104,21 @@
     * 
     * Return array is indexed with table name
     *
-    * @param void
+    * @param Angie_DB_Connection $connection
     * @return array
     */
-    static function getTables() {
+    static function getTables(Angie_DB_Connection $connection, $prefix = '') {
       $tables = array();
       if(is_foreachable(self::getEntities())) {
         foreach(self::getEntities() as $entity) {
-          $tables[$entity->getTableName()] = new Angie_DB_Table(
+          $table = $connection->produceTable(
             $entity->getTableName(), 
             $entity->getFields(), 
             $entity->getPrimaryKeyFieldNames()
           ); // new table
+          $table->setPrefix($prefix);
+          
+          $tables[$entity->getTableName()] = $table;
           
           // For has and belongs to many
           $relationships = $entity->getRelationships();
@@ -147,11 +131,14 @@
                 $target_key_field = new Angie_DB_Field_Integer($relationship->getTargetKey(), null, true);
                 $target_key_field->setUnsigned(true);
                 
-                $tables[$relationship->getJoinTable()] = new Angie_DB_Table(
+                $table = $connection->produceTable(
                   $relationship->getJoinTable(), 
                   array($owner_key_field, $target_key_field), 
                   array($relationship->getOwnerKey(), $relationship->getTargetKey())
-                ); // Angie_DBA_Generator
+                ); // produceTable
+                $table->setPrefix($prefix);
+                
+                $tables[$relationship->getJoinTable()] = $table;
               } // if
             } // if
           } // if

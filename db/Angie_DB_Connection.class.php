@@ -9,7 +9,7 @@
   * @package Angie.DB
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  interface Angie_DB_Connection {
+  abstract class Angie_DB_Connection {
     
     /**
     * Connect to the database
@@ -26,7 +26,7 @@
     * @param array $params
     * @return null
     */
-    function connect($params);
+    abstract function connect($params);
   
     /**
     * Execute SQL command
@@ -45,7 +45,7 @@
     * @return mixed
     * @throws Angie_DB_Error_Query
     */
-    function execute($sql, $arguments = null);
+    abstract function execute($sql, $arguments = null);
     
     /**
     * Execute query and return first result as associative array
@@ -57,7 +57,7 @@
     * @param array $arguments
     * @return array
     */
-    function executeOne($sql, $arguments = null);
+    abstract function executeOne($sql, $arguments = null);
     
     /**
     * Execute query and return all rows
@@ -69,7 +69,7 @@
     * @param array $arguments
     * @return array
     */
-    function executeAll($sql, $arguments = null);
+    abstract function executeAll($sql, $arguments = null);
     
     /**
     * Begin work
@@ -79,7 +79,7 @@
     * @param void
     * @return null
     */
-    function begin();
+    abstract function begin();
     
     /**
     * Commit
@@ -89,7 +89,7 @@
     * @param void
     * @return null
     */
-    function commit();
+    abstract function commit();
     
     /**
     * Rollback
@@ -99,7 +99,7 @@
     * @param void
     * @return null
     */
-    function rollback();
+    abstract function rollback();
     
     /**
     * Escape string before we use it a query
@@ -107,7 +107,7 @@
     * @param string $unescaped
     * @return string
     */
-    function escape($unescaped);
+    abstract function escape($unescaped);
     
     /**
     * Escape field name
@@ -115,7 +115,7 @@
     * @param string $unescaped
     * @return string
     */
-    function escapeFieldName($unescaped);
+    abstract function escapeFieldName($unescaped);
     
     /**
     * Escape table name
@@ -123,7 +123,7 @@
     * @param string $unescaped
     * @return string
     */
-    function escapeTableName($unescaped);
+    abstract function escapeTableName($unescaped);
     
     /**
     * Prepare string (replace every ? with proper arguemnt value)
@@ -132,7 +132,7 @@
     * @param array $arguments
     * @return string
     */
-    function prepareString($string, $arguments);
+    abstract function prepareString($string, $arguments);
     
     /**
     * Return last insert ID
@@ -140,7 +140,7 @@
     * @param void
     * @return integer
     */
-    function lastInsertId();
+    abstract function lastInsertId();
     
     /**
     * Return number of rows affected by the last query
@@ -148,7 +148,7 @@
     * @param void
     * @return integer
     */
-    function affectedRows();
+    abstract function affectedRows();
     
     /**
     * Return array of all tables in the selected database
@@ -156,23 +156,23 @@
     * @param void
     * @return array
     */
-    function listTables();
+    abstract function listTables();
     
     /**
-    * Return array of fields in a specific table
+    * Return table description for a given table
+    *
+    * @param string $table_name
+    * @return Angie_DB_Table
+    */
+    abstract function describeTable($table_name);
+    
+    /**
+    * Return array of field names from a sepcific table
     *
     * @param string $table_name
     * @return array
     */
-    function listFields($table_name);
-    
-    /**
-    * Return array of fields from the database with their details
-    *
-    * @param string $table_name
-    * @return array
-    */
-    function describeFields($table_name);
+    abstract function listFields($table_name);
     
     /**
     * Drop a specific table from database
@@ -181,7 +181,7 @@
     * @param boolean $only_if_exists
     * @return boolean
     */
-    function dropTable($table_name, $only_if_exists = false);
+    abstract function dropTable($table_name, $only_if_exists = false);
     
     /**
     * Syncronise existing table with generator table description
@@ -190,16 +190,28 @@
     * @param string $table_prefix
     * @return null
     */
-    function syncTable(Angie_DBA_Generator_Table $table, $table_prefix = '');
+    abstract function syncTable(Angie_DBA_Generator_Table $table, $table_prefix = '');
     
     /**
-    * Createa a new table based on a generator table description
+    * Create a new table based on a generator table description
     *
-    * @param Angie_DBA_Generator_Table $table
+    * @param Angie_DB_Table $table
     * @param string $table_prefix
     * @return null
     */
-    function buildTable(Angie_DBA_Generator_Table $table, $table_prefix = '');
+    abstract function buildTable(Angie_DB_Table $table, $table_prefix = '');
+    
+    /**
+    * Construct a connection specific type of table
+    *
+    * @param string $name
+    * @param array $fields
+    * @param array $primary_key
+    * @return Angie_DB_Table
+    */
+    function produceTable($name, $fields, $primary_key) {
+      return new Angie_DB_Table($name, $fields, $primary_key);
+    } // produceTable
   
   } // Angie_DB_Connection
 

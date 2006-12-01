@@ -12,6 +12,13 @@
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
   class Angie_DB_Field_Integer extends Angie_DB_Field {
+    
+    /**
+    * Primitive field type
+    *
+    * @var string
+    */
+    protected  $type = Angie_DB::TYPE_INTEGER;
   
     /**
     * Unsigned flag

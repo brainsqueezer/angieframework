@@ -12,6 +12,13 @@
   class Angie_DB_Field_String extends Angie_DB_Field {
     
     /**
+    * Primitive field type
+    *
+    * @var string
+    */
+    protected  $type = Angie_DB::TYPE_VARCHAR;
+    
+    /**
     * Number of characters
     *
     * @var integer

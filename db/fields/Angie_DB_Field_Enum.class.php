@@ -13,6 +13,13 @@
   class Angie_DB_Field_Enum extends Angie_DB_Field {
     
     /**
+    * Primitive field type
+    *
+    * @var string
+    */
+    protected  $type = Angie_DB::TYPE_ENUM;
+    
+    /**
     * Array of possible string values
     *
     * @var array
