@@ -159,6 +159,24 @@
     abstract function listTables();
     
     /**
+    * Return all tables with loaded descriptions
+    *
+    * @param void
+    * @return array
+    */
+    function describeTables() {
+      $tables = $this->listTables();
+      if(is_foreachable($tables)) {
+        $result = array();
+        foreach($tables as $table) {
+          $result[$table] = $this->describeTable($table);
+        } // foreach
+        return $result;
+      } // if
+      return array();
+    } // describeTables
+    
+    /**
     * Return table description for a given table
     *
     * @param string $table_name

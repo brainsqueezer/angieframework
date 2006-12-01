@@ -33,6 +33,11 @@
       require_once $this->test_dir . 'output/packages/Package.class.php';
       require_once $this->test_dir . 'output/packages/Packages.class.php';
       
+      require_once $this->test_dir . 'output/tags/base/BaseTag.class.php';
+      require_once $this->test_dir . 'output/tags/base/BaseTags.class.php';
+      require_once $this->test_dir . 'output/tags/Tag.class.php';
+      require_once $this->test_dir . 'output/tags/Tags.class.php';
+      
       Angie_DB::execute("DROP TABLE IF EXISTS `ac_users`");
       Angie_DB::execute("DROP TABLE IF EXISTS `ac_companies`");
       Angie_DB::execute("DROP TABLE IF EXISTS `ac_packages`");

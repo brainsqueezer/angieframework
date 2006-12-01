@@ -47,7 +47,7 @@
     * @param array $primary_key
     * @return Angie_DB_Table
     */
-    function __construct($name, $fields, $primary_key) {
+    function __construct($name, $fields = array(), $primary_key = array()) {
       $this->setName($name);
       $this->setFields($fields);
       if(is_array($primary_key)) {
@@ -70,6 +70,34 @@
     function getPrefixedName() {
       return trim($this->getPrefix()) . trim($this->getName());
     } // getPrefixedName
+    
+    /**
+    * Read field and keys description from database
+    * 
+    * This function uses given database connection resource to read more data 
+    * about this table from the database. It needs to be implemented in 
+    * subclasses (by default it will just throw an exception)
+    *
+    * @param Angie_DB_Connection $connection
+    * @return null
+    * @throws Angie_Error
+    */
+    function readDescription(Angie_DB_Connection $connection) {
+      throw new Angie_Error('Angie_DB_Table::readDescription() needs to be implemented in subclass');
+    } // readDescription
+    
+    /**
+    * Check if $field is part of tables primary key
+    * 
+    * $field can be field name or Angie_DB_Field object
+    *
+    * @param Angie_DB_Field $field
+    * @return boolean
+    */
+    function isPrimaryKey($field) {
+      $field_name = $field instanceof Angie_DB_Field ? $field->getName() : $field;
+      return array_var($this->primary_key, $field_name);
+    } // isPrimaryKey
     
     // ---------------------------------------------------
     //  Getters and setters
@@ -126,6 +154,20 @@
     } // getFields
     
     /**
+    * Check if specific field exists
+    * 
+    * Check if $field exists in this table. $field can be field name or 
+    * Angie_DB_Field object
+    *
+    * @param Angie_DB_Field $field
+    * @return boolean
+    */
+    function fieldExists($field) {
+      $field_name = $field instanceof Angie_DB_Field ? $field->getName() : $field;
+      return isset($this->fields[$field_name]);
+    } // fieldExists
+    
+    /**
     * Add a single field to the table
     *
     * @param Angie_DB_Field $field
@@ -175,6 +217,25 @@
     function setPrimaryKey($value) {
       $this->primary_key = $value;
     } // setPrimaryKey
+    
+    /**
+    * Add primary key field name
+    * 
+    * $field can be field name or instance of Angie_DB_Field class
+    *
+    * @param Angie_DB_Field $field
+    * @return null
+    */
+    function addPrimaryKey($field) {
+      $field_name = $field instanceof Angie_DB_Field ? $field->getName() : $field;
+      if($this->fieldExists($field_name)) {
+        if(!in_array($field_name, $this->primary_key)) {
+          $this->primary_key[] = $field_name;
+        } // if
+      } else {
+        throw new Angie_DB_Error("Field '$field_name' does not exists in this table");
+      } // if
+    } // addPrimaryKey
     
   } // Angie_DB_Table
 

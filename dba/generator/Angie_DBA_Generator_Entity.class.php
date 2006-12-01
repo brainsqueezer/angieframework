@@ -336,8 +336,7 @@
     * @return Angie_DBA_Generator_Attribute_ForeignKey
     */
     function addFkAttribute($name, $default_value = null) {
-      $attribute = new Angie_DBA_Generator_Attribute_ForeignKey($this, $name, $default_value);
-      return $this->addAttribute($attribute);
+      return $this->addAttribute(new Angie_DBA_Generator_Attribute_ForeignKey($this, $name, $default_value));
     } // addFkAttribute
     
     /**
@@ -350,8 +349,7 @@
     * @return Angie_DBA_Generator_IntegerAttribute
     */
     function addIntAttribute($name, $unsigned = false, $default_value = null, $required = false) {
-      $attribute = new Angie_DBA_Generator_Attribute_Integer($this, $name, $default_value, $required, $unsigned, false);
-      return $this->addAttribute($attribute);
+      return $this->addAttribute(new Angie_DBA_Generator_Attribute_Integer($this, $name, $default_value, $required, $unsigned, false));
     } // addIntAttribute
     
     /**
@@ -364,9 +362,35 @@
     * @return Angie_DBA_Generator_StringAttribute
     */
     function addStringAttribute($name, $lenght, $default_value = null, $required = false) {
-      $attribute = new Angie_DBA_Generator_Attribute_String($this, $name, $default_value, $required, $lenght);
-      return $this->addAttribute($attribute);
+      return $this->addAttribute(new Angie_DBA_Generator_Attribute_String($this, $name, $default_value, $required, $lenght));
     } // addStringAttribute
+    
+    /**
+    * Add float attribute to this entity
+    *
+    * @param string $name
+    * @param integer $lenght
+    * @param integer $precission
+    * @param boolean $unsigned
+    * @param mixed $default_value
+    * @param boolean $required
+    * @return Angie_DBA_Generator_Attribute_Float
+    */
+    function addFloatAttribute($name, $lenght = null, $precission = null, $unsigned = false, $default_value = null, $required = false) {
+      return $this->addAttribute(new Angie_DBA_Generator_Attribute_Float($this, $name, $default_value, $required, $lenght, $precission, $unsigned));
+    } // addFloatAttribute
+    
+    /**
+    * Add boolean attribute to this entity
+    *
+    * @param string $name
+    * @param boolean $default_value
+    * @param boolean $required
+    * @return null
+    */
+    function addBooleanAttribute($name, $default_value = null, $required = false) {
+      return $this->addAttribute(new Angie_DBA_Generator_Attribute_Boolean($this, $name, $default_value, $required));
+    } // addBooleanAttribute
     
     /**
     * Add text (multiline, long string) to this entity
@@ -377,8 +401,7 @@
     * @return Angie_DBA_Generator_TextAttribute
     */
     function addTextAttribute($name, $default_value = null, $required = false) {
-      $attribute = new Angie_DBA_Generator_Attribute_Text($this, $name, $default_value, $required);
-      return $this->addAttribute($attribute);
+      return $this->addAttribute(new Angie_DBA_Generator_Attribute_Text($this, $name, $default_value, $required));
     } // addTextAttribute
     
     /**
@@ -390,8 +413,7 @@
     * @return Angie_DBA_Generator_DateTimeAttribute
     */
     function addDateTimeAttribute($name, $default_value = null, $required = false) {
-      $attribute = new Angie_DBA_Generator_Attribute_DateTime($this, $name, $default_value, $required);
-      return $this->addAttribute($attribute);
+      return $this->addAttribute(new Angie_DBA_Generator_Attribute_DateTime($this, $name, $default_value, $required));
     } // addDateTimeAttribute
     
     /**
@@ -407,9 +429,20 @@
     * @return Angie_DBA_Generator_Attribute_Enum
     */
     function addEnumAttribute($name, $possible_values, $default_value = null, $required = false) {
-      $attribute = new Angie_DBA_Generator_Attribute_Enum($this, $name, $default_value , $required, $possible_values);
-      return $this->addAttribute($attribute);
+      return $this->addAttribute(new Angie_DBA_Generator_Attribute_Enum($this, $name, $default_value , $required, $possible_values));
     } // addEnumAttribute
+    
+    /**
+    * Add binary attribute
+    *
+    * @param string $name
+    * @param mixed $default_value
+    * @param boolean $required
+    * @return null
+    */
+    function addBinaryAttribute($name, $default_value = null, $required = false) {
+      return $this->addAttribute(new Angie_DBA_Generator_Attribute_Binary($this, $name, $default_value, $required));
+    } // addBinaryAttribute
     
     // ---------------------------------------------------
     //  Helper methods / Relationships

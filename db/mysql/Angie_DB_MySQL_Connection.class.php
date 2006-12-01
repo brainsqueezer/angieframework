@@ -341,10 +341,13 @@
     *
     * @param string $table_name
     * @return Angie_DB_Table
+    * @throws Angie_DB_Error_Describe
     */
     function describeTable($table_name) {
-      $row = $this->executeOne("SHOW TABLE STATUS LIKE ?", $table_name);
-      var_dump($row);
+      $table = new Angie_DB_MySQL_Table($table_name);
+      $table->readDescription($this);
+      
+      return $table;
     } // describeTable
     
     /**
@@ -455,9 +458,24 @@
           
         // Text
         } elseif($field instanceof Angie_DB_Field_Text) {
-          
-          
           $fields_code[] = "$field_name TEXT $not_null $default_value";
+          
+        // Float
+        } elseif($field instanceof Angie_DB_Field_Float) {
+          if(!is_null($field->getLenght()) && !is_null($field->getPrecission())) {
+            $lenght = $field->getLenght();
+            $precission = $field->getPrecission();
+            $fields_code[] = "$field_name($lenght, $precission) DOUBLE $not_null $default_value";
+          } elseif(!is_null($field->getLenght())) {
+            $lenght = $field->getLenght();
+            $fields_code[] = "$field_name($lenght) DOUBLE $not_null $default_value";
+          } else {
+            $fields_code[] = "$field_name DOUBLE $not_null $default_value";
+          } // if
+          
+        // Boolean
+        } elseif($field instanceof Angie_DB_Field_Boolean) {
+          $fields_code[] = "$field_name TINYINT(1) $not_null $default_value";
           
         // Datetime
         } elseif($field instanceof Angie_DB_Field_DateTime) {
@@ -473,6 +491,11 @@
           $escaped_possible_values = implode(', ', $escaped_possible_values);
           
           $fields_code[] = "$field_name ENUM($escaped_possible_values) $not_null $default_value";
+          
+        // Binary
+        } elseif($field instanceof Angie_DB_Field_Binary) {
+          $fields_code[] = "$field_name BLOB $not_null $default_value";
+          
         } else {
           throw new Angie_Core_Error_InvalidParamValue('field', $field, '$field is not supported type by this database engine');
         } // if

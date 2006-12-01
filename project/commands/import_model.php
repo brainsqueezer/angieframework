@@ -48,14 +48,37 @@
         'persist'  => false,
       )); // Angie_DB_MySQL_Connection
       
-      $tables = $connection->listTables();
-      if(is_foreachable($tables)) {
-        foreach($tables as $table) {
-          $fields = $connection->describeFields($table);
+      if(empty($file)) {
+        $file = DEVELOPMENT_PATH . '/model.php';
+      } // if
+      
+      $all_tables = $connection->describeTables();
+      if(is_foreachable($all_tables)) {
+        $tables = array();
+        $prefix_len = strlen($prefix);
+        foreach($all_tables as $table) {
+          if(($prefix_len == 0) || str_starts_with($table->getName(), $prefix)) {
+            $tables[substr($table->getName(), $prefix_len + 3)] = $table;
+          } // if
         } // foreach
       } else {
         $output->printMessage('There are no tables in selected database');
         return;
+      } // if
+      
+      if(count($tables) == 0) {
+        $output->printMessage("There are no tables prefixed with '$prefix'");
+        return;
+      } // if
+      
+      $template_engine = new Angie_TemplateEngine_Php();
+      $template_engine->assignToView('project_name', Angie::getConfig('project.name'));
+      $template_engine->assignToView('tables', $tables);
+      
+      if(file_put_contents($file, $template_engine->fetchView(ANGIE_PATH . '/project/import_model/model.php'))) {
+        $output->printMessage("Model has been sucessfully writen into '" . basename($file) . "'");
+      } else {
+        $output->printMessage("Failed to write model description into '" . basename($file) . "'");
       } // if
     } // execute
     
