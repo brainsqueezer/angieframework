@@ -154,6 +154,16 @@
     } // getFields
     
     /**
+    * Return field object
+    *
+    * @param string $field_name
+    * @return Angie_DB_Field
+    */
+    function getField($field_name) {
+      return array_var($this->fields, $field_name);
+    } // getField
+    
+    /**
     * Check if specific field exists
     * 
     * Check if $field exists in this table. $field can be field name or 

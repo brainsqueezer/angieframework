@@ -31,6 +31,103 @@
     // ---------------------------------------------------
     
     /**
+    * Create this table
+    *
+    * @param Angie_DB_MySQL_Connection $connection
+    * @return null
+    */
+    function buildTable(Angie_DB_MySQL_Connection $connection) {
+      $escaped_table_name = $connection->escapeTableName($this->getPrefixedName());
+      
+      $mysql_version = mysql_get_client_info();
+      
+      $engine = 'ENGINE=' . Angie::getConfig('mysql.default_engine', 'MyISAM');
+      $default_charset = '';
+      $default_collation = '';
+      
+      if(version_compare($mysql_version, '4.1') >= 0) {
+        $default_charset = Angie::getConfig('mysql.default_charset');
+        if($default_charset) {
+          $default_charset = " DEFAULT CHARSET=$default_charset";
+        } // if
+        
+        $default_collation = Angie::getConfig('mysql.default_collation');
+        if($default_collation) {
+          $default_collation = "COLLATE=$default_collation";
+        } // if
+      } // if
+      
+      $escaped_primary_keys = array();
+      foreach($this->getPrimaryKey() as $primary_key) {
+        $escaped_primary_keys[] = $connection->escapeFieldName($primary_key);
+      } // foreach
+      $primary_key = count($escaped_primary_keys) ? ",\nPRIMARY KEY(" . implode(', ', $escaped_primary_keys) . ')' : '';
+      
+      $fields_code = array();
+      
+      foreach($this->getFields() as $field) {
+        $field_name = $connection->escapeFieldName($field->getName());
+        $not_null = $field->getNotNull() ? 'NOT NULL' : 'NULL';
+        $default_value = $field->getDefaultValue() ? 'DEFAULT ' . $connection->escape($field->getDefaultValue()) : '';
+        
+        // Integer
+        if($field instanceof Angie_DB_Field_Integer) {
+          $unsigned = $field->getUnsigned() ? 'UNSIGNED' : '';
+          $auto_increment = $field->getAutoIncrement() ? 'auto_increment' : '';
+          $fields_code[] = "$field_name INT $unsigned $not_null $default_value $auto_increment";
+          
+        // Varchar
+        } elseif($field instanceof Angie_DB_Field_String) {
+          $lenght = $field->getLenght();
+          
+          $fields_code[] = "$field_name VARCHAR($lenght) $not_null $default_value";
+          
+        // Text
+        } elseif($field instanceof Angie_DB_Field_Text) {
+          $fields_code[] = "$field_name TEXT $not_null $default_value";
+          
+        // Float
+        } elseif($field instanceof Angie_DB_Field_Float) {
+          $unsigned = $field->getUnsigned() ? 'UNSIGNED' : '';
+          
+          if(!is_null($field->getLenght()) && !is_null($field->getPrecission())) {
+            $lenght = $field->getLenght();
+            $precission = $field->getPrecission();
+            $fields_code[] = "$field_name DOUBLE($lenght, $precission) $unsigned $not_null $default_value";
+          } else {
+            $fields_code[] = "$field_name DOUBLE $not_null $default_value";
+          } // if
+          
+        // Boolean
+        } elseif($field instanceof Angie_DB_Field_Boolean) {
+          $fields_code[] = "$field_name TINYINT(1) $not_null $default_value";
+          
+        // Datetime
+        } elseif($field instanceof Angie_DB_Field_DateTime) {
+          $fields_code[] = "$field_name DATETIME $not_null $default_value";
+          
+        // Enum
+        } elseif($field instanceof Angie_DB_Field_Enum) {
+          $escaped_possible_values = array();
+          foreach($field->getPossibleValues() as $possible_value) {
+            $escaped_possible_values[] = $connection->escape($possible_value);
+          } // foreach
+          $escaped_possible_values = implode(', ', $escaped_possible_values);
+          
+          $fields_code[] = "$field_name ENUM($escaped_possible_values) $not_null $default_value";
+          
+        // Binary
+        } elseif($field instanceof Angie_DB_Field_Binary) {
+          $fields_code[] = "$field_name BLOB $not_null $default_value";
+          
+        } else {
+          throw new Angie_Core_Error_InvalidParamValue('field', $field, '$field is not supported type by this database engine');
+        } // if
+      } // foreach
+      return $connection->execute("CREATE TABLE $escaped_table_name (\n" . implode($fields_code, ",\n") . "$primary_key\n) $engine $default_charset $default_collation");
+    } // buildTable
+    
+    /**
     * Read field and keys description from database
     * 
     * This function uses given database connection resource to read more data 

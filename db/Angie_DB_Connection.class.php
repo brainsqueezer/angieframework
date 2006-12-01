@@ -227,7 +227,7 @@
     * @param array $primary_key
     * @return Angie_DB_Table
     */
-    function produceTable($name, $fields, $primary_key) {
+    function produceTable($name, $fields = array(), $primary_key = array()) {
       return new Angie_DB_Table($name, $fields, $primary_key);
     } // produceTable
   

@@ -94,6 +94,9 @@
       Angie_DBA_Generator::cleanUp();
       Angie_DB::execute("DROP TABLE `ac_users`");
       Angie_DB::execute("DROP TABLE `ac_companies`");
+      Angie_DB::execute("DROP TABLE `ac_packages`");
+      Angie_DB::execute("DROP TABLE `ac_tags`");
+      Angie_DB::execute("DROP TABLE `ac_companies_tags`");
     } // tearDown
     
     function testProtections() {
