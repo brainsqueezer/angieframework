@@ -91,6 +91,12 @@
       $with_defaults = Angie_Router::assemble('with_detaults', array('controller' => 'not_default', 'id' => 12, 'query1' => 1, 'query2' => 2));
       $this->assertEqual($with_defaults, '/with_defaults/not_default/12?query1=1&query2=2');
       
+      $with_defaults = Angie_Router::assemble('with_detaults', array('controller' => 'not_default', 'id' => 12, 'query1' => 1, 'query2' => 2), '', '&', 'anch');
+      $this->assertEqual($with_defaults, '/with_defaults/not_default/12?query1=1&query2=2#anch');
+      
+      $with_defaults = Angie_Router::assemble('with_detaults', array('controller' => 'not_default', 'id' => 12, 'query1' => 1, 'query2' => 2), $url_base, '&', 'anch');
+      $this->assertEqual($with_defaults, 'http://www.google.com/with_defaults/not_default/12?query1=1&query2=2#anch');
+      
       $with_defaults = Angie_Router::assemble('with_detaults', array('controller' => 'not_default', 'id' => 12, 'query1' => 1, 'query2' => 2), $url_base, '&amp;');
       $this->assertEqual($with_defaults, 'http://www.google.com/with_defaults/not_default/12?query1=1&amp;query2=2');
     } // testAssembling

@@ -13,6 +13,13 @@
   class Angie_Request_Get extends Angie_Request {
     
     /**
+    * Name of the $_GET param that holds application name value
+    *
+    * @var string
+    */
+    private $application_param_name = 'app';
+    
+    /**
     * Name of the $_GET param that holds controller value
     *
     * @var string
@@ -54,8 +61,20 @@
     * @return boolean
     */
     protected function process($request_string) {
+      $application_param_name = $this->getApplicationParamName();
       $controller_param_name = $this->getControllerParamName();
       $action_param_name = $this->getActionParamName();
+      
+      // Extract and set controller name
+      $application_name = '';
+      if(isset($_GET[$application_param_name])) {
+        $application_name = array_var($_GET, $application_param_name);
+        unset($_GET[$application_param_name]);
+      } // if
+      if(trim($application_name) == '') {
+        $application_name = Angie::engine()->getDefaultApplicationName();
+      } // if
+      $this->setApplicationName($application_name);
       
       // Extract and set controller name
       $controller_name = '';
@@ -79,6 +98,7 @@
       } // if
       $this->setActionName($action_name);
       
+      $this->setParam('application', $this->getApplicationName());
       $this->setParam('controller', $this->getControllerName());
       $this->setParam('action', $this->getActionName());
       foreach($_GET as $k => $v) {
@@ -91,6 +111,26 @@
     // ---------------------------------------------------
     //  Getters and setters
     // ---------------------------------------------------
+    
+    /**
+    * Get application_param_name
+    *
+    * @param null
+    * @return string
+    */
+    function getApplicationParamName() {
+      return $this->application_param_name;
+    } // getApplicationParamName
+    
+    /**
+    * Set application_param_name value
+    *
+    * @param string $value
+    * @return null
+    */
+    function setApplicationParamName($value) {
+      $this->application_param_name = $value;
+    } // setApplicationParamName
     
     /**
     * Get controller_param_name

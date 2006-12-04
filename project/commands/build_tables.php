@@ -53,7 +53,6 @@
       } // if
       
       $database_tables = $connection->listTables(); // load list of tables in the database...
-      
       foreach($tables as $table) {
         $prefixed_table_name = $table->getPrefixedName();
         if(in_array($prefixed_table_name, $database_tables)) {
@@ -72,13 +71,13 @@
               $output->printMessage('Table "' . $table->getName() . '" exsist. Rebuilding.');
             } // if
             $connection->dropTable($prefixed_table_name, true);
-            $connection->buildTable($table, $table_prefix);
+            $table->buildTable($connection);
           } // if
         } else {
           if(!$quiet) {
             $output->printMessage('Building table "' . $table->getName() . '"');
           } // if
-          $connection->buildTable($table, $table_prefix);
+          $table->buildTable($connection);
         } // if
       } // foreach
     } // execute

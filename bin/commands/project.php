@@ -11,6 +11,10 @@
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
   
+  if(isset($return_help) && $return_help) {
+    return 'This command will create an empty project structure. Second parameter is project name.';
+  } // if
+  
   require_once realpath(dirname(__FILE__) . '/../../init.php');
   require_once ANGIE_PATH . '/toys/structuregenerator/Angie_StructureGenerator.class.php';
   require_once ANGIE_PATH . '/toys/output/Angie_Output.class.php';

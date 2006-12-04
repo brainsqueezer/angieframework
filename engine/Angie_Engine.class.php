@@ -69,7 +69,8 @@
     function execute() {
       $request = $this->getRequest();
       if($request instanceof Angie_Request) {
-        $this->executeAction($request->getControllerName(), $request->getActionName());
+        require_once $this->getApplicationInitfilePath($request->getApplicationName()); // init
+        $this->executeAction($request->getControllerName(), $request->getActionName()); // execute
       } // if
     } // execute
     

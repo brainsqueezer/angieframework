@@ -81,16 +81,16 @@
     * @param array $data
     * @param string $url_base
     * @param string $query_arg_separator
-    * @return string
+    * @return string $anchor
     * @throws Angie_Router_Error_Assemble
     */
-    static function assemble($name, $data = array(), $url_base = '', $query_arg_separator = '&') {
+    static function assemble($name, $data = array(), $url_base = '', $query_arg_separator = '&', $anchor = '') {
       $route = array_var(self::$routes, $name);
       if(!($route instanceof Angie_Router_Route)) {
         throw new Angie_Core_Error_InvalidParamValue('name', $name, "Route '$name' is not mapped");
       } // if
       
-      return $route->assemble($data, $url_base, $query_arg_separator);
+      return $route->assemble($data, $url_base, $query_arg_separator, $anchor);
     } // assemble
     
     // ---------------------------------------------------

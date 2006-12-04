@@ -160,9 +160,10 @@
     * @param array $data
     * @param string $url_base
     * @param string $query_arg_separator
+    * @param string $anchor
     * @return string
     */
-    function assemble($data, $url_base, $query_arg_separator) {
+    function assemble($data, $url_base, $query_arg_separator, $anchor = '') {
       if(!is_array($data)) {
         $data = array();
       } // if
@@ -197,6 +198,11 @@
       $url = with_slash($url_base) . implode('/', $path_parts);
       if(count($query_parts)) {
         $url .= '?' . http_build_query($query_parts, '', $query_arg_separator);
+      } // if
+      
+      $trimmed_anchor = trim($anchor);
+      if($trimmed_anchor) {
+        $url .= '#' . $anchor;
       } // if
       
       return $url;

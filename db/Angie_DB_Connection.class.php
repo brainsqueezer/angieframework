@@ -211,15 +211,6 @@
     abstract function syncTable(Angie_DBA_Generator_Table $table, $table_prefix = '');
     
     /**
-    * Create a new table based on a generator table description
-    *
-    * @param Angie_DB_Table $table
-    * @param string $table_prefix
-    * @return null
-    */
-    abstract function buildTable(Angie_DB_Table $table, $table_prefix = '');
-    
-    /**
     * Construct a connection specific type of table
     *
     * @param string $name

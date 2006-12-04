@@ -3,19 +3,19 @@
   /**
   * Page controller
   * 
-  * Angie_Controller is simple class that lets you execute an action from a controller
-  * and protect certain system methods so they can't be executed as actions. In some
-  * cases that behaviour is enough, but if we want rapid development we need to add
-  * more "magic".
+  * Angie_Controller is simple class that lets you execute an action from a 
+  * controller and protect certain system methods so they can't be executed as 
+  * actions. In some cases that behaviour is enough, but if we want rapid 
+  * development we need to add more "magic".
   * 
-  * Page controller has some extra toy implemented that automate most of the tasks and
-  * make your actions much cleaner.
+  * Page controller has some extra toy implemented that automate most of the 
+  * tasks and make your actions much cleaner.
   * 
   * <b>Automaticly map layouts and views</b>
   * 
-  * First method to keep you happy is to automatically map layouts and views based on used 
-  * controller and action if you didn't provide any exit in action (for instance, you 
-  * forwarded to other action or redirected to some URL).
+  * First method to keep you happy is to automatically map layouts and views 
+  * based on used controller and action if you didn't provide any exit in action 
+  * (for instance, you forwarded to other action or redirected to some URL).
   * 
   * There is a simple convention that is used to determine where layout and view
   * files are:
@@ -39,15 +39,16 @@
   * 
   * <b>Rendering methods</b>
   * 
-  * The most important method for rendering is <b>render()</b> method. All of its params are optional.
-  * Easies way to describe behaviour of render() method is to provide examples:
+  * The most important method for rendering is <b>render()</b> method. All of 
+  * its params are optional. Easies way to describe behaviour of render() method 
+  * is to provide examples:
   * <pre>
   * // Assumptions:
   * // Controller name: task
   * // Action name: action
   * 
-  * // It this case default controller and action name will be used based on convention described
-  * // above. Result:
+  * // It this case default controller and action name will be used based on 
+  * // convention described above. Result:
   * //
   * // layout used: /application/layouts/task.php
   * // view used: /application/views/task/action.php
@@ -55,8 +56,8 @@
   *   $this->render();
   * }
   * 
-  * // Controller will use convention, but instead of controller and action name it will use view
-  * // and layout name provided as params. Result:
+  * // Controller will use convention, but instead of controller and action name 
+  * // it will use view and layout name provided as params. Result:
   * //
   * // layout used: /application/layouts/other_layout.php
   * // view used: /application/views/task/other_view.php
@@ -64,8 +65,8 @@
   *   $this->render('other_view', 'other_layout');
   * }
   * 
-  * // Controller will use convention, but instead of controller and action name it will use view
-  * // and layout name provided as class properties. Result:
+  * // Controller will use convention, but instead of controller and action name 
+  * // it will use view and layout name provided as class properties. Result:
   * //
   * // layout used: /application/layouts/other_layout.php
   * // view used: /application/views/task/other_view.php
@@ -83,7 +84,8 @@
   *   $this->render('/path/to/view', '/path/to/layout');
   * }
   * 
-  * // Controller will use absolute paths of views and layouts provided as class properties. Result:
+  * // Controller will use absolute paths of views and layouts provided as class 
+  * // properties. Result:
   * //
   * // layout used: /path/to/layout
   * // view used: /path/to/view
@@ -94,26 +96,30 @@
   * }
   * </pre>
   * 
-  * In most cases you will let Angie_PageController to automaticly render view if you don't provide any 
-  * exit in your action and you leave $auto_render property set to TRUE (TRUE by default). You can let 
-  * the controller class automaticly map view based on action name and layout based on controller name 
-  * or you can use setLayout() and setView() setters to set specific values.
+  * In most cases you will let Angie_PageController to automaticly render view 
+  * if you don't provide any exit in your action and you leave $auto_render 
+  * property set to TRUE (TRUE by default). You can let the controller class 
+  * automaticly map view based on action name and layout based on controller 
+  * name or you can use setLayout() and setView() setters to set specific 
+  * values.
   * 
-  * Implementation is pretty simple: if no exit is proved in action controller will automaticly call 
-  * render() method without arguments (see examples above).
+  * Implementation is pretty simple: if no exit is proved in action controller 
+  * will automaticly call render() method without arguments (see examples 
+  * above).
   * 
   * If you wish to render simple text you can use <b>renderText()</b> method:
   * <pre>
   * $this->renderText('This is text', true, true);
   * </pre>
   * 
-  * Use additional params to say if you want to use template and die when template is rendered.
+  * Use additional params to say if you want to use template and die when 
+  * template is rendered.
   * 
   * <b>Template engine interface implementation</b>
   * 
-  * Page controller has template engine interface implemented that will automaticly use template
-  * engine provided by the framework. You just need to use assignToView(), fetchView() and 
-  * displayView() methods. Example:
+  * Page controller has template engine interface implemented that will 
+  * automatically use template engine provided by the framework. You just need 
+  * to use assignToView(), fetchView() and displayView() methods. Example:
   * <pre>
   * function action() {
   *   $this->assignToView('variable', $this->fetchView('/path/to/sidebar'));
@@ -123,13 +129,16 @@
   * 
   * <b>Redirecting</b>
   * 
-  * Page controller has some nice methods that lets you redirect user. This methos are:
+  * Page controller has some nice methods that lets you redirect user. This 
+  * methos are:
   * 
-  * 1. redirectTo() - this will use default engine implementation to generate URL based on function arguments
-  *    and it will redirect user to that URL.
-  * 2. redirectToUrl() - this function will use URL that is provided as an argument and redirect user to it
-  * 3. redirectToReferer() - this function will try to get referer and redirect user to it. If referer is not
-  *    found function will use alternative URL that is proveded as function argument
+  * 1. redirectTo() - this will use default engine implementation to generate 
+  *    URL based on function arguments and it will redirect user to that URL.
+  * 2. redirectToUrl() - this function will use URL that is provided as an 
+  *    argument and redirect user to it
+  * 3. redirectToReferer() - this function will try to get referer and redirect 
+  *    user to it. If referer is not found function will use alternative URL 
+  *    that is proveded as function argument
   *
   * @package Angie.controller
   * @subpackage controllers
@@ -142,12 +151,13 @@
     * 
     * There are four supported values:
     * 
-    * 1. Name is empty. Controller name is the name of this controller and name of the view
-    *    is action that is executed
-    * 2. View is the name of view file (without the extension). Controller that is used in 
-    *    that case is this controller
+    * 1. Name is empty. Controller name is the name of this controller and name 
+    *    of the view is action that is executed
+    * 2. View is the name of view file (without the extension). Controller that 
+    *    is used in that case is this controller
     * 3. Absolute path of view file
-    * 4. Array where fist param is controller name and second is the name the action
+    * 4. Array where fist param is controller name and second is the name the 
+    *    action
     *
     * @var mixed
     */
@@ -169,8 +179,9 @@
     /**
     * Array of loaded helpers
     * 
-    * Whenever we add a project template to the controller its name is added to this list. Built-in 
-    * helpers are automaticly included by the controller and they are not listed in this list
+    * Whenever we add a project template to the controller its name is added 
+    * to this list. Built-in helpers are automaticly included by the controller 
+    * and they are not listed in this list
     *
     * @var array
     */
@@ -205,9 +216,9 @@
     /**
     * Execute action
     * 
-    * This methods extends default controller behaviour by providing auto render functionality to the 
-    * controller - it is able to map layout / template pair based on controller and action name and 
-    * automaticly render them
+    * This methods extends default controller behaviour by providing auto render 
+    * functionality to the controller - it is able to map layout / template pair 
+    * based on controller and action name and automaticly render them
     *
     * @param string $action
     * @return boolean

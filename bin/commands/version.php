@@ -7,6 +7,11 @@
   * @subpackage commands
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
+  
+  if(isset($return_help) && $return_help) {
+    return 'Display framework version';
+  } // if
 
   print 'Angie ' . ANGIE_VERSION;
+  
 ?>
