@@ -1,7 +1,7 @@
 <?php
 
   /**
-  * Abstract engine
+  * Default engine
   * 
   * This class provides stub function and partial implementation of default 
   * behaviour. Purpose of engine is to tie rest of the system together - to know 
@@ -12,7 +12,7 @@
   * @package Angie.engines
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
-  abstract class Angie_Engine {
+  class Angie_Engine {
     
     /**
     * Request object; it is preapred by init method by default
@@ -65,12 +65,15 @@
     *
     * @param void
     * @return null
+    * @throws Angie_Core_Error_InvalidInstance if request is not set
     */
     function execute() {
       $request = $this->getRequest();
       if($request instanceof Angie_Request) {
         require_once $this->getApplicationInitfilePath($request->getApplicationName()); // init
         $this->executeAction($request->getControllerName(), $request->getActionName()); // execute
+      } else {
+        throw new Angie_Core_Error_InvalidInstance('this->request', $this->request, '$this->request should be object of Angie_Request class');
       } // if
     } // execute
     
@@ -405,6 +408,8 @@
       if(!($controller instanceof Angie_Controller)) {
         throw new Angie_Core_Error_InvalidInstance('controller', $controller, 'Angie_Controller');
       } // if
+      
+      $controller->setEngine($this);
       
       return $controller;
     } // getController

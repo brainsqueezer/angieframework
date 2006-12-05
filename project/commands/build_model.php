@@ -19,19 +19,12 @@
     */
     function execute(Angie_Output $output) {
       Angie_DBA_Generator::cleanUp();
+      Angie_DBA_Generator::assignToView('project_name', Angie::getConfig('project.name'));
       
       require DEVELOPMENT_PATH . '/model.php';
       
       $output_dir = PROJECT_PATH . '/models';
-      
-      $options = array(
-        'force'      => (boolean) $this->getOption('force'),
-        'quiet'      => (boolean) $this->getOption('q', 'quiet'),
-        'output_dir' => $output_dir,
-      ); // array
-      
-      $quiet = array_var($options, 'quiet');
-      $force = array_var($options, 'force');
+      $force = (boolean) $this->getOption('force');
       
       // Check output directory
       if(!is_dir($output_dir)) {
@@ -42,35 +35,114 @@
         throw new Angie_FileSystem_Error_DirNotWritable($output_dir);
       } // if
       
-      if(!$quiet) {
-        $output->printMessage('Output directory exists and is writable', 'ok');
-      } // if
+      $output->printMessage('Output directory exists and is writable', 'ok');
       
       // Loop through entities
       if(is_foreachable(Angie_DBA_Generator::getEntities())) {
         foreach(Angie_DBA_Generator::getEntities() as $entity) {
+          Angie_DBA_Generator::assignToView('entity', $entity);
+          
           $entity_output_dir = with_slash($output_dir) . $entity->getOutputDir();
           
           if(is_dir($entity_output_dir)) {
-            if(!$quiet) {
-              $output->printMessage("Directory '" . get_path_relative_to($entity_output_dir, $output_dir) . "' exists. Continue.");
-            } // if
+            $output->printMessage("Directory '" . get_path_relative_to($entity_output_dir, ROOT_PATH) . "' exists. Continue.");
           } else {
             if(mkdir($entity_output_dir)) {
-              if(!$quiet) {
-                $output->printMessage("Directory '" . get_path_relative_to($entity_output_dir, $output_dir) . "' created");
-              } // if
+              $output->printMessage("Directory '" . get_path_relative_to($entity_output_dir, ROOT_PATH) . "' created");
             } else {
-              throw new Angie_FileSystem_Error_DirNotWritable(self::$output_dir);
+              throw new Angie_FileSystem_Error_DirNotWritable($output_dir);
             } // if
           } // if
           
-          $entity->generate($output, $entity_output_dir, $options);
+          $base_entity_output_dir = with_slash($entity_output_dir) . 'base';
+          if(is_dir($base_entity_output_dir)) {
+            $output->printMessage("Directory '" . get_path_relative_to($base_entity_output_dir, ROOT_PATH) . "' exists. Continue.");
+          } else {
+            if(mkdir($base_entity_output_dir)) {
+              $output->printMessage("Directory '" . get_path_relative_to($base_entity_output_dir, ROOT_PATH) . "' created");
+            } else {
+              throw new Angie_FileSystem_Error_DirNotWritable($base_entity_output_dir);
+            } // if
+          } // if
           
-          $test_file = DEVELOPMENT_PATH . '/tests/unit/' . $entity->getName() . '.php';
+          $base_object_file  = $entity_output_dir . '/base/' . $entity->getBaseObjectClassName() . '.class.php';
+          $base_manager_file = $entity_output_dir . '/base/' . $entity->getBaseManagerClassName() . '.class.php';
+          $object_file       = $entity_output_dir . '/' . $entity->getObjectClassName() . '.class.php';
+          $manager_file      = $entity_output_dir . '/' .$entity->getManagerClassName() . '.class.php';
           
+          // Base object file...
+          $relative_path = get_path_relative_to($base_object_file, ROOT_PATH);
+          if($entity->writeBaseObjectClass($base_object_file)) {
+            $message = "File '$relative_path' generated";
+          } else {
+            $message = "Failed to generate '$relative_path' file";
+          } // if
+          $output->printMessage($message);
           
-          $fixtures_file = DEVELOPMENT_PATH . '/tests/fixtures/' . $entity->getName() . '.ini';
+          // Base manager class...
+          $relative_path = get_path_relative_to($base_manager_file, ROOT_PATH);
+          if($entity->writeBaseManagerClass($base_manager_file)) {
+            $message = "File '$relative_path' generated";
+          } else {
+            $message = "Failed to generate '$relative_path' file";
+          } // if
+          $output->printMessage($message);
+          
+          // Object file
+          $object_file_exists = file_exists($object_file);
+          $relative_path = get_path_relative_to($object_file, ROOT_PATH);
+          if(!$object_file_exists || $force) {
+            if($entity->writeObjectClass($object_file)) {
+              $message = "File '$relative_path' generated";
+            } else {
+              $message = "Failed to generate '$relative_path' file";
+            } // if
+          } else {
+            $message = "File '$relative_path' already exists. Skipping";
+          } // if
+          $output->printMessage($message);
+          
+          // Manager file
+          $manager_file_exists = file_exists($manager_file);
+          $relative_path = get_path_relative_to($manager_file, ROOT_PATH);
+          if(!$manager_file_exists || $force) {
+            if($entity->writeManagerClass($manager_file)) {
+              $message = "File '$relative_path' generated";
+            } else {
+              $message = "Failed to generate '$relative_path' file";
+            } // if
+          } else {
+            $message = "File '$relative_path' already exists. Skipping";
+          } // if
+          $output->printMessage($message);
+          
+          $test_file = DEVELOPMENT_PATH . '/tests/unit/' . $entity->getTestClassName() . '.class.php';
+          $test_file_exists = file_exists($test_file);
+          $relative_path = get_path_relative_to($test_file, ROOT_PATH);
+          if(!$test_file_exists || $force) {
+            if(file_put_contents($test_file, Angie_DBA_Generator::fetchView(ANGIE_PATH . '/project/build_model/test.php', true))) {
+              $message = "File '$relative_path' generated";
+            } else {
+              $message = "Failed to generate '$relative_path' file";
+            } // if
+          } else {
+            $message = "File '$relative_path' already exists. Skipping";
+          } // if
+          $output->printMessage($message);
+          
+          $fixtures_file = DEVELOPMENT_PATH . '/tests/fixtures/' . $entity->getFixturesName() . '.ini';
+          $fixtures_file_exists = file_exists($fixtures_file);
+          $relative_path = get_path_relative_to($fixtures_file, ROOT_PATH);
+          if(!$fixtures_file_exists || $force) {
+            if(file_put_contents($fixtures_file, Angie_DBA_Generator::fetchView(ANGIE_PATH . '/project/build_model/fixtures.php', true))) {
+              $message = "File '$relative_path' generated";
+            } else {
+              $message = "Failed to generate '$relative_path' file";
+            } // if
+          } else {
+            $message = "File '$relative_path' already exists. Skipping";
+          } // if
+          $output->printMessage($message);
           
         } // foreach
       } // if

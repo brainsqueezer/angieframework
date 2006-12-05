@@ -1,6 +1,8 @@
 <?php
 
   /**
+  * Base controller class
+  * 
   * Abstract controller class that implements basic controller logic: action
   * exectution, method protection etc (we don't people play with methods that we
   * are forced to make public - such as __construct, execute etc)
@@ -11,7 +13,18 @@
   abstract class Angie_Controller {
     
     /**
-    * Name of this controller. It is underscored class-name without Controller sufix
+    * Parent engine
+    * 
+    * Engine that created this controller. It is used to generated associated 
+    * paths, extract data from requests and so on
+    *
+    * @var Angie_Engine
+    */
+    protected $engine;
+    
+    /**
+    * Name of this controller. It is underscored class-name without Controller 
+    * sufix
     *
     * @var string
     */
@@ -25,11 +38,12 @@
     private $action;
     
     /**
-    * Specify this property to set what methods will be protected - they will be invisible to 
-    * execute() method. For basic controllers that just inherit abstract controller things 
-    * should work just fine because methods of Angie_Controller class are automaticly 
-    * protected, but for any other complex controller type (like Angie_Controller_Page) more 
-    * methods need to be protected - render(), renderText() etc
+    * Specify this property to set what methods will be protected - they will be 
+    * invisible to execute() method. For basic controllers that just inherit 
+    * abstract controller things should work just fine because methods of 
+    * Angie_Controller class are automaticly protected, but for any other 
+    * complex controller type (like Angie_Controller_Page) more methods need to 
+    * be protected - render(), renderText() etc
     *
     * @var string
     */
@@ -38,26 +52,27 @@
     /**
     * Contruct controller and set controller name
     * 
-    * All methods of Angie_Controller class will be protected (will not be valid action names) unless 
-    * controller that inherits it implement different behavior
+    * All methods of Angie_Controller class will be protected (will not be valid 
+    * action names) unless controller that inherits it implement different 
+    * behavior
     *
     * @param void
     * @return Angie_Controller
     */
     function __construct() {
-      $this->setControllerName(Angie::engine()->getControllerName(get_class($this)));
       $this->setProtectClassMethods('Angie_Controller');
     } // __construct
     
     /**
     * Execute specific controller action
     * 
-    * Action will be executed only if it is valid (action method exists in this controller and it
-    * is not protected by the controller).
+    * Action will be executed only if it is valid (action method exists in this 
+    * controller and it is not protected by the controller).
     *
     * @param string $action
     * @return boolean
-    * @throws Angie_Controller_Error_ActionDnx if action name is not valid or true
+    * @throws Angie_Controller_Error_ActionDnx if action name is not valid or 
+    *   true
     */
     function execute($action) {
       $action = trim(strtolower($action));
@@ -74,10 +89,11 @@
     /**
     * Forward execution from action you are in to specific controller action
     * 
-    * This function lets controller actions to forword to other action without need to redirect
-    * user to that specific action using URL or new console request. $action_name is required
-    * argument, but $controller_name can be left out. If $controller_name is empty or it is the
-    * same name of the current controller $this will be used to execute $action_name
+    * This function lets controller actions to forword to other action without 
+    * need to redirect user to that specific action using URL or new console 
+    * request. $action_name is required argument, but $controller_name can be 
+    * left out. If $controller_name is empty or it is the same name of the 
+    * current controller $this will be used to execute $action_name.
     * 
     * Examples:
     * <pre>class MyController extends PageController {
@@ -102,7 +118,7 @@
       if((trim($controller_name) == '') || ($controller_name == $this->getControllerName())) {
         $this->execute($action_name);
       } else {
-        Angie::engine()->executeAction($controller_name, $action_name);
+        $this->engine->executeAction($controller_name, $action_name);
       } // if
     } // forward
     
@@ -113,8 +129,8 @@
     /**
     * Check if specific $action is valid controller action
     * 
-    * Action is valid if $action method exists in this class and that method is not
-    * protected by the controller
+    * Action is valid if $action method exists in this class and that method is 
+    * not protected by the controller
     *
     * @param string $action
     * @return boolean
@@ -137,12 +153,41 @@
     // -------------------------------------------------------
     
     /**
+    * Get engine
+    *
+    * @param null
+    * @return Angie_Engine
+    */
+    function getEngine() {
+      return $this->engine;
+    } // getEngine
+    
+    /**
+    * Set engine value
+    *
+    * @param Angie_Engine $value
+    * @return null
+    */
+    function setEngine(Angie_Engine $value) {
+      $this->engine = $value;
+      $this->controller_name = $value->getControllerName(get_class($this));
+    } // setEngine
+    
+    /**
     * Get controller_name
     *
     * @param null
     * @return string
     */
     function getControllerName() {
+      if(!$this->controller_name) {
+        if($this->engine instanceof Angie_Engine) {
+          $this->controller_name = $this->engine->getControllerName(get_class($this));
+        } else {
+          $this->controller_name = Angie::engine()->getControllerName(get_class($this));
+        } // if
+      } // if
+      
       return $this->controller_name;
     } // getControllerName
     
@@ -191,8 +236,8 @@
     *
     * @param string $value
     * @return null
-    * @throws InvalidParamError If $value class does not exist. $value class need to be include because
-    *   this method will not use autoloader
+    * @throws InvalidParamError If $value class does not exist. $value class 
+    *   need to be include because this method will not use autoloader
     */
     function setProtectClassMethods($value) {
       if(class_exists($value, false)) {

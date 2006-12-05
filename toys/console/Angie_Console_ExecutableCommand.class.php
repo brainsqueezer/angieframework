@@ -111,6 +111,16 @@
       
       return $result;
     } // defineHelp
+    
+    /**
+    * Returns true if this command is executed with -q or --quiet flags
+    *
+    * @param void
+    * @return boolean
+    */
+    function isQuiet() {
+      return $this->getOption('q', 'quiet');
+    } // isQuiet
   
   } // Angie_Console_ExecutableCommand
 

@@ -52,6 +52,20 @@
     private $base_manager_class_name = null;
     
     /**
+    * Classname of test case class
+    *
+    * @var string
+    */
+    private $test_class_name;
+    
+    /**
+    * Name of the fixtures file, without extension
+    *
+    * @var string
+    */
+    private $fixtures_name;
+    
+    /**
     * Name of the output directory
     * 
     * If NULL plural of entity name will be used
@@ -147,162 +161,44 @@
     } // __construct
     
     /**
-    * Generate classes
+    * Render base object class to a given file
     *
-    * @param Angie_Output $output
-    * @param string $output_dir
-    * @param mixed $additional_options
-    * @return null
+    * @param string $to_file
+    * @return boolean
     */
-    function generate(Angie_Output $output, $output_dir, $additional_options = null) {
-      $quiet = array_var($additional_options, 'quiet');
-      $force = array_var($additional_options, 'force');
-      
-      $base_dir = with_slash($output_dir) . 'base';
-      
-      if(is_dir($base_dir)) {
-        if(!$quiet) {
-          $output->printMessage("Directory '" . get_path_relative_to($base_dir, array_var($additional_options, 'output_dir')) . "' exists. Continue.");
-        } // if
-      } else {
-        if(mkdir($base_dir)) {
-          if(!$quiet) {
-            $output->printMessage("Directory '" . get_path_relative_to($base_dir, array_var($additional_options, 'output_dir')) . "' created");
-          } // if
-        } else {
-          throw new Angie_FileSystem_Error_DirNotWritable($output_dir);
-        } // if
-      } // if
-      
-      if(!folder_is_writable($base_dir)) {
-        throw new Angie_FileSystem_Error_DirNotWritable($base_dir);
-      } // if
-      
-      Angie_DBA_Generator::assignToView('entity', $this);
-      
-      $this->generateBaseObject($output, $base_dir, $additional_options);
-      $this->generateBaseManager($output, $base_dir, $additional_options);
-      $this->generateObject($output, $output_dir, $additional_options);
-      $this->generateManager($output, $output_dir, $additional_options);
-    } // generate
+    function writeBaseObjectClass($to_file) {
+      return file_put_contents($to_file, Angie_DBA_Generator::fetchView('base_object_class'));
+    } // writeBaseObjectClass
     
     /**
-    * Generate base object class
+    * Render base manager class to a given file
     *
-    * @param Angie_Output $output
-    * @param string $output_dir
-    * @param mixed $additional_options
-    * @return null
+    * @param string $to_file
+    * @return boolean
     */
-    private function generateBaseObject(Angie_Output $output, $output_dir, $additional_options = null) {
-      $quiet = array_var($additional_options, 'quiet');
-      
-      $output_file = with_slash($output_dir) . $this->getBaseObjectClassName() . '.class.php';
-      $file_exists = file_exists($output_file);
-      
-      file_put_contents($output_file, Angie_DBA_Generator::fetchView('base_object_class'));
-      
-      if(!$quiet) {
-        if($file_exists) {
-          $output->printMessage("File '" . get_path_relative_to($output_file, array_var($additional_options, 'output_dir')) . "' exists. Overwrite.");
-        } else {
-          $output->printMessage("File '" . get_path_relative_to($output_file, array_var($additional_options, 'output_dir')) . "' created");
-        } // if
-      } // if
-    } // generateBaseObject
+    function writeBaseManagerClass($to_file) {
+      return file_put_contents($to_file, Angie_DBA_Generator::fetchView('base_manager_class'));
+    } // writeBaseManagerClass
     
     /**
-    * Generate base manager class
+    * Render object class to a given file
     *
-    * @param Angie_Output $output
-    * @param string $output_dir
-    * @param mixed $additional_options
-    * @return null
+    * @param string $to_file
+    * @return boolean
     */
-    private function generateBaseManager(Angie_Output $output, $output_dir, $additional_options = null) {
-      $quiet = array_var($additional_options, 'quiet');
-      
-      $output_file = with_slash($output_dir) . $this->getBaseManagerClassName() . '.class.php';
-      $file_exists = file_exists($output_file);
-      
-      file_put_contents($output_file, Angie_DBA_Generator::fetchView('base_manager_class'));
-      
-      if(!$quiet) {
-        if($file_exists) {
-          $output->printMessage("File '" . get_path_relative_to($output_file, array_var($additional_options, 'output_dir')) . "' exists. Overwrite.");
-        } else {
-          $output->printMessage("File '" . get_path_relative_to($output_file, array_var($additional_options, 'output_dir')) . "' created");
-        } // if
-      } // if
-    } // generateBaseManager
+    function writeObjectClass($to_file) {
+      return file_put_contents($to_file, Angie_DBA_Generator::fetchView('object_class'));
+    } // writeObjectClass
     
     /**
-    * Generate object class
+    * Render manager class to a given file
     *
-    * @param Angie_Output $output
-    * @param string $output_dir
-    * @param mixed $additional_options
-    * @return null
+    * @param string $to_file
+    * @return boolean
     */
-    private function generateObject(Angie_Output $output, $output_dir, $additional_options = null) {
-      $quiet = array_var($additional_options, 'quiet');
-      $force = array_var($additional_options, 'force');
-      
-      $output_file = with_slash($output_dir) . $this->getObjectClassName() . '.class.php';
-      
-      if(file_exists($output_file)) {
-        if($force) {
-          if(!$quiet) {
-            $output->printMessage("File '" . get_path_relative_to($output_file, array_var($additional_options, 'output_dir')) . "' exists. Overwrite.");
-          } // if
-        } else {
-          if(!$quiet) {
-            $output->printMessage("File '" . get_path_relative_to($output_file, array_var($additional_options, 'output_dir')) . "' exists. Skip.");
-          } // if
-          return; // skip here...
-        } // if
-      } else {
-        if(!$quiet) {
-          $output->printMessage("File '" . get_path_relative_to($output_file, array_var($additional_options, 'output_dir')) . "' created");
-        } // if
-      } // if
-      
-      file_put_contents($output_file, Angie_DBA_Generator::fetchView('object_class'));
-    } // generateObject
-    
-    /**
-    * Generate manager class
-    *
-    * @param Angie_Output $output
-    * @param string $output_dir
-    * @param mixed $additional_options
-    * @return null
-    */
-    private function generateManager(Angie_Output $output, $output_dir, $additional_options = null) {
-      $quiet = array_var($additional_options, 'quiet');
-      $force = array_var($additional_options, 'force');
-      
-      $output_file = with_slash($output_dir) . $this->getManagerClassName() . '.class.php';
-      
-      if(file_exists($output_file)) {
-        if($force) {
-          if(!$quiet) {
-            $output->printMessage("File '" . get_path_relative_to($output_file, array_var($additional_options, 'output_dir')) . "' exists. Overwrite.");
-          } // if
-        } else {
-          if(!$quiet) {
-            $output->printMessage("File '" . get_path_relative_to($output_file, array_var($additional_options, 'output_dir')) . "' exists. Skip.");
-          } // if
-          return; // skip here...
-        } // if
-      } else {
-        if(!$quiet) {
-          $output->printMessage("File '" . get_path_relative_to($output_file, array_var($additional_options, 'output_dir')) . "' created");
-        } // if
-      } // if
-      
-      file_put_contents($output_file, Angie_DBA_Generator::fetchView('manager_class'));
-    } // generateManager
+    function writeManagerClass($to_file) {
+      return file_put_contents($to_file, Angie_DBA_Generator::fetchView('manager_class'));
+    } // writeManagerClass
     
     // ---------------------------------------------------
     //  Helper methods / Attributes
@@ -948,6 +844,54 @@
     } // setBaseManagerClassName
     
     /**
+    * Get test_class_name
+    *
+    * @param null
+    * @return string
+    */
+    function getTestClassName() {
+      if($this->test_class_name) {
+        return $this->test_class_name;
+      } else {
+        return 'Test' . $this->getManagerClassName();
+      } // if
+    } // getTestClassName
+    
+    /**
+    * Set test_class_name value
+    *
+    * @param string $value
+    * @return null
+    */
+    function setTestClassName($value) {
+      $this->test_class_name = $value;
+    } // setTestClassName
+    
+    /**
+    * Get fixtures_file_name
+    *
+    * @param null
+    * @return string
+    */
+    function getFixturesName() {
+      if($this->fixtures_name) {
+        return $this->fixtures_name;
+      } else {
+        return Angie_Inflector::pluralize($this->getName());
+      } // if
+    } // getFixturesName
+    
+    /**
+    * Set fixtures_file_name value
+    *
+    * @param string $value
+    * @return null
+    */
+    function setFixturesFileName($value) {
+      $this->fixtures_file_name = $value;
+    } // setFixturesFileName
+    
+    /**
     * Get output_dir
     *
     * @param null
@@ -1217,7 +1161,6 @@
       $setter->setEntity($this);
       
       $this->auto_setters[$attribute_name] = $setter;
-      //var_dump($setter->getFieldName());
       
       return $setter;
     } // addAutoSetter

@@ -32,13 +32,6 @@
     private static $entities = array();
     
     /**
-    * Output directory
-    *
-    * @var string
-    */
-    private static $output_dir;
-    
-    /**
     * Template engine used in generation process
     *
     * @var Angie_TemplateEngine
@@ -161,8 +154,9 @@
     * @param string $view_name
     * @return string
     */
-    static function fetchView($view_name) {
-      return self::getTemplateEngine()->fetchView(self::getTemplatePath($view_name));
+    static function fetchView($view_name, $external = false) {
+      $view_path = $external ? $view_name : self::getTemplatePath($view_name);
+      return self::getTemplateEngine()->fetchView($view_path);
     } // fetchView
     
     /**
@@ -171,8 +165,9 @@
     * @param string $view_name
     * @return boolean
     */
-    static function displayView($view_name) {
-      return self::getTemplateEngine()->displayView(self::getTemplatePath($view_name));
+    static function displayView($view_name, $external = false) {
+      $view_path = $external ? $view_name : self::getTemplatePath($view_name);
+      return self::getTemplateEngine()->displayView($view_path);
     } // displayView
     
     // ---------------------------------------------------
@@ -271,26 +266,6 @@
         unset(self::$entities[$name]);
       } // if
     } // removeEntity
-    
-    /**
-    * Get output_dir
-    *
-    * @param null
-    * @return string
-    */
-    static function getOutputDir() {
-      return self::$output_dir;
-    } // getOutputDir
-    
-    /**
-    * Set output_dir value
-    *
-    * @param string $value
-    * @return null
-    */
-    static function setOutputDir($value) {
-      self::$output_dir = $value;
-    } // setOutputDir
   
   } // Angie_DBA_Generator
 

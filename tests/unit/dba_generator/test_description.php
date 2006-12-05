@@ -67,7 +67,22 @@
   $company->hasAndBelongsToMany('tag');
   $tag->hasAndBelongsToMany('company');
   
-  Angie_DBA_Generator::setOutputDir(dirname(__FILE__) . '/output');
-  Angie_DBA_Generator::generate(new Angie_Output_Silent());
+  // Lets generate description...
+  if(is_foreachable(Angie_DBA_Generator::getEntities())) {
+    foreach(Angie_DBA_Generator::getEntities() as $entity) {
+      Angie_DBA_Generator::assignToView('entity', $entity);
+      
+      $entity_output_dir = with_slash(ANGIE_PATH . '/tests/unit/dba_generator/output/') . $entity->getOutputDir();
+      if(!is_dir($entity_output_dir)) {
+        mkdir($entity_output_dir);
+        mkdir($entity_output_dir . '/base/');
+      } // if
+      
+      $entity->writeBaseObjectClass($entity_output_dir . '/base/' . $entity->getBaseObjectClassName() . '.class.php');
+      $entity->writeBaseManagerClass($entity_output_dir . '/base/' . $entity->getBaseManagerClassName() . '.class.php');
+      $entity->writeObjectClass($entity_output_dir . '/' . $entity->getObjectClassName() . '.class.php');
+      $entity->writeManagerClass($entity_output_dir . '/' .$entity->getManagerClassName() . '.class.php');
+    } // foreach
+  } // if
 
 ?>
