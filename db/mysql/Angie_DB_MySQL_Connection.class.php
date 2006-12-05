@@ -90,13 +90,15 @@
       $database = array_var($params, 'name', '');
       $persist  = array_var($params, 'persist', false);
       
-      $link = $persist ? @mysql_pconnect($host, $user, $pass) : @mysql_connect($host, $user, $pass);
+      $link = $persist ? 
+        mysql_pconnect($host, $user, $pass) : 
+        mysql_connect($host, $user, $pass);
         
       if(!is_resource($link)) {
         throw new Angie_DB_Error_Connect($host, $user, $database);
       } // if
       
-      if(!@mysql_select_db($database, $link)) {
+      if(!mysql_select_db($database, $link)) {
         throw new Angie_DB_Error_Connect($host, $user, $database);
       } // if
       

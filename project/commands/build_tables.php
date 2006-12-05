@@ -32,7 +32,7 @@
         self::MODE_REBUILD
       ); // array
       
-      require DEVELOPMENT_PATH . '/model.php';
+      require Angie::engine()->getDevelopmentPath('model.php');
       
       $quiet = (boolean) $this->getOption('q', 'quiet');
       $mode = $this->getOption('m', 'mode');

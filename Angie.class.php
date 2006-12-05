@@ -1,9 +1,11 @@
 <?php
 
   /**
-  * Angie class provides interface to engine instance - object that ties the whole 
-  * project in one system. Angie is able to have multiple engines running at the 
-  * same time
+  * Angie class
+  * 
+  * Angie class provides interface to engine instance - object that ties the 
+  * whole project in one system. Angie is able to have multiple engines running 
+  * at the same time
   *
   * @package Angie
   * @author Ilija Studen <ilija.studen@gmail.com>
@@ -52,7 +54,8 @@
     // ---------------------------------------------------
     
     /**
-    * Load specific environment configuration from specific folder (usuably /config)
+    * Load specific environment configuration from specific folder (usuably 
+    * /config)
     *
     * @param string $where_is_it Where to look for configuration file
     * @param string $environment Name of the environment that we need to load
@@ -81,31 +84,36 @@
     } // loadRoutes
     
     /**
-    * This function will include project engine, construct it and set it under $engine_name
+    * This function will include project engine, construct it and set it under 
+    * $engine_name
     * 
-    * $class_name is the name of the engine class. It is usually camelized project name with Engine sufix but it can be 
-    * changed by user. When engine is constructed it will be set as default engine and returned
+    * $class_name is the name of the engine class. It is usually camelized 
+    * project name with Engine sufix but it can be changed by user. When engine 
+    * is constructed it will be set as default engine and returned
     *
-    * @param string $where_is_it
     * @param string $engine_class
+    * @param string $root_path
+    * @param string $root_url
     * @return Angie_Engine
-    * @throws Angie_FileSystem_Error_FileDnx If engine file is not found
-    * @throws Angie_Core_Error_InvalidInstance If $class_name is not valid engine class
+    * @throws Angie_Core_Error_InvalidInstance If $class_name is not valid 
+    *   engine class
     */
-    static function setProjectEngine($where_is_it, $engine_class) {
-      require_once rtrim($where_is_it, '/') . '/engine.php';
-      
+    static function setProjectEngine($engine_class, $root_path, $root_url) {
       $engine = new $engine_class();
       if(!($engine instanceof Angie_Engine)) {
         throw new Angie_Core_Error_InvalidInstance('engine', $engine, 'Angie_Engine');
       } // if
+      
+      $engine->setRootPath($root_path);
+      $engine->setRootUrl($root_url);
       
       self::setEngine($engine);
       return $engine;
     } // setProjectEngine
     
     /**
-    * Load, construct and set template engine by class name ($template_engine_class)
+    * Load, construct and set template engine by class name 
+    * ($template_engine_class)
     *
     * @param string $template_engine_name
     * @return null
@@ -129,9 +137,11 @@
     /**
     * Return array of available commands
     * 
-    * This function will return an array of available commands by reading content of angies and projects commands folders. 
-    * Project commands are are read later on so they can override any commands available in framework. Result is an array 
-    * where key is command name and value is file where command handler is defined.
+    * This function will return an array of available commands by reading 
+    * content of angies and projects commands folders. Project commands are are 
+    * read later on so they can override any commands available in framework. 
+    * Result is an array where key is command name and value is file where 
+    * command handler is defined.
     *
     * @param void
     * @return array
@@ -142,11 +152,11 @@
       } // if
       
       self::$available_commands = array();
-    
-      $search_in = array(ANGIE_PATH . '/project/commands/');
-      if(defined('DEVELOPMENT_PATH') && is_dir(DEVELOPMENT_PATH . '/scripts/commands/')) {
-        $search_in[] = DEVELOPMENT_PATH . '/scripts/commands/';
-      } // if
+      
+      $search_in = array(
+        ANGIE_PATH . '/project/commands/',
+        Angie::engine()->getDevelopmentPath('scripts/commands/'),
+      ); // array
       
       foreach($search_in as $path) {
         $path = with_slash($path);
@@ -168,9 +178,10 @@
     /**
     * Get command handler class based on command name and construct it
     * 
-    * Conver command name to expected command class and, if class is loaded, construct the handler object. If class is 
-    * not loaded this function will throw an exception. While detecting if class exists this function will use autoload 
-    * function.
+    * Conver command name to expected command class and, if class is loaded, 
+    * construct the handler object. If class is not loaded this function will 
+    * throw an exception. While detecting if class exists this function will use 
+    * autoload function.
     *
     * @param string $command
     * @return Angie_Console_Command
@@ -196,8 +207,8 @@
     // ---------------------------------------------------
     
     /**
-    * Return engine; if $engine_name is NULL default engine is returned, else engine 
-    * will be return from $additional_engines array if available
+    * Return engine; if $engine_name is NULL default engine is returned, else 
+    * engine will be return from $additional_engines array if available
     *
     * @param string $engine_name
     * @return Angie_Engine
@@ -211,8 +222,8 @@
     } // engine
     
     /**
-    * Set specific engine instance. If engine name is provided script will set additional 
-    * engine. If not default engine will be set
+    * Set specific engine instance. If engine name is provided script will set 
+    * additional engine. If not default engine will be set
     *
     * @param Angie_Engine $engine
     * @param string $engine_name If NULL default engine will be set

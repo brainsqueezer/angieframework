@@ -15,6 +15,20 @@
   class Angie_Engine {
     
     /**
+    * Root path
+    *
+    * @var string
+    */
+    private $root_path = '';
+    
+    /**
+    * Project base URL
+    *
+    * @var string
+    */
+    private $root_url = '';
+    
+    /**
     * Request object; it is preapred by init method by default
     *
     * @var Angie_Request
@@ -24,10 +38,11 @@
     /**
     * Construct the engine
     * 
-    * This function will register close() method that will be executed on script 
-    * shutdown
+    * $root_path is path of the project folder. It is used as a base for most 
+    * path generation. Also, this function will register close() method that 
+    * will be executed on script shutdown
     *
-    * @param void
+    * @param string $root_path
     * @return Angie_Engine
     */
     function __construct() {
@@ -126,6 +141,80 @@
     } // getDefaultActionName
     
     // ---------------------------------------------------
+    //  System paths
+    // ---------------------------------------------------
+    
+    /**
+    * Return path relative to development directory
+    *
+    * @param string $rel
+    * @return string
+    */
+    function getDevelopmentPath($rel = '') {
+      return $this->root_path . '/development/' . $rel;
+    } // getDevelopmentPath
+    
+    /**
+    * Return path relative to project directory
+    *
+    * @param string $rel
+    * @return string
+    */
+    function getProjectPath($rel = '') {
+      return $this->root_path . '/project/' . $rel;
+    } // getProjectPath
+    
+    /**
+    * Return path relative to public directory
+    *
+    * @param string $rel
+    * @return string
+    */
+    function getPublicPath($rel = '') {
+      return $this->root_path . '/public/' . $rel;
+    } // getPublicPath
+    
+    /**
+    * Return path relative to vendor directory
+    *
+    * @param string $rel
+    * @return string
+    */
+    function getVendorPath($rel = '') {
+      return $this->root_path . '/vendor/' . $rel;
+    } // getVendorPath
+    
+    /**
+    * Return path relative to applications directory
+    *
+    * @param string $rel
+    * @return string
+    */
+    function getApplicationsPath($rel = '') {
+      return $this->getProjectPath('applications/' . $rel);
+    } // getApplicationsPath
+    
+    /**
+    * Return path relative to config path
+    *
+    * @param string $rel
+    * @return string
+    */
+    function getConfigPath($rel = '') {
+      return $this->getProjectPath('config/' . $rel);
+    } // getConfigPath
+    
+    /**
+    * Return path relative to cache path
+    *
+    * @param string $rel
+    * @return string
+    */
+    function getCachePath($rel = '') {
+      return $this->getProjectPath('cache/' . $rel);
+    } // getCachePath
+    
+    // ---------------------------------------------------
     //  Application level paths
     // ---------------------------------------------------
     
@@ -136,7 +225,7 @@
     * @return string
     */
     function getApplicationPath($application) {
-      return PROJECT_PATH . "/applications/$application";
+      return $this->getApplicationsPath($application);
     } // getApplicationPath
     
     /**
@@ -179,7 +268,7 @@
     * @return string
     */
     function getPublicApplicationPath($application) {
-      return PUBLIC_PATH . "/$application";
+      $this->getPublicPath($application);
     } // getPublicApplicationPath
     
     /**
@@ -452,6 +541,46 @@
     // ---------------------------------------------------
     //  Getters and setters
     // ---------------------------------------------------
+    
+    /**
+    * Get root_path
+    *
+    * @param null
+    * @return string
+    */
+    function getRootPath() {
+      return $this->root_path;
+    } // getRootPath
+    
+    /**
+    * Set root_path value
+    *
+    * @param string $value
+    * @return null
+    */
+    function setRootPath($value) {
+      $this->root_path = $value;
+    } // setRootPath
+    
+    /**
+    * Get root_url
+    *
+    * @param null
+    * @return string
+    */
+    function getRootUrl() {
+      return $this->root_url;
+    } // getRootUrl
+    
+    /**
+    * Set root_url value
+    *
+    * @param string $value
+    * @return null
+    */
+    function setRootUrl($value) {
+      $this->root_url = $value;
+    } // setRootUrl
     
     /**
     * Get request

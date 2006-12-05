@@ -168,7 +168,7 @@
     * @param Angie_Engine $value
     * @return null
     */
-    function setEngine(Angie_Engine $value) {
+    function setEngine($value) {
       $this->engine = $value;
       $this->controller_name = $value->getControllerName(get_class($this));
     } // setEngine

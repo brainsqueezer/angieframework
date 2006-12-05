@@ -198,19 +198,11 @@
     * Construct controller
     *
     * @param void
-    * @return null
+    * @return Angie_Controller_Page
     */
     function __construct() {
       parent::__construct();
       $this->setProtectClassMethods('Angie_Controller_Page');;
-      
-      // Use system set of templates
-      $this->addHelper('form', 'format', 'html', 'page', 'pagination', 'url');
-      
-      // Use controller template if exists
-      if(Angie::engine()->helperExists($this->getControllerName())) {
-        $this->addHelper($this->getControllerName());
-      } // if
     } // __construct
     
     /**
@@ -224,6 +216,14 @@
     * @return boolean
     */
     function execute($action) {
+      // Use system set of templates
+      $this->addHelper('form', 'format', 'html', 'page', 'pagination', 'url');
+      
+      // Use controller template if exists
+      if($this->engine->helperExists($this->getControllerName())) {
+        $this->addHelper($this->getControllerName());
+      } // if
+      
       try {
         $execution = parent::execute($action);
         if($this->getAutoRender()) {
@@ -236,7 +236,7 @@
         $view_name = $action;
         $layout_name = $this->getControllerName();
         
-        if($this->getAutoRender() && Angie::engine()->viewExists($view_name, $layout_name)) {
+        if($this->getAutoRender() && $this->engine->viewExists($view_name, $layout_name)) {
           $this->setView($view_name);
           $this->setLayout($layout_name);
           
@@ -437,14 +437,14 @@
     function getViewPath() {
       $view_value = $this->getView();
       if(is_array($view_value)) {
-        $controller_name = array_var($view_value, 0, Angie::engine()->getDefaultControllerName());
-        $view_name = array_var($view_value, 1, Angie::engine()->getDefaultActionName());
+        $controller_name = array_var($view_value, 0, $this->engine->getDefaultControllerName());
+        $view_name = array_var($view_value, 1, $this->engine->getDefaultActionName());
       } else {
         $controller_name = $this->getControllerName();
         $view_name = trim($view_value) == '' ? $this->getAction() : $view_value;
       } // if
       
-      return Angie::engine()->getViewPath($view_name, $controller_name);
+      return $this->engine->getViewPath($view_name, $controller_name);
     } // getTemplatePath
     
     /**
@@ -458,7 +458,7 @@
     */
     function getLayoutPath() {
       $layout_name = trim($this->getLayout()) == '' ? $this->getControllerName() : $this->getLayout();
-      return Angie::engine()->getLayoutPath($layout_name);
+      return $this->engine->getLayoutPath($layout_name);
     } // getLayoutPath
     
     // -------------------------------------------------------
@@ -543,7 +543,7 @@
           continue;
         } // if
         
-        if(!in_array($helper_name, $this->helpers) && Angie::engine()->useHelper($helper_name)) {
+        if(!in_array($helper_name, $this->helpers) && $this->engine->useHelper($helper_name)) {
           $this->helpers[] = $helper_name;
         } // if
       } // foreach

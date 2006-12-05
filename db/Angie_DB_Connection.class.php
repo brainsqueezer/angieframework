@@ -221,6 +221,21 @@
     function produceTable($name, $fields = array(), $primary_key = array()) {
       return new Angie_DB_Table($name, $fields, $primary_key);
     } // produceTable
+    
+    /**
+    * Drop all tables from database
+    *
+    * @param void
+    * @return null
+    */
+    function emptyDatabase() {
+      $tables = $this->listTables();
+      if(is_foreachable($tables)) {
+        foreach($tables as $table_name) {
+          $this->dropTable($table_name);
+        } // if
+      } // if
+    } // emptyDatabase
   
   } // Angie_DB_Connection
 

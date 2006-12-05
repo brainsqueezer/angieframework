@@ -49,7 +49,7 @@
       )); // Angie_DB_MySQL_Connection
       
       if(empty($file)) {
-        $file = DEVELOPMENT_PATH . '/model.php';
+        $file = Angie::engine()->getDevelopmentPath('model.php');;
       } // if
       
       $all_tables = $connection->describeTables();

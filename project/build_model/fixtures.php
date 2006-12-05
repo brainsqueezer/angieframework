@@ -1,1 +1,1 @@
-# Fixtures file for <?= $entity->getName() ?> entity
+; Fixtures file for <?= $entity->getName() ?> entity

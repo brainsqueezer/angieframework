@@ -1,7 +1,7 @@
 <?php
 
-  class TestPageController extends Angie_Controller_Page {
+  class PageTestController extends Angie_Controller_Page {
   
-  } // TestPageController
+  } // PageTestController
 
 ?>

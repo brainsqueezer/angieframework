@@ -61,7 +61,7 @@
     * @param string $request_string
     * @return Angie_Request
     */
-    function __construct($request_string) {
+    function __construct($request_string = '') {
       $this->setRequestString($request_string);
       $this->process($request_string);
     } // __construct

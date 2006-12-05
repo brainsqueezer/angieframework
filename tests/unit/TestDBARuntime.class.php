@@ -38,27 +38,27 @@
       require_once $this->test_dir . 'output/tags/Tag.class.php';
       require_once $this->test_dir . 'output/tags/Tags.class.php';
       
-      Angie_DB::execute("DROP TABLE IF EXISTS `ac_users`");
-      Angie_DB::execute("DROP TABLE IF EXISTS `ac_companies`");
-      Angie_DB::execute("DROP TABLE IF EXISTS `ac_packages`");
-      Angie_DB::execute("DROP TABLE IF EXISTS `ac_tags`");
-      Angie_DB::execute("DROP TABLE IF EXISTS `ac_companies_tags`");
+      Angie_DB::execute("DROP TABLE IF EXISTS `pm_users`");
+      Angie_DB::execute("DROP TABLE IF EXISTS `pm_companies`");
+      Angie_DB::execute("DROP TABLE IF EXISTS `pm_packages`");
+      Angie_DB::execute("DROP TABLE IF EXISTS `pm_tags`");
+      Angie_DB::execute("DROP TABLE IF EXISTS `pm_companies_tags`");
       
-      Angie_DB::execute("CREATE TABLE `ac_companies` (
+      Angie_DB::execute("CREATE TABLE `pm_companies` (
         `id` smallint(5) unsigned NOT NULL auto_increment,
         `name` varchar(100) NOT NULL default '',
         `created_by_id` smallint(5) unsigned NOT NULL default '0',
         PRIMARY KEY  (`id`)
       ) ENGINE=MEMORY;");
       
-      Angie_DB::execute("CREATE TABLE `ac_packages` (
+      Angie_DB::execute("CREATE TABLE `pm_packages` (
         `id` smallint(5) unsigned NOT NULL auto_increment,
         `name` varchar(100) NOT NULL default '',
         `company_id` smallint(5) unsigned NOT NULL default '0',
         PRIMARY KEY  (`id`)
       ) ENGINE=MEMORY;");
 
-      Angie_DB::execute("CREATE TABLE `ac_users` (
+      Angie_DB::execute("CREATE TABLE `pm_users` (
         `id` smallint(5) unsigned NOT NULL auto_increment,
         `company_id` smallint(5) unsigned NOT NULL default '0',
         `username` varchar(50) NOT NULL default '',
@@ -71,13 +71,13 @@
         PRIMARY KEY  (`id`)
       ) ENGINE=MEMORY");
       
-      Angie_DB::execute("CREATE TABLE `ac_tags` (
+      Angie_DB::execute("CREATE TABLE `pm_tags` (
         `id` smallint(5) unsigned NOT NULL auto_increment,
         `name` varchar(100) NOT NULL default '',
         PRIMARY KEY  (`id`)
       ) ENGINE=MEMORY;");
       
-      Angie_DB::execute("CREATE TABLE `ac_companies_tags` (
+      Angie_DB::execute("CREATE TABLE `pm_companies_tags` (
         `company_id` smallint(5)  NOT NULL,
         `tag_id` smallint(5) unsigned NOT NULL,
         PRIMARY KEY (`company_id`, `tag_id`)
@@ -92,11 +92,11 @@
       delete_dir(dirname(__FILE__) . '/dba_generator/output/tags');
       
       Angie_DBA_Generator::cleanUp();
-      Angie_DB::execute("DROP TABLE `ac_users`");
-      Angie_DB::execute("DROP TABLE `ac_companies`");
-      Angie_DB::execute("DROP TABLE `ac_packages`");
-      Angie_DB::execute("DROP TABLE `ac_tags`");
-      Angie_DB::execute("DROP TABLE `ac_companies_tags`");
+      Angie_DB::execute("DROP TABLE `pm_users`");
+      Angie_DB::execute("DROP TABLE `pm_companies`");
+      Angie_DB::execute("DROP TABLE `pm_packages`");
+      Angie_DB::execute("DROP TABLE `pm_tags`");
+      Angie_DB::execute("DROP TABLE `pm_companies_tags`");
     } // tearDown
     
     function testProtections() {

@@ -21,9 +21,9 @@
       Angie_DBA_Generator::cleanUp();
       Angie_DBA_Generator::assignToView('project_name', Angie::getConfig('project.name'));
       
-      require DEVELOPMENT_PATH . '/model.php';
+      require Angie::engine()->getDevelopmentPath('model.php');
       
-      $output_dir = PROJECT_PATH . '/models';
+      $output_dir = Angie::engine()->getProjectPath('models');
       $force = (boolean) $this->getOption('force');
       
       // Check output directory
@@ -116,7 +116,7 @@
           } // if
           $output->printMessage($message);
           
-          $test_file = DEVELOPMENT_PATH . '/tests/unit/' . $entity->getTestClassName() . '.class.php';
+          $test_file = Angie::engine()->getDevelopmentPath('tests/unit/' . $entity->getTestClassName() . '.class.php');
           $test_file_exists = file_exists($test_file);
           $relative_path = get_path_relative_to($test_file, ROOT_PATH);
           if(!$test_file_exists || $force) {
@@ -130,7 +130,7 @@
           } // if
           $output->printMessage($message);
           
-          $fixtures_file = DEVELOPMENT_PATH . '/tests/fixtures/' . $entity->getFixturesName() . '.ini';
+          $fixtures_file = Angie::engine()->getDevelopmentPath('tests/fixtures/' . $entity->getFixturesName() . '.ini');
           $fixtures_file_exists = file_exists($fixtures_file);
           $relative_path = get_path_relative_to($fixtures_file, ROOT_PATH);
           if(!$fixtures_file_exists || $force) {
