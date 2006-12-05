@@ -58,7 +58,7 @@
         $prefix_len = strlen($prefix);
         foreach($all_tables as $table) {
           if(($prefix_len == 0) || str_starts_with($table->getName(), $prefix)) {
-            $tables[substr($table->getName(), $prefix_len + 3)] = $table;
+            $tables[substr($table->getName(), $prefix_len)] = $table;
           } // if
         } // foreach
       } else {

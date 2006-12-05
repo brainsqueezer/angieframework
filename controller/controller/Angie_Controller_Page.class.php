@@ -205,7 +205,7 @@
       $this->setProtectClassMethods('Angie_Controller_Page');;
       
       // Use system set of templates
-      $this->addHelper('form', 'format', 'html', 'page', 'pagination');
+      $this->addHelper('form', 'format', 'html', 'page', 'pagination', 'url');
       
       // Use controller template if exists
       if(Angie::engine()->helperExists($this->getControllerName())) {
@@ -381,39 +381,25 @@
     // ---------------------------------------------------
     //  Redirection related methods
     // ---------------------------------------------------
-    
+
     /**
-    * Generate project level URL and redirect user to generated URL
-    * 
-    * This function uses getUrlFromArguments() from project engine so its implementation may be different
-    * in different projects. By default it converts set of params:
-    * 
-    * 0 -> controller
-    * 1 -> action
-    * 2 -> array of params
-    * 3 -> anchor
-    * 
-    * Into:
-    * 
-    * PROJECT_URL/controller/action/param_name-param_value/param_name-param_value/#anchor
-    * 
-    * All elements can are optional. If controller and action values are not present default values will 
-    * be used. If there is no params and anchor they will be excluded.
+    * Generate URL from given arguments and redirect to it
     *
-    * @param string $controller
-    * @param string $action
-    * @param array $params
+    * @param string $route_name
+    * @param array $arguments
     * @param string $anchor
+    * @param string $url_base
+    * @param string $qs_separator
     * @return null
     */
-    function redirectTo($controller = DEFAULT_CONTROLLER, $action = DEFAULT_ACTION, $params = null, $anchor = null) {
-      redirect_to(Angie::engine()->getUrlFromArguments(func_get_args()));
+    function redirectTo($route_name, $arguments = null, $anchor = null, $url_base = null, $qs_separator = '&') {
+      redirect_to(url_for($route_name, $arguments, $anchor, $url_base, $qs_separator));
     } // redirectTo
     
     /**
     * Redirect to URL
     * 
-    * Redirect user to $url
+    * Redirect user to the given $url
     *
     * @param string $url
     * @return null
@@ -455,7 +441,7 @@
         $view_name = array_var($view_value, 1, Angie::engine()->getDefaultActionName());
       } else {
         $controller_name = $this->getControllerName();
-        $view_name = trim($view_value) == '' ? Angie::engine()->getDefaultActionName() : $view_value;
+        $view_name = trim($view_value) == '' ? $this->getAction() : $view_value;
       } // if
       
       return Angie::engine()->getViewPath($view_name, $controller_name);

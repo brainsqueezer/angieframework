@@ -150,6 +150,16 @@
     static function getRoutes() {
       return self::$routes;
     } // getRoutes
+    
+    /**
+    * Return route by name
+    *
+    * @param string $name
+    * @return Angie_Route
+    */
+    static function getRoute($name) {
+      return array_var(self::$routes, $name);
+    } // getRoute
   
   } // Angie_Router
 

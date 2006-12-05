@@ -24,7 +24,7 @@
     if($die) {
       die();
     } // if
-  } // end func redirect_to
+  } // redirect_to
   
   /**
   * Redirect to referer

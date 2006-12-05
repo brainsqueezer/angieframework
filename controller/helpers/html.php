@@ -49,13 +49,30 @@
   } // close_html_tag
   
   /**
+  * Return anchor (a) tag
+  *
+  * @param string $text
+  * @param string $href
+  * @param array $attributes
+  * @return string
+  */
+  function anchor_tag($text, $href, $attributes = null) {
+    if(!is_array($attributes)) {
+      $attributes = array();
+    } // if
+    $attributes['href'] = $href;
+    
+    return open_html_tag('a', $attributes) . clean($text) . '</a>';
+  } // anchor_tag
+  
+  /**
   * Return title tag
   *
   * @param string $title
   * @return string
   */
   function title_tag($title) {
-    return open_html_tag('title') . $title . close_html_tag('title');
+    return open_html_tag('title') . $title . '</title>';
   } // title_tag
 
   /**
@@ -145,7 +162,7 @@
       return open_html_tag('script', $attributes) . $content . close_html_tag('script');
     } else {
       $attributes['src'] = $content;
-      return open_html_tag('script', $attributes) . close_html_tag('script');
+      return open_html_tag('script', $attributes) . '</script>';
     } // if
   } // script_tag
   
@@ -164,7 +181,7 @@
       $close = '<![endif]-->';
     } // if
     
-    return $open . open_html_tag('style', array('type' => 'text/css')) . $content . close_html_tag('style') . "\n" . $close;
+    return $open . open_html_tag('style', array('type' => 'text/css')) . $content . '</style>' . "\n" . $close;
   } // style_tag
 
 ?>

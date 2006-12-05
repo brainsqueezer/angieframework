@@ -9,10 +9,6 @@
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
   final class Angie {
-    
-    /** Default controller and action value **/
-    const DEFAULT_CONTROLLER_NAME = 'default';
-    const DEFAULT_ACTION_NAME = 'index';
   
     /**
     * Default engine

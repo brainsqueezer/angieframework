@@ -16,7 +16,7 @@
   $<?= $entity_name ?> = Angie_DBA_Generator::addEntity('<?= $entity_name ?>');
   
 <?php foreach($table->getFields() as $field) { ?>
-<?php if($table->isPrimaryKey($field)) { ?>
+<?php if($table->isPrimaryKey($field) && ($field instanceof Angie_DB_Field_Integer)) { ?>
   $<?= $entity_name ?>->addIdAttribute('<?= $field->getName() ?>', <?= var_export($field->getAutoIncrement()) ?>);
 <?php } elseif($field instanceof Angie_DB_Field_Integer) { ?>
   $<?= $entity_name ?>->addIntAttribute('<?= $field->getName() ?>', <?= var_export($field->getUnsigned()) ?>, <?= var_export($field->getDefaultValue()) ?>, <?= var_export($field->getNotNull()) ?>);

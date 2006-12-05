@@ -95,8 +95,8 @@
     * @return boolean
     */
     function isPrimaryKey($field) {
-      $field_name = $field instanceof Angie_DB_Field ? $field->getName() : $field;
-      return array_var($this->primary_key, $field_name);
+      $field_name = $field instanceof Angie_DB_Field ? $field->getName() : (string) $field;
+      return in_array($field_name, $this->primary_key);
     } // isPrimaryKey
     
     // ---------------------------------------------------

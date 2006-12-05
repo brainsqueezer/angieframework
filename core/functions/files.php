@@ -285,5 +285,16 @@
 		} // if
 		return true;
   } // is_dir_empty
+  
+  /**
+  * Return path relative to a given path
+  *
+  * @param string $path
+  * @param $relative_to
+  * @return string
+  */
+  function get_path_relative_to($path, $relative_to) {
+    return substr($path, strlen($relative_to));
+  } // get_path_relative_to
 
 ?>

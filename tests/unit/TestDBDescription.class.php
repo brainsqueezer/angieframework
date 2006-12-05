@@ -81,6 +81,9 @@
       $this->assertTrue($table instanceof Angie_DB_Table);
       $this->assertEqual($table->getPrimaryKey(), array('id'));
       
+      $this->assertTrue($table->isPrimaryKey('id'));
+      $this->assertFalse($table->isPrimaryKey('title'));
+      
       $id_field = $table->getField('id');
       $this->assertEqual($id_field->getType(), Angie_DB::TYPE_INTEGER);
       $this->assertTrue($id_field->getUnsigned());
@@ -130,6 +133,10 @@
       
       $table_description = $this->database_connection->describeTable($table->getName());
       $this->assertEqual($table_description->getPrimaryKey(), array('user_id', 'project_id'));
+      
+      $this->assertTrue($table_description->isPrimaryKey('user_id'));
+      $this->assertTrue($table_description->isPrimaryKey('project_id'));
+      $this->assertFalse($table_description->isPrimaryKey('title'));
       
       $this->assertTrue($this->database_connection->dropTable($table->getName()));
     } // testCompositePk

@@ -50,53 +50,6 @@
     // ---------------------------------------------------
     
     /**
-    * Generate classes based on description
-    *
-    * @param Angie_Output $output
-    * @param array $options
-    * @return null
-    */
-    static function generate(Angie_Output $output, $options = null) {
-      $quiet = array_var($options, 'quiet');
-      
-      // Check output directory
-      if(!is_dir(self::$output_dir)) {
-        throw new Angie_FileSystem_Error_DirDnx(self::$output_dir);
-      } // if
-      
-      if(!folder_is_writable(self::$output_dir)) {
-        throw new Angie_FileSystem_Error_DirNotWritable(self::$output_dir);
-      } // if
-      
-      if(!$quiet) {
-        $output->printMessage('Output directory exists and is writable', 'ok');
-      } // if
-      
-      // Loop through entities
-      if(is_foreachable(self::$entities)) {
-        foreach(self::$entities as $entity) {
-          $entity_output_dir = with_slash(self::$output_dir) . $entity->getOutputDir();
-          
-          if(is_dir($entity_output_dir)) {
-            if(!$quiet) {
-              $output->printMessage("Directory '" . self::relativeToOutput($entity_output_dir) . "' exists. Continue.");
-            } // if
-          } else {
-            if(mkdir($entity_output_dir)) {
-              if(!$quiet) {
-                $output->printMessage("Directory '" . self::relativeToOutput($entity_output_dir) . "' created");
-              } // if
-            } else {
-              throw new Angie_FileSystem_Error_DirNotWritable(self::$output_dir);
-            } // if
-          } // if
-          
-          $entity->generate($output, $entity_output_dir, $options);
-        } // foreach
-      } // if
-    } // generate
-    
-    /**
     * Return array of database tables produced by this model
     * 
     * This function will walk through entities array and return tables based on them. It will also construct tables for 
@@ -157,16 +110,6 @@
     static function cleanUp() {
       self::$entities = array();
     } // cleanUp
-    
-    /**
-    * This will return only part of the path relative to $output_dir
-    *
-    * @param string $path
-    * @return string
-    */
-    static function relativeToOutput($path) {
-      return substr($path, strlen(self::$output_dir));
-    } // relativeToOutput
     
     // ---------------------------------------------------
     //  Template interface

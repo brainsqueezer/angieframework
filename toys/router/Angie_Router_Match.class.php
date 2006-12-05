@@ -114,6 +114,16 @@
     private function setRoute(Angie_Router_Route $value) {
       $this->route = $value;
     } // setRoute
+    
+    /**
+    * Return array of matches
+    *
+    * @param void
+    * @return array
+    */
+    function getMatches() {
+      return $this->matches;
+    } // getMatches
   
   } // Angie_Router_Match
 

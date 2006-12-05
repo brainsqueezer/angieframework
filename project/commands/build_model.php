@@ -22,15 +22,59 @@
       
       require DEVELOPMENT_PATH . '/model.php';
       
-      $output_directory = PROJECT_PATH . '/models';
+      $output_dir = PROJECT_PATH . '/models';
       
       $options = array(
-        'force' => (boolean) $this->getOption('force'),
-        'quiet' => (boolean) $this->getOption('q', 'quiet'),
+        'force'      => (boolean) $this->getOption('force'),
+        'quiet'      => (boolean) $this->getOption('q', 'quiet'),
+        'output_dir' => $output_dir,
       ); // array
       
-      Angie_DBA_Generator::setOutputDir($output_directory);
-      Angie_DBA_Generator::generate($output, $options);
+      $quiet = array_var($options, 'quiet');
+      $force = array_var($options, 'force');
+      
+      // Check output directory
+      if(!is_dir($output_dir)) {
+        throw new Angie_FileSystem_Error_DirDnx($output_dir);
+      } // if
+      
+      if(!folder_is_writable($output_dir)) {
+        throw new Angie_FileSystem_Error_DirNotWritable($output_dir);
+      } // if
+      
+      if(!$quiet) {
+        $output->printMessage('Output directory exists and is writable', 'ok');
+      } // if
+      
+      // Loop through entities
+      if(is_foreachable(Angie_DBA_Generator::getEntities())) {
+        foreach(Angie_DBA_Generator::getEntities() as $entity) {
+          $entity_output_dir = with_slash($output_dir) . $entity->getOutputDir();
+          
+          if(is_dir($entity_output_dir)) {
+            if(!$quiet) {
+              $output->printMessage("Directory '" . get_path_relative_to($entity_output_dir, $output_dir) . "' exists. Continue.");
+            } // if
+          } else {
+            if(mkdir($entity_output_dir)) {
+              if(!$quiet) {
+                $output->printMessage("Directory '" . get_path_relative_to($entity_output_dir, $output_dir) . "' created");
+              } // if
+            } else {
+              throw new Angie_FileSystem_Error_DirNotWritable(self::$output_dir);
+            } // if
+          } // if
+          
+          $entity->generate($output, $entity_output_dir, $options);
+          
+          $test_file = DEVELOPMENT_PATH . '/tests/unit/' . $entity->getName() . '.php';
+          
+          
+          $fixtures_file = DEVELOPMENT_PATH . '/tests/fixtures/' . $entity->getName() . '.ini';
+          
+        } // foreach
+      } // if
+      
     } // execute
     
     /**
@@ -59,6 +103,16 @@
     function defineDescription() {
       return 'Use model description rebuild model classes';
     } // defineDescription
+    
+    /**
+    * This will return only part of the path relative to $output_dir
+    *
+    * @param string $path
+    * @return string
+    */
+    private function relativeToOutput($path, $ouput_dir) {
+      return substr($path, strlen($output_dir));
+    } // relativeToOutput
   
   } // Angie_Command_BuildModel
 

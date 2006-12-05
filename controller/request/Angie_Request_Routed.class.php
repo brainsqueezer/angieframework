@@ -30,11 +30,16 @@
         $query_string = substr($request_string, $query_string_pos + 1);
       } // if
       
-      $_GET = (array) Angie_Router::match($request_path, $query_string);
-      
-      $this->setApplicationName(array_var($_GET, 'application', Angie::engine()->getDefaultApplicationName()));
-      $this->setControllerName(array_var($_GET, 'controller', Angie::engine()->getDefaultControllerName()));
-      $this->setActionName(array_var($_GET, 'action', Angie::engine()->getDefaultActionName()));
+      $match = Angie_Router::match($request_path, $query_string);
+      if($match instanceof Angie_Router_Match) {
+        $_GET = $match->getMatches();
+        
+        $this->setApplicationName(array_var($_GET, 'application'));
+        $this->setControllerName(array_var($_GET, 'controller'));
+        $this->setActionName(array_var($_GET, 'action'));
+      } else {
+        throw new Angie_Router_Error_Match($request_string, 'Invalid match result returned');
+      } // if
     } // process
   
   } // Angie_Request_Routed
