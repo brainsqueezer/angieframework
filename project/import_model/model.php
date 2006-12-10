@@ -25,7 +25,7 @@
 <?php } elseif($field instanceof Angie_DB_Field_Text) { ?>
   $<?= $entity_name ?>->addTextAttribute('<?= $field->getName() ?>', <?= var_export($field->getDefaultValue()) ?>, <?= var_export($field->getNotNull()) ?>);
 <?php } elseif($field instanceof Angie_DB_Field_Float) { ?>
-  $<?= $entity_name ?>->addFloatAttribute('<?= $field->getName() ?>', <?= var_export($field->getLenght()) ?>, <?= var_export($field->getPrecission()) ?>, <?= var_export($field->getDefaultValue()) ?>, <?= var_export($field->getNotNull()) ?>);
+  $<?= $entity_name ?>->addFloatAttribute('<?= $field->getName() ?>', <?= var_export($field->getLenght()) ?>, <?= var_export($field->getPrecission()) ?>, <?= var_export($field->getUnsigned()) ?>, <?= var_export($field->getDefaultValue()) ?>, <?= var_export($field->getNotNull()) ?>);
 <?php } elseif($field instanceof Angie_DB_Field_Boolean) { ?>
   $<?= $entity_name ?>->addBooleanAttribute('<?= $field->getName() ?>', <?= var_export($field->getDefaultValue()) ?>, <?= var_export($field->getNotNull()) ?>);
 <?php } elseif($field instanceof Angie_DB_Field_DateTime) { ?>

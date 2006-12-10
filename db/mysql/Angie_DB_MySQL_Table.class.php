@@ -26,6 +26,16 @@
     */
     private $collation = null;
     
+    /**
+    * This value is true if this table can use Memory engine
+    * 
+    * When table contains TEXT or BLOB fields it can't be used with memory 
+    * engine.
+    *
+    * @var boolean
+    */
+    private $can_use_memory = true;
+    
     // ---------------------------------------------------
     //  Utils
     // ---------------------------------------------------
@@ -41,7 +51,12 @@
       
       $mysql_version = mysql_get_client_info();
       
-      $engine = 'ENGINE=' . Angie::getConfig('mysql.default_engine', 'MyISAM');
+      $engine = trim($this->getEngine());
+      if(!$engine) {
+        $engine = Angie::getConfig('mysql.default_engine', 'MyISAM');
+      } // if
+      
+      $engine = "ENGINE=$engine";
       $default_charset = '';
       $default_collation = '';
       
@@ -308,6 +323,30 @@
     function setCollation($value) {
       $this->collation = $value;
     } // setCollation
+    
+    /**
+    * Returns true if this table can use memory engine (does not have any TEXT 
+    * or BLOB fields)
+    *
+    * @param void
+    * @return boolean
+    */
+    function getCanUseMemory() {
+      return $this->can_use_memory;
+    } // getCanUseMemory
+    
+    /**
+    * Add a single field to the table
+    *
+    * @param Angie_DB_Field $field
+    * @return Angie_DB_Field
+    */
+    function addField(Angie_DB_Field $field) {
+      if($this->can_use_memory && (($field instanceof Angie_DB_Field_Text) || ($field instanceof Angie_DB_Field_Binary))) {
+        $this->can_use_memory = false;
+      } // if
+      parent::addField($field);
+    } // addField
   
   } // Angie_DB_MySQL_Table
 

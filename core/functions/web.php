@@ -142,5 +142,30 @@
     } // foreach
     return $array;
   } // array_stripslashes
+  
+  /**
+  * Check and set a valid protocol for a given URL
+  * 
+  * This function will check if $url has a protocol part and if it does not have 
+  * it will add it. If $ignore_empty is set to true and $url is an emapty string 
+  * empty string will be returned back (good for optional URL fields).
+  *
+  * @param string $url
+  * @param boolean $ignore_empty
+  * @param string $protocol
+  * @return string
+  */
+  function valid_url_protocol($url, $ignore_empty = false, $protocol = 'http') {
+    $trimmed = trim($url);
+    if(($trimmed == '') && $ignore_empty) {
+      return '';
+    } // if
+    
+    if(strpos($trimmed, '://') === false) {
+      return "$protocol://$trimmed";
+    } else {
+      return $trimmed;
+    } // if
+  } // valid_url_protocol
 
 ?>

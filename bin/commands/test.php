@@ -13,7 +13,11 @@
   } // if
 
   $project_path = array_var($argv, 2, getcwd());
-  if(trim($project_path) == '') {
+  if(trim($project_path) == 'self') {
+    define('TEST_SELF', true);
+    $project_path = getcwd();
+  } elseif(trim($project_path) == '') {
+    define('TEST_SELF', false);
     $project_path = getcwd();
   } // if
   if(!is_dir($project_path)) {

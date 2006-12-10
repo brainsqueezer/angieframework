@@ -32,7 +32,6 @@
       
       if(is_foreachable($development_tables)) {
         foreach($development_tables as $dev_table) {
-          $dev_table->setEngine('Memory');
           $dev_table->buildTable(Angie_DB::getConnection());
         } // foreach
       } // if
@@ -65,6 +64,13 @@
       
       $fixture_file_names = func_get_args();
       if(is_foreachable($fixture_file_names)) {
+        
+        // We will collect reference for rows that need to be updated when all 
+        // data is inserted in this array. Sometimes we need to have all 
+        // fixtures imported in order to resolve connections and insert proper 
+        // inser ID-s
+        $updates = array();
+        
         foreach($fixture_file_names as $fixture_file_name) {
           
           $fixture_file_path = Angie::engine()->getDevelopmentPath("tests/fixtures/$fixture_file_name.ini");
@@ -75,6 +81,7 @@
           $table_name = $connection->escapeTableName("$table_prefix$fixture_file_name");
           
           $data = parse_ini_file($fixture_file_path, true);
+          
           if(is_foreachable($data)) {
             foreach($data as $object_name => $object_data) {
               $escaped_object_data = array();
@@ -91,7 +98,9 @@
                   
                   // ID not logged yet? Keep reference for future update
                   if(is_null($value)) {
-                    if(!is_array($update_fields)) $update_fields = array();
+                    if(!is_array($update_fields)) {
+                      $update_fields = array();
+                    } // if
                     $update_fields[$field] = array(
                       'fixture_name' => $is_insert_id[0],
                       'object_name' => $is_insert_id[1]
@@ -113,28 +122,36 @@
               if($insert_id) {
                 $this->addFixtureInsertId($fixture_file_name, $object_name, $insert_id);
                 if($update_fields) {
-                  $updates[$table_name] = array(
+                  if(!isset($updates[$table_name]) || !is_array($updates[$table_name])) {
+                    $updates[$table_name] = array();
+                  } // if
+                  
+                  $updates[$table_name][] = array(
                     'update_fields' => $update_fields,
                     'row_id'        => $insert_id
                   ); // array
-                }
+                } // if
               } // if
             } // foreach
           } // if
         } // foreach
         
+        //var_dump($updates);
+        
         // Do the update
         if(isset($updates) && is_foreachable($updates)) {
-          foreach($updates as $table => $update_data) {
-            $fields = array();
-            foreach($update_data['update_fields'] as $field_name => $fixture_info) {
-              $value = $this->getFixtureInsertId($fixture_info['fixture_name'], $fixture_info['object_name'], null);
-              if(is_null($value)) {
-                throw new Angie_Error("Fixture $fixture_info[fixture_name]:$fixture_info[object_name] not loaded!");
-              } // if
+          foreach($updates as $table => $update_rows) {
+            foreach($update_rows as $update_data) {
+              $fields = array();
+              foreach($update_data['update_fields'] as $field_name => $fixture_info) {
+                $value = $this->getFixtureInsertId($fixture_info['fixture_name'], $fixture_info['object_name'], null);
+                if(is_null($value)) {
+                  throw new Angie_Error("Fixture $fixture_info[fixture_name]:$fixture_info[object_name] not loaded!");
+                } // if
+              } // foreach
+              $fields[] = $connection->escapeFieldName($field_name) . ' = ' . $connection->escape($value);
+              $connection->execute("UPDATE $table SET " .  implode(', ', $fields) . ' WHERE `id` = ' . $connection->escape($update_data['row_id']));
             } // foreach
-            $fields[] = $connection->escapeFieldName($field_name) . ' = ' . $connection->escape($value);
-            $connection->execute("UPDATE $table SET " .  implode(', ', $fields) . ' WHERE `id` = ' . $connection->escape($update_data['row_id']));
           } // foreach
         } // if
         
