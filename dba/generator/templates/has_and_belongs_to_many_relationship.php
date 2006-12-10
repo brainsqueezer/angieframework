@@ -3,9 +3,15 @@
     * Return collection of <?= $target_entity->getObjectClassName() ?> objects related through <?= $relationship->getJoinTable() ?>
     *
     * @param boolean $reload
+    * @param string $additional_conditions
     * @return array
     */
-    function <?= $relationship->getGetterName() ?>($reload = false) {
+    function <?= $relationship->getGetterName() ?>($reload = false, $additional_conditions = null) {
+      $trimmed_additional_conditions = trim($additional_conditions);
+      if($trimmed_additional_conditions) {
+        $reload = true;
+      } // if
+      
       $cache_key = '<?= $relationship->getName() ?>';
       
       if(isset($this->cache[$cache_key])) {
@@ -20,13 +26,19 @@
       $sql = Angie_DB::getConnection()->prepareString(<?= var_export($relationship->getFinderSql()) ?>, array($this-><?= $relationship->getOwnerEntityPrimaryKeyGetterName() ?>()));
       $this->cache[$cache_key] = <?= $target_entity->getManagerClassName() ?>::findBySql($sql);
 <?php } else { ?>
+      $additional_conditions = $trimmed_additional_conditions == '' ? '' : " AND ($trimmed_additional_conditions)";
       $connection = Angie_DB::getConnection();
       
       $table_prefix = trim(Angie::getConfig('db.table_prefix'));
       $target_table = $connection->escapeTableName($table_prefix . '<?= $target_entity->getTableName() ?>');
       $join_table = $connection->escapeTableName($table_prefix . '<?= $relationship->getJoinTable() ?>');
+<?php if(trim($relationship->getOrder()) == '') { ?>
+      $order = '';
+<?php } else { ?>
+      $order = str_replace('#PREFIX#', Angie::getConfig('db.table_prefix'), ' ORDER BY ' . <?= var_export($relationship->getOrder()) ?>);
+<?php } // if ?>
       
-      $this->cache[$cache_key] = <?= $target_entity->getManagerClassName() ?>::findBySql(sprintf('SELECT %s.* FROM %s, %s WHERE %s.%s = %s AND %s.%s = %s.%s',
+      $this->cache[$cache_key] = <?= $target_entity->getManagerClassName() ?>::findBySql(sprintf('SELECT %s.* FROM %s, %s WHERE (%s.%s = %s AND %s.%s = %s.%s)%s%s',
         $target_table,
         $target_table,
         $join_table,
@@ -36,7 +48,9 @@
         $join_table,
         $connection->escapeFieldName('<?= $relationship->getTargetKey() ?>'),
         $target_table,
-        $connection->escapeFieldName('<?= $relationship->getTargetEntityPrimaryKeyName() ?>')
+        $connection->escapeFieldName('<?= $relationship->getTargetEntityPrimaryKeyName() ?>'),
+        $additional_conditions,
+        $order
       )); // findBySql
 <?php } // if ?>
 
@@ -69,9 +83,15 @@
     * Return number of related <?= $target_entity->getObjectClassName() ?> objects
     *
     * @param boolean $reload
+    * @param string $additional_conditions
     * @return integer
     */
-    function <?= $relationship->getCounterName() ?>($reload = false) {
+    function <?= $relationship->getCounterName() ?>($reload = false, $additional_conditions = null) {
+      $trimmed_additional_conditions = trim($additional_conditions);
+      if($trimmed_additional_conditions) {
+        $reload = true;
+      } // if
+      
       $cache_key = '<?= $relationship->getName() ?>_count';
       
       if(isset($this->cache[$cache_key])) {
@@ -85,11 +105,13 @@
 <?php if(trim($relationship->getCounterSql())) { ?>
       $row = Angie_DB::getConnection()->executeOne(<?= var_export($relationship->getCounterSql()) ?>, $this-><?= $relationship->getOwnerEntityPrimaryKeyGetterName() ?>(), $value-><?= $relationship->getTargetEntityPrimaryKeyGetterName ?>());
 <?php } else { ?>
+      $additional_conditions = $trimmed_additional_conditions == '' ? '' : " AND ($trimmed_additional_conditions)";
       $connection = Angie_DB::getConnection();
-      $row = $connection->executeOne(sprintf("SELECT COUNT(*) AS 'row_count' FROM %s WHERE %s = %s",
+      $row = $connection->executeOne(sprintf("SELECT COUNT(*) AS 'row_count' FROM %s WHERE (%s = %s)%s",
         $connection->escapeTableName(trim(Angie::getConfig('db.table_prefix')) . '<?= $relationship->getJoinTable() ?>'),
         $connection->escapeFieldName('<?= $relationship->getOwnerKey() ?>'),
-        $connection->escape($this-><?= $relationship->getOwnerEntityPrimaryKeyGetterName() ?>())
+        $connection->escape($this-><?= $relationship->getOwnerEntityPrimaryKeyGetterName() ?>()),
+        $additional_conditions
       )); // execute
 <?php } // if ?>
 

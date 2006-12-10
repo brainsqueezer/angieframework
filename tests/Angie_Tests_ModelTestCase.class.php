@@ -19,10 +19,8 @@
     /**
     * Setup model test case
     * 
-    * This function will copy table structure from development database into 
-    * test database. To get better test performance Memory DB engine is used. It 
-    * is important that tearDown method is executed to clean up test database 
-    * after every test
+    * This function will truncate all tables from database table. The whole 
+    * procces is about 4 times faster than complete recreatin of table.
     *
     * @param void
     * @return null
@@ -30,24 +28,14 @@
     function setUp() {
       global $development_tables;
       
+      $connection = Angie_DB::getConnection();
+      
       if(is_foreachable($development_tables)) {
-        foreach($development_tables as $dev_table) {
-          $dev_table->buildTable(Angie_DB::getConnection());
+        foreach($development_tables as $development_table) {
+          $connection->clearTable($development_table->getName());
         } // foreach
       } // if
     } // setUp
-    
-    /**
-    * Tear down model test
-    * 
-    * Drop all data from test database
-    *
-    * @param void
-    * @return null
-    */
-    function tearDown() {
-      Angie_DB::getConnection()->emptyDatabase();
-    } // tearDown
     
     /**
     * Use fixtures

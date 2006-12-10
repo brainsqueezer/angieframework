@@ -538,6 +538,28 @@
       return Angie_Inflector::camelize($controller_name) . 'Controller';
     } // getControllerClass
     
+    /**
+    * Prepare table name in current environment
+    * 
+    * This function will use environment settings and prepare table name - 
+    * prefix it and escape it using the current database connection and settings 
+    * from registry
+    *
+    * @param string $table_name
+    * @param boolean $prefix
+    * @param boolean $escape
+    * @return string
+    */
+    function prepareTableName($table_name, $prefix = true, $escape = true) {
+      if($prefix) {
+        $result = $table_prefix = Angie::getConfig('db.table_prefix') . $table_name;
+      } else {
+        $result = $table_name;
+      } // if
+      
+      return $escape ? Angie_DB::escapeTableName($result) : $result;
+    } // prepareTableName
+    
     // ---------------------------------------------------
     //  Getters and setters
     // ---------------------------------------------------

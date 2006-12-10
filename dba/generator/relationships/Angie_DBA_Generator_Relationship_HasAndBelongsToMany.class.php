@@ -321,6 +321,26 @@
     } // setTargetKey
     
     /**
+    * Get order
+    *
+    * @param null
+    * @return string
+    */
+    function getOrder() {
+      return $this->order;
+    } // getOrder
+    
+    /**
+    * Set order value
+    *
+    * @param string $value
+    * @return null
+    */
+    function setOrder($value) {
+      $this->order = $value;
+    } // setOrder
+    
+    /**
     * Get finder_sql
     *
     * @param null

@@ -202,6 +202,14 @@
     abstract function dropTable($table_name, $only_if_exists = false);
     
     /**
+    * Clear a given table
+    *
+    * @param string $table_name
+    * @return boolean
+    */
+    abstract function clearTable($table_name);
+    
+    /**
     * Syncronise existing table with generator table description
     *
     * @param Angie_DBA_Generator_Table $table

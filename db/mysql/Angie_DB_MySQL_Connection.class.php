@@ -391,6 +391,16 @@
     } // dropTable
     
     /**
+    * Clear a given table
+    *
+    * @param string $table_name
+    * @return boolean
+    */
+    function clearTable($table_name) {
+      return $this->execute("TRUNCATE TABLE " . $this->escapeTableName($table_name));
+    } // clearTable
+    
+    /**
     * Syncronise existing table with generator table description
     *
     * @param Angie_DBA_Generator_Table $table
