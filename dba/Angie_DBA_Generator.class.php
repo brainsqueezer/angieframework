@@ -235,12 +235,16 @@
     /**
     * Add entity
     * 
-    * $entity can be valid Angie_DBA_Generator_Entity or entity name (new entity will be created).
+    * $entity can be valid Angie_DBA_Generator_Entity or entity name (new entity 
+    * will be created). If $id parameter is present it will be used a name for 
+    * unsgined, auto increment integer attribute named with that value. This is 
+    * a simple shortcut for defining most common type of ID field
     *
     * @param mixed $entity
+    * @param string $id
     * @return Angie_DBA_Generator_Entity
     */
-    static function addEntity($entity) {
+    static function addEntity($entity, $id = null) {
       if($entity instanceof Angie_DBA_Generator_Entity) {
         $entity_name = $entity->getName();
         self::$entities[$entity_name] = $entity;
@@ -252,6 +256,11 @@
           throw new Angie_Core_Error_InvalidParamValue('entity', $entity, '$entity should be an entity name or valid entity object');
         } // if
       } // if
+      
+      if($id) {
+        self::$entities[$entity_name]->addIdAttribute($id, true);
+      } // if
+      
       return self::$entities[$entity_name];
     } // addEntity
     

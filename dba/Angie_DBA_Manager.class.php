@@ -30,8 +30,9 @@
       if(count($primary_key) == 1) {
         $conditions = Angie_DB::getConnection()->prepareString($primary_key[0] . ' = ?', array($id));
       } elseif(count($primary_key) > 1) {
+        $conditions = array();
         foreach($primary_key as $pk) {
-          $conditions = Angie_DB::getConnection()->prepareString($pk . ' = ?', array(array_var($id, $pk)));
+          $conditions[] = Angie_DB::getConnection()->prepareString($pk . ' = ?', array(array_var($id, $pk)));
         } // foreach
         $conditions = implode(' AND ', $conditions);
       } // if
