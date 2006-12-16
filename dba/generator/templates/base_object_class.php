@@ -4,7 +4,7 @@
   /**
   * <?= $entity->getBaseObjectClassName() ?> class
   */
-  class <?= $entity->getBaseObjectClassName() ?> extends <?= $entity->getObjectExtends() ?> {
+  abstract class <?= $entity->getBaseObjectClassName() ?> extends <?= $entity->getObjectExtends() ?> {
   
     /**
     * List of primary key fields

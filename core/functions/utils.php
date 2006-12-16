@@ -53,6 +53,8 @@
   function datetimeval($value) {
     if($value instanceof Angie_DateTime) {
       return $value;
+    } elseif($value === null) {
+      return null;
     } else {
       if(is_integer($value)) {
         return new Angie_DateTime($value);
