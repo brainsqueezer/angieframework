@@ -24,7 +24,7 @@
   
   $subcommand = array_var($argv, 1);
   if(trim($subcommand) == '') {
-    die('Subcommand is missing');
+    die("Subcommand is missing\n");
   } // if
   
   if($subcommand == '-h' || $subcommand == '--help') {
@@ -33,7 +33,7 @@
   
   $subcommand_file = ANGIE_BIN_PATH . '/commands/' . $subcommand . '.php';
   if(!is_readable($subcommand_file)) {
-    die("Subcommand '$subcommand' is not recognized");
+    die("Subcommand '$subcommand' is not recognized\n");
   } // if
   
   require_once $subcommand_file;

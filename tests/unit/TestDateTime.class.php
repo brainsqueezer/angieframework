@@ -60,7 +60,7 @@
       $datetime = Angie_DateTime::makeFromString('14 Nov 1984 14:30:15');
       $this->assertEqual($datetime->toMySQL(), '1984-11-14 14:30:15');
       $this->assertEqual($datetime->toISO8601(), '1984-11-14T14:30:15+0000');
-      $this->assertEqual($datetime->toAtom(), '1984-11-14T14:30:15+0000');
+      $this->assertEqual($datetime->toAtom(), '1984-11-14T14:30:15+00:00');
       
       // Problems with this assertation: on some installation (tested on PHP 5.0.4) this
       // function will return 'Wed, 14 Nov 1984 14:30:15 GMT Standard Time' and on some '
@@ -69,7 +69,7 @@
       // 'Wed, 14 Nov 1984 14:30:15 GMT' to make sure that date and the timezone are 
       // recognized. If PHP adds something behind that it would be OK
       //$this->assertEqual($datetime->toRSS(), 'Wed, 14 Nov 1984 14:30:15 GMT');
-      $this->assertTrue(str_starts_with($datetime->toRSS(), 'Wed, 14 Nov 1984 14:30:15 GMT'));
+      $this->assertTrue(str_starts_with($datetime->toRSS(), 'Wed, 14 Nov 1984 14:30:15'));
     } // testFormats
     
     function testIsYesterday() {

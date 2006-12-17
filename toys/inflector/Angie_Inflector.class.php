@@ -49,7 +49,7 @@
     } // pluralize
   
     /**
-    * Return $word in singular form.
+    * Return $word in singular form
     *
     * @param string $word Word in plural
     * @return string Word in singular
@@ -116,14 +116,20 @@
     } // underscore
   
     /**
-    * Returns a human-readable string from $lower_case_and_underscored_word,
-    * by replacing underscores with a space, and by upper-casing the initial characters.
+    * Returns a human-readable string
+    * 
+    * This function will return a human readable string from $str. Input string 
+    * can be in camelized and underscre form. If camelized it will be converted 
+    * to underscore form.
+    * 
+    * Every underscores is replaced with a space and first letter of every word 
+    * is uppercased
     *
-    * @param string $lower_case_and_underscored_word String to be made more readable
-    * @return string Human-readable string
+    * @param string $string
+    * @return string
     */
-    static function humanize($lower_case_and_underscored_word) {
-      return ucwords(str_replace("_"," ",$lower_case_and_underscored_word));
+    static function humanize($string) {
+      return ucwords(str_replace("_", " ", self::underscore($string)));
     } // humanize
     
   } // Angie_Inflector

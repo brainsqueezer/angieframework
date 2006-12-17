@@ -35,6 +35,29 @@
   } // collect_test_from_dir
   
   /**
+  * Handle an exception inside of a console tool
+  *
+  * @param Exception $e
+  * @return null
+  */
+  function console_exception_handler($e) {
+    print 'Exception caught: ' . $e->getMessage() . "\n\n";
+    if($e instanceof Angie_Error) {
+      $params = $e->getParams();
+      if(is_foreachable($params)) {
+        print "Error parameters:\n\n";
+        foreach($params as $param_name => $param_value) {
+          print "$param_name => $param_value\n";
+        } // foreach
+        print "\n";
+      } // if
+    } // if
+    print "Trace:\n\n";
+    print $e->getTraceAsString();
+    print "\n\n";
+  } // console_exception_handler
+  
+  /**
   * Return valid boolean value
   *
   * @param mixed $value

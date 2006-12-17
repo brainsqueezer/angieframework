@@ -3,24 +3,40 @@
   /**
   * Has one relationship
   * 
-  * This relationship is used to describe situation when owner entity object has one (or none) and only one related 
-  * object from a target entity. Options:
+  * This relationship is used to describe situation when owner entity object has 
+  * one (or none) and only one related object from a target entity. Options:
   * 
-  * - name            - Relationship name, inherited from base class. If name is not present script will look for 
-  *                     foreign key and if set remove _id sufix. Else it will just use name of targe entity. 
-  *                     Relationship names are use for generating method names. Example: relationship named 'package' 
-  *                     will result in methods such as getPackage() and setPackage()
-  * - foreign key     - Name of the field in target entity that is for lookup. If it is not set by the user script will 
-  *                     use target entity name + '_id' sufix (Examples: package_id, mentor_id).
-  * - conditions      - Additional conditions that are appended to foreign_key = ID condition. This is ignored if user 
+  * - name            - Relationship name, inherited from base class. If name is 
+  *                     not present script will look for foreign key and if set 
+  *                     remove _id sufix. Else it will just use name of targe 
+  *                     entity.
+  * 
+  *                     Relationship names are use for generating method names. 
+  *                     Example: relationship named 'package' will result in 
+  *                     methods such as getPackage() and setPackage()
+  * 
+  * - foreign key     - Name of the field in target entity that is for lookup. 
+  *                     If it is not set by the user script will use target 
+  *                     entity name + '_id' sufix (Examples: package_id, 
+  *                     mentor_id).
+  * 
+  * - conditions      - Additional conditions that are appended to 
+  *                     foreign_key = ID condition. This is ignored if user 
   *                     provides a full finder SQL.
-  * - order           - Order part of the extraction SQL. It is ignored if finder SQL is provided.
+  * 
+  * - order           - Order part of the extraction SQL. It is ignored if 
+  *                     finder SQL is provided.
+  * 
   * - finder_sql      - Full SQL query that is used for extraction of data.
-  * - on_delete       - This option determins how will script behave when owner object is deleted. There are four 
-  *                     possible behaviors - cascade (related object will be loaded and deleted by calling its delete 
-  *                     methods), delete (related objects will be deleted using a single delete query, don't use this if 
-  *                     an object needs to do some clean-up), nullify (values of foreign keys for related objects will 
-  *                     be reseted to NULL or 0) and do nothing.
+  * 
+  * - on_delete       - This option determins how will script behave when owner 
+  *                     object is deleted. There are four possible behaviors - 
+  *                     cascade (related object will be loaded and deleted by 
+  *                     calling its delete methods), delete (related objects 
+  *                     will be deleted using a single delete query, don't use 
+  *                     this if an object needs to do some clean-up), nullify 
+  *                     (values of foreign keys for related objects will be 
+  *                     reseted to NULL or 0) and do nothing.
   *
   * @package Angie.DBA
   * @subpackage generator.relationships

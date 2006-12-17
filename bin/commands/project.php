@@ -24,18 +24,18 @@
   
   $project_name = array_var($argv, 2);
   if(trim($project_name) == '') {
-    die('Please provide project name');
+    die("Please provide project name\n");
   } // if
   
   $parent_folder_path = array_var($argv, 3, getcwd());
   if(!is_dir($parent_folder_path)) {
-    die("Please provide a path of the folder where you want to create '$project_name' project");
+    die("Please provide a path of the folder where you want to create '$project_name' project\n");
   } // if
   
   $project_path = with_slash($parent_folder_path) . $project_name;
   if(!is_dir($project_path)) {
     if(!mkdir($project_path)) {
-      die("Failed to create '$project_name' folder");
+      die("Failed to create '$project_name' folder\n");
     } // if
   } // if
   

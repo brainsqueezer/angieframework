@@ -59,7 +59,7 @@
       
         // If there is a object set and it is not saved lets forget about previous arangemens (that he'll inform us 
         // when he gets saved) and put a new value
-        $object_from_cache = $this->cache['<?= $relationship->getName() ?>'];
+        $object_from_cache = isset($this->cache['<?= $relationship->getName() ?>']) ? $this->cache['<?= $relationship->getName() ?>'] : null;
         if(($object_from_cache instanceof Angie_DBA_Object) && $object_from_cache->isNew()) {
           $object_from_cache->removeUnsavedRelatedObject('<?= $relationship->getName() ?>', false, $this);
         } // if

@@ -146,6 +146,22 @@
   	private $updated_pks = array();
   	
   	/**
+  	* Construct data object
+  	* 
+  	* This function will construct a new object. If $id is set it will try to 
+  	* load the object from database. $full is used to tell the class to load 
+  	* all object data, including details and is used only when $id is set
+  	*
+  	* @param mixed $id
+  	* @return Angie_DBA_Object
+  	*/
+  	function __construct($id = null, $full = false) {
+  	  if($id !== null) {
+  	    $this->loadById($id, $full);
+  	  } // if
+  	} // __construct
+  	
+  	/**
   	* Validate input data (usualy collected from from)
   	* 
   	* This method is called before the item is saved and can be used to fetch errors in 
@@ -369,9 +385,33 @@
   	} // delete
   	
   	/**
+  	* Load object by ID
+  	*
+  	* @param mixed $id
+  	* @param boolean $full
+  	* @return null
+  	*/
+  	protected function loadById($id, $full = false) {
+  	  $connection = Angie_DB::getConnection();
+  	  
+  	  $fields = array();
+  	  foreach($this->fields as $field) {
+  	    if(!$full && $this->isDetailField($field)) {
+  	      continue;
+  	    } // if
+  	    $fields[] = $connection->escapeFieldName($field);
+  	  } // foreach
+  	  $fields = implode(', ', $fields);
+  	  
+  	  $row = $connection->executeOne("SELECT " . $fields ." FROM " . $this->getTableName(true, true) . " WHERE " . $this->getConditionsById($this->getInitialPkValue()));
+  	  if(is_array($row)) {
+  	    $this->loadFromRow($row);
+  	  } // if
+  	} // loadById
+  	
+  	/**
   	* Load data from database row
   	*
-  	* @access public
   	* @param array $row Database row
   	* @return boolean
   	*/
@@ -383,6 +423,10 @@
   	    
   	    $this->setIsLoaded(true);
   	    $this->notModified();
+  	    
+  	    if(count($row) == count($this->fields)) {
+  	      $this->setDetailsLoaded(true); // details loaded!
+  	    } // if
   	    
   	    return true;
   	  } // if

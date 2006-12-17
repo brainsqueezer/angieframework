@@ -26,13 +26,17 @@
     * @return Angie_DBA_Object
     */
     static function findById($id, $primary_key, $object_class, $table_name, $fields = null) {
+      $connection = Angie_DB::getConnection();
+      
       $conditions = array();
       if(count($primary_key) == 1) {
-        $conditions = Angie_DB::getConnection()->prepareString($primary_key[0] . ' = ?', array($id));
+        $conditions = $connection->prepareString($connection->escapeFieldName($primary_key[0]) . ' = ?', array($id));
+        
+        //$conditions = Angie_DB::getConnection()->prepareString($primary_key[0] . ' = ?', array($id));
       } elseif(count($primary_key) > 1) {
         $conditions = array();
         foreach($primary_key as $pk) {
-          $conditions[] = Angie_DB::getConnection()->prepareString($pk . ' = ?', array(array_var($id, $pk)));
+          $conditions[] = $connection->prepareString($connection->escapeFieldName($pk) . ' = ?', array(array_var($id, $pk)));
         } // foreach
         $conditions = implode(' AND ', $conditions);
       } // if
@@ -120,13 +124,22 @@
       $offset     = (integer) array_var($arguments, 'offset', 0);
       $limit      = (integer) array_var($arguments, 'limit', 0);
       
-      $fields_list = is_array($fields) ? implode(', ', $fields) : '*';
+      $connection = Angie_DB::getConnection();
+      
+      $fields_list = '*';
+      if(is_array($fields)) {
+        $fields_list = array();
+        foreach($fields as $field) {
+          $fields_list[] = $connection->escapeFieldName($field);
+        } // foreach
+        $fields_list = implode(', ', $fields_list);
+      } // if
       
       $where_string = trim($conditions) == '' ? '' : "WHERE $conditions";
       $order_by_string = trim($order_by) == '' ? '' : "ORDER BY $order_by";
       $limit_string = $limit > 0 ? "LIMIT $offset, $limit" : '';
       
-      $escaped_table_name = Angie_DB::getConnection()->escapeTableName($table_prefix . $table_name);
+      $escaped_table_name = $connection->escapeTableName($table_prefix . $table_name);
       return self::findBySQL("SELECT $fields_list FROM $escaped_table_name $where_string $order_by_string $limit_string", $object_class, $one);
     }  // find
     

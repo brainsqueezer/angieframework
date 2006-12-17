@@ -18,12 +18,12 @@
   } // if
   
   if(!is_dir($project_path)) {
-    die('Please provide project path');
+    die("Please provide project path\n");
   } // if
   
   $project_console_file = with_slash($project_path) . 'development/scripts/console.php';
   if(!is_file($project_console_file)) {
-    die("'$project_path' is not a valid Angie project");
+    die("'$project_path' is not a valid Angie project\n");
   } // if
   
   require_once $project_console_file;

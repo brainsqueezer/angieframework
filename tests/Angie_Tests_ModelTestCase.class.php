@@ -60,7 +60,6 @@
         $updates = array();
         
         foreach($fixture_file_names as $fixture_file_name) {
-          
           $fixture_file_path = Angie::engine()->getDevelopmentPath("tests/fixtures/$fixture_file_name.ini");
           if(!is_file($fixture_file_path)) {
             throw new Angie_FileSystem_Error_FileDnx($fixture_file_path);
@@ -69,7 +68,6 @@
           $table_name = $connection->escapeTableName("$table_prefix$fixture_file_name");
           
           $data = parse_ini_file($fixture_file_path, true);
-          
           if(is_foreachable($data)) {
             foreach($data as $object_name => $object_data) {
               $escaped_object_data = array();
@@ -134,7 +132,7 @@
               foreach($update_data['update_fields'] as $field_name => $fixture_info) {
                 $value = $this->getFixtureInsertId($fixture_info['fixture_name'], $fixture_info['object_name'], null);
                 if(is_null($value)) {
-                  throw new Angie_Error("Fixture $fixture_info[fixture_name]:$fixture_info[object_name] not loaded!");
+                  throw new Angie_Error("Fixture $fixture_info[fixture_name]:$fixture_info[object_name] not loaded! Please check if you used '$fixture_info[fixture_name]' fixture in " . get_class($this) . " test case.");
                 } // if
               } // foreach
               $fields[] = $connection->escapeFieldName($field_name) . ' = ' . $connection->escape($value);
@@ -162,6 +160,16 @@
         return false;
       } // if
     } // isInsertIdValue
+    
+    /**
+    * Return all ID-s remembered for a given fixture
+    *
+    * @param string $fixture_name
+    * @return array
+    */
+    function getFixtureInsertIds($fixture_name) {
+      return array_var($this->fixture_insert_ids, $fixture_name);
+    } // getFixtureInsertIds
     
     /**
     * Return value of specific fixture.object insert ID value

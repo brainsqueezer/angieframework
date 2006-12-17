@@ -11,10 +11,11 @@
   class Angie_Error extends Exception {
     
     /**
-    * Return error params (name -> value pairs). General params are file and line
-    * and any specific error have their own params...
+    * Return error params (name -> value pairs)
+    * 
+    * General params are file and line and any specific error have their own 
+    * params (returned through getAdditionalParams() method)...
     *
-    * @access public
     * @param void
     * @return array
     */

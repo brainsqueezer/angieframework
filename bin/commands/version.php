@@ -12,6 +12,6 @@
     return 'Display framework version';
   } // if
 
-  print 'Angie ' . ANGIE_VERSION;
+  print 'Angie ' . ANGIE_VERSION . "\n";
   
 ?>
