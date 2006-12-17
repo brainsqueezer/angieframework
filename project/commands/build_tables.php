@@ -80,6 +80,23 @@
           $table->buildTable($connection);
         } // if
       } // foreach
+      
+      // Ask user to import initial data
+      $initial_data_file = Angie::engine()->getDevelopmentPath('initial_data.php');
+      if(is_file($initial_data_file)) {
+        if($output instanceof Angie_Output_Silent) {
+          print "\n\nInitial data file found. Load it? (y/n)";
+        } else {
+          $output->printMessage('');
+          $output->printMessage("Initial data file found. Load it? (y/n)");
+        } // if
+        
+        $answer = strtolower(trim(fgets(STDIN)));
+        if($answer == 'y') {
+          require $initial_data_file;
+          $output->printMessage("Initial data file found and loaded");
+        } // if
+      } // if
     } // execute
     
     /**
