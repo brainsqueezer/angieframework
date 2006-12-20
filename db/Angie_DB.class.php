@@ -3,9 +3,11 @@
   /**
   * Database interface
   * 
-  * This class is used to provide interface to database library. It is here for compatibility reasons and to better 
-  * integrate Creole with Angie (statement preparation, additional data types like Angie_DateTime support etc). Also, 
-  * this class support usage of multiple database connections through same interface
+  * This class is used to provide interface to database library. It is here for 
+  * compatibility reasons and to better integrate Creole with Angie (statement 
+  * preparation, additional data types like Angie_DateTime support etc). Also, 
+  * this class support usage of multiple database connections through same 
+  * interface
   *
   * @package Angie.DB
   * @author Ilija Studen <ilija.studen@gmail.com>
@@ -24,7 +26,7 @@
     /**
     * Default database connection
     *
-    * @var Connection
+    * @var Angie_DB_Connection
     */
     static private $default_connection;
   
@@ -42,10 +44,12 @@
     /**
     * Execute SQL command
     * 
-    * Use this function to execute any SQL command on given connection (if $connection_name is NULL default connection 
-    * will be used). Possible results:
+    * Use this function to execute any SQL command on given connection (if 
+    * $connection_name is NULL default connection will be used). Possible 
+    * results:
     * 
-    * - commands that return some kind of result (SELECT, SHOW...) return a populated Angie_DB_ResultSet object
+    * - commands that return some kind of result (SELECT, SHOW...) return a 
+    *   populated Angie_DB_ResultSet object
     * - DELETE or UPDATE commants return number of affected rows
     * - INSERT commants return last insert ID
     * - other commants return TRUE on success
@@ -59,14 +63,20 @@
     * @throws Angie_DB_Error_Query
     */
     static function execute($sql, $arguments = null, $connection_name = null) {
-      return self::getConnection($connection_name)->execute($sql, $arguments);
+      if($connection_name === null) {
+        return self::$default_connection->execute($sql, $arguments);
+      } else {
+        return self::getConnection($connection_name)->execute($sql, $arguments);
+      } // if
     } // execute
     
     /**
-    * Execute query that returns result set (SELECT, SHOW etc), but return only first row
+    * Execute query that returns result set (SELECT, SHOW etc), but return only 
+    * first row
     * 
-    * If $arguments is array than they will be used to with $sql to preapre a query, else raw $sql value will be used. 
-    * Optional $connection_name let you select what connection will be used to execute this query
+    * If $arguments is array than they will be used to with $sql to preapre a 
+    * query, else raw $sql value will be used. Optional $connection_name let you 
+    * select what connection will be used to execute this query
     * 
     * This method will limit execution to only one row
     *
@@ -74,27 +84,36 @@
     * @param array $arguments
     * @param string $connection_name
     * @return array
-    * @throws SQLException
+    * @throws Angie_DB_Error_Query
     */
     static function executeOne($sql, $arguments = null, $connection_name = null) {
-      return self::getConnection($connection_name)->executeOne($sql, $arguments);
+      if($connection_name === null) {
+        return self::$default_connection->executeOne($sql, $arguments);
+      } else {
+        return self::getConnection($connection_name)->executeOne($sql, $arguments);
+      } // if
     } // executeOne
     
     /**
-    * Execute query that returns result set (SELECT, SHOW etc) and return all rows
+    * Execute query that returns result set (SELECT, SHOW etc) and return all 
+    * rows
     * 
-    * If $arguments is array than they will be used to with $sql to preapre a query, else raw $sql value will be used. 
-    * Optional $connection_name let you select what connection will be used to execute this query
+    * If $arguments is array than they will be used to with $sql to preapre a 
+    * query, else raw $sql value will be used. Optional $connection_name let you 
+    * select what connection will be used to execute this query
     * 
     * This method will return rows as associative array
     *
-    * @access public
     * @param string $sql
     * @return array
-    * @throws DBQueryError
+    * @throws Angie_DB_Error_Query
     */
     static function executeAll($sql, $arguments = null, $connection_name = null) {
-      return self::getConnection($connection_name)->executeAll($sql, $arguments);
+      if($connection_name === null) {
+        return self::$default_connection->executeAll($sql, $arguments);
+      } else {
+        return self::getConnection($connection_name)->executeAll($sql, $arguments);
+      } // if
     } // executeAll
     
     /**
@@ -102,10 +121,14 @@
     *
     * @param string $connection_name
     * @return boolean
-    * @throws DBQueryError
+    * @throws Angie_DB_Error_Query
     */
-    static function beginWork($connection_name = null) {
-      return self::getConnection($connection_name)->begin();
+    static function begin($connection_name = null) {
+      if($connection_name === null) {
+        return self::$default_connection->begin();
+      } else {
+        return self::getConnection($connection_name)->begin();
+      } // if
     } // beginWork
     
     /**
@@ -113,22 +136,29 @@
     *
     * @param string 
     * @return boolean
-    * @throws DBQueryError
+    * @throws Angie_DB_Error_Query
     */
     static function commit($connection_name = null) {
-      return self::getConnection($connection_name)->commit();
+      if($connection_name === null) {
+        return self::$default_connection->commit();
+      } else {
+        return self::getConnection($connection_name)->commit();
+      } // if
     } // commit
     
     /**
     * Rollback transaction
     *
-    * @access public
     * @param void
     * @return boolean
-    * @throws DBQueryError
+    * @throws Angie_DB_Error_Query
     */
     static function rollback($connection_name = null) {
-      return self::getConnection($connection_name)->rollback();
+      if($connection_name === null) {
+        return self::$default_connection->rollback();
+      } else {
+        return self::getConnection($connection_name)->rollback();
+      } // if
     } // rollback
     
     /**
@@ -139,7 +169,11 @@
     * @return string
     */
     static function escape($unescaped, $connection_name = null) {
-      return self::getConnection($connection_name)->escape($unescaped);
+      if($connection_name === null) {
+        return self::$default_connection->escape($unescaped);
+      } else {
+        return self::getConnection($connection_name)->escape($unescaped);
+      } // if
     } // escape
     
     /**
@@ -150,7 +184,11 @@
     * @return string
     */
     static function escapeFieldName($unescaped, $connection_name = null) {
-      return self::getConnection($connection_name)->escapeFieldName($unescaped);
+      if($connection_name === null) {
+        return self::$default_connection->escapeFieldName($unescaped);
+      } else {
+        return self::getConnection($connection_name)->escapeFieldName($unescaped);
+      } // if
     } // escapeFieldName
     
     /**
@@ -161,19 +199,26 @@
     * @return string
     */
     static function escapeTableName($unescaped, $connection_name = null) {
-      return self::getConnection($connection_name)->escapeTableName($unescaped);
+      if($connection_name === null) {
+        return self::$default_connection->escapeTableName($unescaped);
+      } else {
+        return self::getConnection($connection_name)->escapeTableName($unescaped);
+      } // if
     } // escapeTableName
     
     /**
     * Prepare string
     * 
-    * This function will use $string as base and replace every ? with properly escaped argument. Example:
+    * This function will use $string as base and replace every ? with properly 
+    * escaped argument. Example:
+    * 
     * <pre>
     * Angie_DB::prepareString('username = ? AND homepage = ?', array('Ilija', 'http://www.ilija.biz/'));
     * // For MySQL it will return: username = 'Ilija' AND homepage = 'http://www.ilija.biz/'
     * </pre>
     * 
-    * This function supports all types that are supported by DBA including DateTime, booleans etc.
+    * This function supports all types that are supported by DBA including 
+    * Angie_DateTime, booleans etc.
     *
     * @param string $string
     * @param array $arguments
@@ -181,7 +226,11 @@
     * @return string
     */
     static function prepareString($string, $arguments, $connection_name = null) {
-      return self::getConnection($connection_name)->prepareString($string, $arguments);
+      if($connection_name === null) {
+        return self::$default_connection->prepareString($string, $arguments);
+      } else {
+        return self::getConnection($connection_name)->prepareString($string, $arguments);
+      } // if
     } // prepareString
     
     // ---------------------------------------------------
@@ -191,7 +240,8 @@
     /**
     * Get connection
     * 
-    * If $connection_name is present named (additional) connection will be returned. Else, default connection will be 
+    * If $connection_name is present named (additional) connection will be 
+    * returned. Else, default connection will be 
     * returned
     *
     * @param null
@@ -213,7 +263,8 @@
     /**
     * Set connection value
     * 
-    * If $connection_name value is present we will set additional, named connection. Else we will set default connection
+    * If $connection_name value is present we will set additional, named 
+    * connection. Else we will set default connection
     *
     * @param Angie_DB_Connection $value
     * @param string $connection_name

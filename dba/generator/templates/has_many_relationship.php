@@ -6,15 +6,12 @@
     * @param boolean $full
 <?php if(!$relationship->getFinderSql()) { ?>
     * @param string $additional_conditions
+    * @param string $order
 <?php } // if ?>
     * @return array
     */
-    function <?= $relationship->getGetterName() ?>($reload = false, $full = false<?php if(!$relationship->getFinderSql()) { ?>, $additional_conditions = null<?php } // if ?>) {
-<?php if($relationship->getFinderSql()) { ?>
-      $cache_key = '<?= $relationship->getName() ?>';
-<?php } else { ?>
-      $cache_key = '<?= $relationship->getName() ?>' . (string) $additional_conditions;
-<?php } // if ?>
+    function <?= $relationship->getGetterName() ?>($reload = false, $full = false<?php if(!$relationship->getFinderSql()) { ?>, $additional_conditions = null, $order = null<?php } // if ?>) {
+      $cache_key = "<?= $relationship->getName() ?>$additional_conditions$order";
     
       if(isset($this->cache[$cache_key])) {
         if($reload) {
@@ -40,9 +37,13 @@
         $conditions = "($conditions) AND ($additional_conditions)";
       } // if
       
+      if($order === null) {
+        $order = <?= var_export($relationship->getOrder()) ?>;
+      } // if
+      
       $this->cache[$cache_key] = <?= $target_entity->getManagerClassName() ?>::find(array(
         'conditions' => $conditions,
-        'order' => <?= var_export($relationship->getOrder()) ?>,
+        'order' => $order,
       ), $full); // find
 <?php } // if ?>
 
@@ -59,11 +60,7 @@
     * @return integer
     */
     function <?= $relationship->getCounterName() ?>($reload = false<?php if(!$relationship->getFinderSql()) { ?>, $additional_conditions = null<?php } // if ?>) {
-<?php if($relationship->getFinderSql()) { ?>
-      $cache_key = '<?= $relationship->getName() ?>_count';
-<?php } else { ?>
-      $cache_key = '<?= $relationship->getName() ?>_count' . (string) $additional_conditions;
-<?php } // if ?>
+      $cache_key = "<?= $relationship->getName() ?>$additional_conditions" . '_count';
       
       if(isset($this->cache[$cache_key])) {
         if($reload) {

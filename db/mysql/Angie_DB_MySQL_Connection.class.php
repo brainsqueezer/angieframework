@@ -48,6 +48,24 @@
     private $link;
     
     /**
+    * Transaction counter
+    * 
+    * Every time we open a transaction this indicator is incremented. When we do 
+    * a commit:
+    * 
+    * - If we have only one transaction open we'll commit changes. 
+    * - If more than one open we'll decrement the value of the flag
+    * 
+    * On rollback we do a rollback no matter how many transactions we have open
+    * 
+    * This indicator basically enable us that we have a nested transaction 
+    * support
+    *
+    * @var integer
+    */
+    private $transaction_counter;
+    
+    /**
     * Construct connection
     * 
     * If $params value is present (not NULL) constructor will also try to 
@@ -202,6 +220,7 @@
     * @return null
     */
     function begin() {
+      $this->transaction_counter++;
       return $this->execute('BEGIN WORK');
     } // begin
     
@@ -214,7 +233,10 @@
     * @return null
     */
     function commit() {
-      return $this->execute('COMMIT');
+      $this->transaction_counter--;
+      if($this->transaction_counter == 0) {
+        return $this->execute('COMMIT');
+      } // if
     } // commit
     
     /**
@@ -226,6 +248,7 @@
     * @return null
     */
     function rollback() {
+      $this->transaction_counter = 0;
       return $this->execute('ROLLBACK');
     } // rollback
     

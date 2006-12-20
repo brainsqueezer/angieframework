@@ -158,6 +158,7 @@
   	* @throws Angie_DB_Error_Query
     */
     function delete() {
+      Angie_DB::begin();
 <?php foreach($entity->getRelationships() as $rel) { ?>
 <?php if($rel instanceof Angie_DBA_Generator_Relationship_HasMany) { ?>
 <?php if($rel->getOnDelete() == Angie_DBA_Generator::ON_DELETE_CASCADE) { ?>
@@ -187,7 +188,9 @@
       $this-><?= $rel->getAllRelationsDeleterName() ?>();
 <?php } // if ?>
 <?php } // foreach ?>
-      return parent::delete();
+      $result = parent::delete();
+      Angie_DB::commit();
+      return $result;
     } // delete
 <?php } // if ?>
   

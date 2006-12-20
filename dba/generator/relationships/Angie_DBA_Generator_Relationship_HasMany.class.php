@@ -3,25 +3,35 @@
   /**
   * Has many relationship
   * 
-  * This class describes situation when $entity has a collection of $target_entity related objects. Options for this 
-  * relatinship:
+  * This class describes situation when $entity has a collection of 
+  * $target_entity related objects. Options for this relatinship:
   * 
-  * - name            - Relationship name, inherited from base class. If name is not present script will use plural of 
-  *                     target  entity name. Relationship names are use for generating method names. Example: 
-  *                     relationship named 'owned_companies' will result in methods such as getOwnedCompanies(), 
+  * - name            - Relationship name, inherited from base class. If name is 
+  *                     not present script will use plural of target  entity 
+  *                     name. Relationship names are use for generating method 
+  *                     names. Example: relationship named 'owned_companies' 
+  *                     will result in methods such as getOwnedCompanies(), 
   *                     addOwnedCompany() etc.
-  * - foreign key     - Name of the field in target entity that is for lookup. If it is not set by the user script will 
-  *                     use singular of target entity name + '_id' sufix (Examples: user_id, book_id).
-  * - conditions      - Additional conditions that are appended to foreign_key = ID condition. This is ignored if user 
-  *                     provides a full finder SQL.
-  * - order           - Order part of the extraction SQL. It is ignored if finder SQL is provided.
+  * - foreign key     - Name of the field in target entity that is for lookup. 
+  *                     If it is not set by the user script will use singular of 
+  *                     target entity name + '_id' sufix (Examples: user_id, 
+  *                     book_id).
+  * - conditions      - Additional conditions that are appended to foreign_key 
+  *                     = ID condition. This is ignored if user provides a full 
+  *                     finder SQL.
+  * - order           - Order part of the extraction SQL. It is ignored if 
+  *                     finder SQL is provided.
   * - finder_sql      - Full SQL query that is used for extraction of data.
-  * - counter_sql     - Full SQL query that is used for couinting related entities.
-  * - on_delete       - This option determins how will script behave when owner object is deleted. There are four 
-  *                     possible behaviors - cascade (related object will be loaded and deleted by calling their delete 
-  *                     methods), delete (related objects will be deleted using a single delete query, fast but don't 
-  *                     work if an object needs to do some clean-up), nullify (values of foreign keys for related 
-  *                     objects will be reseted to NULL or 0) and do nothing.
+  * - counter_sql     - Full SQL query that is used for couinting related 
+  *                     entities.
+  * - on_delete       - This option determins how will script behave when owner 
+  *                     object is deleted. There are four possible behaviors - 
+  *                     cascade (related object will be loaded and deleted by 
+  *                     calling their delete methods), delete (related objects 
+  *                     will be deleted using a single delete query, fast but 
+  *                     don't work if an object needs to do some clean-up), 
+  *                     nullify (values of foreign keys for related objects will 
+  *                     be reseted to NULL or 0) and do nothing.
   *
   * @package Angie.DBA
   * @subpackage generator.relationships

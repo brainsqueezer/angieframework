@@ -4,15 +4,16 @@
     *
     * @param boolean $reload
     * @param string $additional_conditions
+    * @param string $order
     * @return array
     */
-    function <?= $relationship->getGetterName() ?>($reload = false, $additional_conditions = null) {
+    function <?= $relationship->getGetterName() ?>($reload = false, $additional_conditions = null, $order = null) {
       $trimmed_additional_conditions = trim($additional_conditions);
       if($trimmed_additional_conditions) {
         $reload = true;
       } // if
       
-      $cache_key = '<?= $relationship->getName() ?>';
+      $cache_key = "<?= $relationship->getName() ?>$trimmed_additional_conditions$order";
       
       if(isset($this->cache[$cache_key])) {
         if($reload) {
@@ -32,11 +33,14 @@
       $table_prefix = trim(Angie::getConfig('db.table_prefix'));
       $target_table = $connection->escapeTableName($table_prefix . '<?= $target_entity->getTableName() ?>');
       $join_table = $connection->escapeTableName($table_prefix . '<?= $relationship->getJoinTable() ?>');
+      
+      if($order === null) {
 <?php if(trim($relationship->getOrder()) == '') { ?>
-      $order = '';
+        $order = '';
 <?php } else { ?>
-      $order = str_replace('#PREFIX#', Angie::getConfig('db.table_prefix'), ' ORDER BY ' . <?= var_export($relationship->getOrder()) ?>);
+        $order = str_replace('#PREFIX#', Angie::getConfig('db.table_prefix'), ' ORDER BY ' . <?= var_export($relationship->getOrder()) ?>);
 <?php } // if ?>
+      } // if
       
       $this->cache[$cache_key] = <?= $target_entity->getManagerClassName() ?>::findBySql(sprintf('SELECT %s.* FROM %s, %s WHERE (%s.%s = %s AND %s.%s = %s.%s)%s%s',
         $target_table,
@@ -92,7 +96,7 @@
         $reload = true;
       } // if
       
-      $cache_key = '<?= $relationship->getName() ?>_count';
+      $cache_key = "<?= $relationship->getName() ?>$trimmed_additional_conditions" . '_count';
       
       if(isset($this->cache[$cache_key])) {
         if($reload) {
