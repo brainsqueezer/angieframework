@@ -392,6 +392,8 @@
   	* @return null
   	*/
   	protected function loadById($id, $full = false) {
+  	  $id = (array) $id;
+  	  
   	  $connection = Angie_DB::getConnection();
   	  
   	  $fields = array();
@@ -403,7 +405,7 @@
   	  } // foreach
   	  $fields = implode(', ', $fields);
   	  
-  	  $row = $connection->executeOne("SELECT " . $fields ." FROM " . $this->getTableName(true, true) . " WHERE " . $this->getConditionsById($this->getInitialPkValue()));
+  	  $row = $connection->executeOne($sql = "SELECT " . $fields ." FROM " . $this->getTableName(true, true) . " WHERE " . $this->getConditionsById($id));
   	  if(is_array($row)) {
   	    $this->loadFromRow($row);
   	  } // if

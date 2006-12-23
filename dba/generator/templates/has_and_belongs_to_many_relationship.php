@@ -3,17 +3,35 @@
     * Return collection of <?= $target_entity->getObjectClassName() ?> objects related through <?= $relationship->getJoinTable() ?>
     *
     * @param boolean $reload
-    * @param string $additional_conditions
-    * @param string $order
+    * @param string $additional
     * @return array
     */
-    function <?= $relationship->getGetterName() ?>($reload = false, $additional_conditions = null, $order = null) {
-      $trimmed_additional_conditions = trim($additional_conditions);
-      if($trimmed_additional_conditions) {
-        $reload = true;
-      } // if
+    function <?= $relationship->getGetterName() ?>($reload = false, $additional = null) {
+      if($additional === null) {
+        $additional_conditions = null;
+        $order = null;
+        $offset = null;
+        $limit = null;
+        $one = null;
       
-      $cache_key = "<?= $relationship->getName() ?>$trimmed_additional_conditions$order";
+        $cache_key = "<?= $relationship->getName() ?>";
+      } elseif(is_string($additional)) {
+        $additional_conditions = trim($additional);
+        $order = null;
+        $offset = null;
+        $limit = null;
+        $one = null;
+        
+        $cache_key = "<?= $relationship->getName() ?>$additional_conditions";
+      } elseif(is_array($additional)) {
+        $additional_conditions = array_var($additional, 'conditions');
+        $order = array_var($additional, 'order');
+        $offset = array_var($additional, 'offset');
+        $limit = array_var($additional, 'limit');
+        $one = array_var($additional, 'one');
+      
+        $cache_key = "<?= $relationship->getName() ?>$additional_conditions-$order-$offset-$limit-$one";
+      } // if
       
       if(isset($this->cache[$cache_key])) {
         if($reload) {
@@ -27,7 +45,7 @@
       $sql = Angie_DB::getConnection()->prepareString(<?= var_export($relationship->getFinderSql()) ?>, array($this-><?= $relationship->getOwnerEntityPrimaryKeyGetterName() ?>()));
       $this->cache[$cache_key] = <?= $target_entity->getManagerClassName() ?>::findBySql($sql);
 <?php } else { ?>
-      $additional_conditions = $trimmed_additional_conditions == '' ? '' : " AND ($trimmed_additional_conditions)";
+      $additional_conditions = $additional_conditions == '' ? '' : " AND ($additional_conditions)";
       $connection = Angie_DB::getConnection();
       
       $table_prefix = trim(Angie::getConfig('db.table_prefix'));
@@ -42,7 +60,12 @@
 <?php } // if ?>
       } // if
       
-      $this->cache[$cache_key] = <?= $target_entity->getManagerClassName() ?>::findBySql(sprintf('SELECT %s.* FROM %s, %s WHERE (%s.%s = %s AND %s.%s = %s.%s)%s%s',
+      $sql_limit = '';
+      if(($offset !== null) && ($limit !== null)) {
+        $sql_limit = " LIMIT $offset, $limit";
+      } // if
+      
+      $objects = <?= $target_entity->getManagerClassName() ?>::findBySql(sprintf('SELECT %s.* FROM %s, %s WHERE (%s.%s = %s AND %s.%s = %s.%s)%s%s%s',
         $target_table,
         $target_table,
         $join_table,
@@ -54,8 +77,11 @@
         $target_table,
         $connection->escapeFieldName('<?= $relationship->getTargetEntityPrimaryKeyName() ?>'),
         $additional_conditions,
-        $order
+        $order,
+        $limit
       )); // findBySql
+      
+      $this->cache[$cache_key] = $one ? array_var($objects, 0) : $objects;
 <?php } // if ?>
 
       $this->cache['<?= $relationship->getName() ?>_count'] = is_array($this->cache[$cache_key]) ? count($this->cache[$cache_key]) : 0;

@@ -5,13 +5,36 @@
     * @param boolean $reload
     * @param boolean $full
 <?php if(!$relationship->getFinderSql()) { ?>
-    * @param string $additional_conditions
-    * @param string $order
+    * @param string $additional
 <?php } // if ?>
     * @return array
     */
-    function <?= $relationship->getGetterName() ?>($reload = false, $full = false<?php if(!$relationship->getFinderSql()) { ?>, $additional_conditions = null, $order = null<?php } // if ?>) {
-      $cache_key = "<?= $relationship->getName() ?>$additional_conditions$order";
+    function <?= $relationship->getGetterName() ?>($reload = false, $full = false<?php if(!$relationship->getFinderSql()) { ?>, $additional = null<?php } // if ?>) {
+      if($additional === null) {
+        $additional_conditions = null;
+        $additional_order = null;
+        $additional_offset = null;
+        $additional_limit = null;
+        $additional_one = null;
+      
+        $cache_key = "<?= $relationship->getName() ?>";
+      } elseif(is_string($additional)) {
+        $additional_conditions = trim($additional);
+        $additional_order = null;
+        $additional_offset = null;
+        $additional_limit = null;
+        $additional_one = null;
+        
+        $cache_key = "<?= $relationship->getName() ?>$additional_conditions";
+      } elseif(is_array($additional)) {
+        $additional_conditions = array_var($additional, 'conditions');
+        $additional_order = array_var($additional, 'order');
+        $additional_offset = array_var($additional, 'offset');
+        $additional_limit = array_var($additional, 'limit');
+        $additional_one = array_var($additional, 'one');
+      
+        $cache_key = "<?= $relationship->getName() ?>$additional_conditions-$additional_order-$additional_offset-$additional_limit-$additional_one";
+      } // if  
     
       if(isset($this->cache[$cache_key])) {
         if($reload) {
@@ -37,13 +60,18 @@
         $conditions = "($conditions) AND ($additional_conditions)";
       } // if
       
-      if($order === null) {
+      if($additional_order === null) {
         $order = <?= var_export($relationship->getOrder()) ?>;
+      } else {
+        $order = $additional_order;
       } // if
       
       $this->cache[$cache_key] = <?= $target_entity->getManagerClassName() ?>::find(array(
         'conditions' => $conditions,
-        'order' => $order,
+        'order'      => $order,
+        'limit'      => $additional_limit,
+        'offset'     => $additional_offset,
+        'one'        => $additional_one,
       ), $full); // find
 <?php } // if ?>
 
