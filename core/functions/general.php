@@ -73,6 +73,24 @@
     } // if
   } // str_replace_first
   
+  /**
+  * Make a passsword out of list of allowed characters with a given length
+  *
+  * @param integer $length
+  * @param string $allowed_chars
+  * @return string
+  */
+  function make_password($length = 10, $allowed_chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789') {
+    $pass = '';
+    $allowed_chars_len = strlen($allowed_chars);
+    
+    for($i = 0; $i < $length; $i++) {
+      $pass .= substr($allowed_chars, rand(0, $allowed_chars_len), 1);
+    } // for
+    
+    return $pass;
+  } // make_password
+  
   // ---------------------------------------------------
   //  Input validation
   // ---------------------------------------------------

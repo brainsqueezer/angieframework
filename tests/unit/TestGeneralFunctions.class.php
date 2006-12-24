@@ -115,6 +115,17 @@
       $new_min_value = $max_from_ini - 10;
       $this->assertEqual(get_max_upload_size($new_min_value, $max_from_ini + 10), $new_min_value);
     } // testGetMaxUploadSize
+    
+    function testMakePassword() {
+      $allowed_chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      
+      $generated_password = make_password(10, $allowed_chars);
+      
+      $this->assertEqual(strlen($generated_password), 10);
+      for($i = 0, $len = strlen($generated_password); $i < $len; $i++) {
+        $this->assertTrue(strpos($allowed_chars, substr($generated_password, $i, 1)) !== false);
+      } // for
+    } // testMakePassword
   
   } // TestGeneralFunctions
 
