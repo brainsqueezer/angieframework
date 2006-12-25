@@ -57,8 +57,9 @@
     */
     static function findBySQL($sql, $object_class, $one) {
       $rows = Angie_DB::getConnection()->executeAll($sql);
-      if(!is_array($rows) || (count($rows) < 1)) {
-        return array();
+      
+      if(!is_foreachable($rows)) {
+        return $one ? null : array();
       } // if
       
       if($one) {
