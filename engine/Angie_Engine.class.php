@@ -52,24 +52,13 @@
     /**
     * Initialization method
     * 
-    * This method is called in init.php before we execute any action. By default 
-    * this method will connect to the database using db. configuration options. 
-    * If you don't wish that kind of behavior just override this method in your 
-    * project engine class
+    * This method is called in init.php before we execute any action
     *
     * @param void
     * @return null
     */
     function init() {
-      if(Angie::getConfig('db.connect_on_init')) {
-        Angie_DB::setConnection(new Angie_DB_MySQL_Connection(array(
-          'hostname' => Angie::getConfig('db.hostname'),
-          'username' => Angie::getConfig('db.username'),
-          'password' => Angie::getConfig('db.password'),
-          'name'     => Angie::getConfig('db.name'),
-          'persist'  => Angie::getConfig('db.persist')
-        ))); // Angie_DB_MySQL_Connection
-      } // if
+      
     } // init
     
     /**

@@ -62,7 +62,8 @@
     */
     function getAdditionalParams() {
       return array(
-        'hostname' => $this->getHost()
+        'hostname' => $this->getHost(),
+        'database' => $this->getDatabase(),
       ); // array
     } // getAdditionalParams
     

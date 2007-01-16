@@ -10,16 +10,19 @@
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
   
+  session_start();
+  
   define('ANGIE_BIN_PATH', dirname(__FILE__));
   require_once realpath(ANGIE_BIN_PATH . '/../init.php');
   
   if(!class_exists('Angie_Console')) {
-    require_once ANGIE_PATH . '/toys/console/Angie_Console.class.php';
-    require_once ANGIE_PATH . '/toys/console/Angie_Console_Command.class.php';
-    require_once ANGIE_PATH . '/toys/console/Angie_Console_ExecutableCommand.class.php';
-    require_once ANGIE_PATH . '/toys/output/Angie_Output.class.php';
-    require_once ANGIE_PATH . '/toys/output/Angie_Output_Console.class.php';
-    require_once ANGIE_PATH . '/toys/output/Angie_Output_Silent.class.php';
+    require ANGIE_PATH . '/toys/console/Angie_Console.class.php';
+    require ANGIE_PATH . '/toys/console/Angie_Console_Command.class.php';
+    require ANGIE_PATH . '/toys/console/Angie_Console_ExecutableCommand.class.php';
+    require ANGIE_PATH . '/toys/console/Angie_Console_GeneratorCommand.class.php';
+    require ANGIE_PATH . '/toys/output/Angie_Output.class.php';
+    require ANGIE_PATH . '/toys/output/Angie_Output_Console.class.php';
+    require ANGIE_PATH . '/toys/output/Angie_Output_Silent.class.php';
   } // if
   
   $subcommand = array_var($argv, 1);

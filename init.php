@@ -33,5 +33,7 @@
   require_once ANGIE_PATH . '/toys/inflector/Angie_Inflector.class.php';
   
   Angie_DateTime::init(); // reset environment timezone and use GMT from now one
+  
+  define('ANGIE_INITED', true);
 
 ?>
