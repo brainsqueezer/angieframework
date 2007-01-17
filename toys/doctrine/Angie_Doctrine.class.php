@@ -8,56 +8,54 @@
   * @author Ilija Studen <ilija.studen@gmail.com>
   */
   class Angie_Doctrine {
-  
+    
     /**
-    * Doctrine manager object
+    * Reference to Doctrine manager instance
     *
     * @var Doctrine_Manager
     */
-    static public $manager;
+    static private $manager = null;
     
     /**
-    * Init doctrine interface
+    * Return Doctrine_Connection for a given connection name
     *
-    * @param void
-    * @return null
-    */
-    static function init() {
-      self::$manager =  Doctrine_Manager::getInstance();
-    } // init
-    
-    /**
-    * Open a new connection
-    *
-    * @param Doctrine_Adapter $adapter
-    * @param string $name
+    * @param string $connection
     * @return Doctrine_Connection
     */
-    static function openConnection($adapter, $name = null) {
-      return self::$manager->openConnection($adapter, $name);
-    } // openConnection
-    
+    function connection($connection) {
+      if(self::$manager === null) {
+        self::$manager = Doctrine_Manager::getInstance();
+      } // if
+      return $manager->getConnection($connection);
+    } // connection
+  
     /**
-    * Return table object with a given name
-    * 
-    * This function assumes that doctrine has a valid connection to the database
+    * Return a Doctrine_Table instance for a given component
     *
-    * @param string $name
+    * @param string $component
+    * @param string $connection
     * @return Doctrine_Table
     */
-    static function getTable($name) {
-      return self::$manager->getCurrentConnection()->getTable($name);
-    } // getTable
+    static function table($component, $connection = null) {
+      if(self::$manager === null) {
+        self::$manager = Doctrine_Manager::getInstance();
+      } // if
+      return self::$manager->getTable($component);
+    } // table
     
     /**
-    * Return array of connection tables
+    * Return query object for a given component
     *
-    * @param void
-    * @return array
+    * @param string $component
+    * @param string $connection
+    * @return Doctrine_Query
     */
-    static function getTables() {
-      return self::$manager->getCurrentConnection()->getTables();
-    } // getTables
+    static function query($component, $connection = null) {
+      if(self::$manager === null) {
+        self::$manager = Doctrine_Manager::getInstance();
+      } // if
+      return self::$manager->getTable($component)->createQuery();
+    } // query
     
   } // Angie_Doctrine
 
