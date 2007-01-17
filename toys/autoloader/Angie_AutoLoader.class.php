@@ -37,6 +37,13 @@
 		private $parse_directories = array();
 		
 		/**
+		* Array of directories that need to be ignored
+		*
+		* @var array
+		*/
+		private $ignore_directories = array();
+		
+		/**
 		* Extension of files that need to be scaned
 		*
 		* @var string
@@ -119,29 +126,41 @@
 		* 	creates an associative array (class name => class file) 
 		* - Generates the array in PHP code and saves it as index file
 		*
-		* @access private
 		* @param param_type $param_name
 		* @throws Exception
 		*/
-		private function createCache() {
-			if(is_array($this->parse_directories) && count($this->parse_directories)) {
-			  foreach($this->parse_directories as $dir) $this->parseDir($dir);
-			} // if
-			$this->createIndexFile();
+		function createCache() {
+		  if(is_foreachable($this->parse_directories)) {
+		    foreach($this->parse_directories as $path_constant => $path) {
+		      $this->parseDir($path, $path_constant);
+		    } // foreach
+		  } // if
+			return $this->createIndexFile();
 		} // createCache
 		
 		/**
 		* Write out to the index file
 		*
-		* @access private
 		* @throws Angie_Error
 		*/
 		private function createIndexFile() {
 			/* generate php index file */
 			$index_content = "<?php\n";
-			foreach($this->class_index as $class_name => $class_file) {
-				$index_content .= "\t\$GLOBALS['autoloader_classes'][". var_export(strtoupper($class_name), true) . "] = " . var_export($class_file, true) . ";\n";
+			
+			foreach($this->class_index as $path_constant => $files) {
+			  if(is_foreachable($files)) {
+			    foreach($files as $class_name => $class_file) {
+			      if(str_starts_with($class_file, $this->parse_directories[$path_constant])) {
+			        $actual_path = $path_constant . " . " . var_export(substr($class_file, strlen($this->parse_directories[$path_constant])), true);
+			      } else {
+			        $actual_path = var_export($class_file, true);
+			      } // if
+			      
+			      $index_content .= "\t\$GLOBALS['" . self::GLOBAL_VAR . "'][". var_export(strtoupper($class_name), true) . "] = " . $actual_path . ";\n";
+			    } // foreach
+			  } // if
 			} // foreach
+			
 			$index_content .= "?>";
 			if(!@file_put_contents($this->getIndexFilename(), $index_content)) {
 				throw new Angie_Error('Could not write to "'.$this->getIndexFilename().'". Make sure, that your webserver has write access to it.');
@@ -155,17 +174,24 @@
 		* Parses a directory for class/interface definitions. Saves found definitions
 		* in $classIndex
 		*
-		* @access private
 		* @param string $directory_path
 		* @throws Exception
 		* @return boolean Success
 		*/
-		private function parseDir($directory_path) {
+		private function parseDir($directory_path, $directory_constant) {
+		  if(in_array(with_slash($directory_path), $this->ignore_directories)) {
+		    return;
+		  } // if
+		  
 		  $directory_path = with_slash($directory_path);
 		  if(in_array($directory_path, $this->parsed_directories)) {
 		    return;
 		  } else {
 		    $this->parsed_directories[] = $directory_path;
+		  } // if
+		  
+		  if(!isset($this->class_index[$directory_constant])) {
+		    $this->class_index[$directory_constant] = array();
 		  } // if
 		  
 		  $dir = dir($directory_path);
@@ -176,12 +202,20 @@
 		    
 		    $path = $directory_path . $entry;
 		    if(is_dir($path)) {
-		      if($this->getIgnoreHiddenFiles() && ($entry[0] == '.')) continue;
-		      if(!is_readable($path)) continue;
-		      $this->parseDir($path);
+		      if($this->getIgnoreHiddenFiles() && ($entry[0] == '.')) {
+		        continue;
+		      } // if
+		      if(!is_readable($path)) {
+		        continue;
+		      } // if
+		      $this->parseDir($path, $directory_constant);
 		    } elseif(is_file($path)) {
-		      if(!is_readable($path)) continue;
-		      if(str_ends_with($path, $this->getScanFileExtension())) $this->parseFile($path);
+		      if(!is_readable($path)) {
+		        continue;
+		      } // if
+		      if(str_ends_with($path, $this->getScanFileExtension())) {
+		        $this->parseFile($path, $directory_constant);
+		      } // if
 		    } // if
 		  } // if
 		  $dir->close();
@@ -194,14 +228,19 @@
 		* @param string path to file
 		* @throws Exception
 		*/
-		private function parseFile($path) {
-			if(!$buf = @file_get_contents($path)) throw new Exception('Couldn\'t read file contents from "'.$path.'".');
+		private function parseFile($path, $path_constant) {
+			if(!$buf = @file_get_contents($path)) {
+			  throw new Exception('Couldn\'t read file contents from "'.$path.'".');
+			} // if
 			
 			/* searching for classes */
-			if(preg_match_all("%(interface|class)\s+(\w+)\s+(extends\s+(\w+)\s+)?(implements\s+\w+\s*(,\s*\w+\s*)*)?{%im", $buf, $result)) {
-				foreach($result[2] as $class_name) {
-				  $this->class_index[$class_name] = str_replace('\\', '/', $path);
-				} // if
+			//if(preg_match_all("%(interface|class)\s+(\w+)\s+(extends\s+(\w+)\s+)?(implements\s+\w+\s*(,\s*\w+\s*)*)?{%im", $buf, $result)) {
+			if(preg_match_all('%(interface|class)\s+(\w+)\s+(extends\s+(\w+)\s+)?(implements\s+\w+\s*(,\s*\w+\s*)*)?{%', $buf, $result)) {
+			  if(isset($result[2]) && is_foreachable($result[2])) {
+  				foreach($result[2] as $class_name) {
+  				  $this->class_index[$path_constant][$class_name] = str_replace('\\', '/', $path);
+  				} // foreach
+			  } // if
 			} // if
 		} // parseFile
 		
@@ -213,11 +252,27 @@
 		* Add directory that need to be scaned
 		*
 		* @param stirng $path Direcotry path
+		* @param string $path_constant
 		* @return null
 		*/
-		function addDir($path) {
-		  if(is_dir($path)) $this->parse_directories[] = $path;
+		function addDir($path, $path_constant) {
+		  if(is_dir($path)) {
+		    $this->parse_directories[$path_constant] = $path;
+		  } // if
 		} // addDir
+		
+		/**
+		* Add a path to ignore list
+		*
+		* @param string $path
+		* @return null
+		*/
+		function addToIgnoreList($path) {
+		  $add_path = with_slash($path);
+		  if(!in_array($add_path, $this->ignore_directories)) {
+		    $this->ignore_directories[] = $add_path;
+		  } // if
+		} // addToIgnoreList
 		
 		/**
 		* Get index_filename

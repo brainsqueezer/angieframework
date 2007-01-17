@@ -175,16 +175,6 @@
     function defineDescription() {
       return 'Use model description rebuild model classes';
     } // defineDescription
-    
-    /**
-    * This will return only part of the path relative to $output_dir
-    *
-    * @param string $path
-    * @return string
-    */
-    private function relativeToOutput($path, $ouput_dir) {
-      return substr($path, strlen($output_dir));
-    } // relativeToOutput
   
   } // Angie_Command_BuildModel
 

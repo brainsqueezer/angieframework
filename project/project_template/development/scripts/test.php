@@ -7,7 +7,7 @@
   * @package <?= $project_name ?>.development
   */
   
-  define('ANGIE_ENVIRONMENT', 'test');
+  define('ANGIE_ENVIRONMENT', 'console');
   require realpath(dirname(__FILE__) . '/../../init.php');
   
   if(!is_dir(ANGIE_PATH . '/vendor/simpletest')) {
