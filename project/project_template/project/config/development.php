@@ -18,6 +18,7 @@
   Angie::setConfig('system.engine', '<?= Angie_Inflector::camelize($project_name) ?>Engine');
   Angie::setConfig('system.template_engine', 'Angie_TemplateEngine_Php');
   Angie::setConfig('system.debugging', true);
+  Angie::setConfig('system.routing', true);
   
   // ---------------------------------------------------
   //  Database connection

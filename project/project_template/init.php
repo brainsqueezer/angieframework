@@ -1,13 +1,11 @@
 <?= '<?php' ?>
 
-
   /**
   * Application initialization file
   * 
-  * Purpose of this file is to initialize project level resources. It will intialize Anige framework, load configuration 
-  * and initialize project (call init() method of project engine).
+  * This file will initialize framwrok, create applicatio engine, load configuration, collect users request etc.
   *
-  * @package <?= $project_name ?>.application
+  * @author Ilija Studen <ilija.studen@gmail.com>
   */
   
   // ---------------------------------------------------
@@ -18,20 +16,20 @@
     define('ROOT_PATH', dirname(__FILE__));
   } // if
   
-  define('DEVELOPMENT_PATH',  ROOT_PATH . '/development');
-  define('PROJECT_PATH',      ROOT_PATH . '/project');
-  define('PUBLIC_PATH',       ROOT_PATH . '/public');
-  define('VENDOR_PATH',       ROOT_PATH . '/vendor');
-  define('APPLICATIONS_PATH', PROJECT_PATH, '/applications');
-  define('CONFIG_PATH',       PROJECT_PATH . '/config');
-  define('CACHE_PATH',        PROJECT_PATH . '/cache');
+  if(!defined('CONFIG_PATH')) {
+    define('CONFIG_PATH', ROOT_PATH . '/project/config');
+  } // if
   
   // ---------------------------------------------------
   //  Init Angie and other system resources
   // ---------------------------------------------------
   
-  require_once 'angie/init.php';
-  require_once PROJECT_PATH . '/functions.php';
+  if(!defined('ANGIE_INITED')) {
+    require 'angie/init.php'; // init only if Angie is not inited
+  } // if
+  
+  require_once ROOT_PATH . '/functions.php';
+  require_once ROOT_PATH . '/engine.php';
   
   // ---------------------------------------------------
   //  Init engine and handle the request if request is
@@ -40,6 +38,8 @@
   // ---------------------------------------------------
   
   Angie::loadConfiguration(CONFIG_PATH, ANGIE_ENVIRONMENT);
+  define('ROOT_URL', Angie::getConfig('project.url')); // just for convinience
+  
   if(Angie::getConfig('system.debugging')) {
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
@@ -48,9 +48,11 @@
     error_reporting(0);
   } // if
   
-  Angie::setProjectEngine(PROJECT_PATH, Angie::getConfig('system.engine'));
+  Angie::setProjectEngine(Angie::getConfig('system.engine'), ROOT_PATH, ROOT_URL);
   Angie::useTemplateEngine(Angie::getConfig('system.template_engine'));
-  Angie::loadRoutes(CONFIG_PATH);
+  if(Angie::getConfig('system.routing')) {
+    Angie::loadRoutes(CONFIG_PATH);
+  } // if
   
   Angie::engine()->init();
   

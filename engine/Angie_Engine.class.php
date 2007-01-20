@@ -257,7 +257,7 @@
     * @return string
     */
     function getPublicApplicationPath($application) {
-      $this->getPublicPath($application);
+      return $this->getPublicPath($application);
     } // getPublicApplicationPath
     
     /**

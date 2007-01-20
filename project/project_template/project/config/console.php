@@ -5,7 +5,7 @@
   //  Project settings
   // ---------------------------------------------------
   
-  Angie::setConfig('project.name', '<?= var_export($project_name) ?>');
+  Angie::setConfig('project.name', '<?= $project_name ?>');
   Angie::setConfig('project.url', '');
   
   // ---------------------------------------------------
@@ -18,6 +18,7 @@
   Angie::setConfig('system.engine', '<?= Angie_Inflector::camelize($project_name) ?>Engine');
   Angie::setConfig('system.template_engine', 'Angie_TemplateEngine_Php');
   Angie::setConfig('system.debugging', true);
+  Angie::setConfig('system.routing', false);
   
   // ---------------------------------------------------
   //  Database connection

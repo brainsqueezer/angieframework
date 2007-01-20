@@ -43,6 +43,6 @@
   $structure_generator->assignToView('project_name', $project_name);
   $structure_generator->copyStructure(ANGIE_PATH . '/project/project_template', $project_path, new Angie_Output_Console(), $parent_folder_path);
   
-  print "Project '$project_name' created";
+  print "Project '$project_name' created\n\n";
 
 ?>

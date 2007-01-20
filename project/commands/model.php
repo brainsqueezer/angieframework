@@ -27,27 +27,16 @@
         return;
       } // if
       
-      $application_name = trim($this->getArgument(1));
-      if($application_name == '') {
-        $output->printMessage('Please insert application name');
-        return;
-      } // if
-      
-      if(!Angie::engine()->applicationExists($application_name)) {
-        $output->printMessage("Application '$application_name' does not exist");
-        return;
-      } // if
-      
       $force = $this->getOption('force');
       
       $model_dir         = Angie::engine()->getProjectPath("models/$model_name");
       $record_class_name = Angie_Inflector::camelize($model_name);
       $record_class_file = "$model_dir/$record_class_name.class.php";
       $table_name        = Angie_Inflector::pluralize($model_name);
-      $table_class_name  = Angie_Inflector::camelize($table_name);
+      $table_class_name  = $record_class_name . 'Table';
       $table_class_file  = "$model_dir/$table_class_name.class.php";
       
-      $this->assignToView('application_name', $application_name);
+      $this->assignToView('project_name', Angie::getConfig('project.name'));
       $this->assignToView('model_name', $model_name);
       $this->assignToView('record_class', $record_class_name);
       $this->assignToView('table_name', $table_name);

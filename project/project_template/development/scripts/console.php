@@ -1,12 +1,14 @@
 <?= '<?php' ?>
 
-
   // ---------------------------------------------------
   //  Init
   // ---------------------------------------------------
 
-  define('ANGIE_ENVIRONMENT', 'development');
-  require_once realpath(dirname(__FILE__) . '/../../init.php');
+  define('ANGIE_ENVIRONMENT', 'console');
+  
+  require realpath(dirname(__FILE__) . '/../../init.php'); // init project
+  
+  set_exception_handler('console_exception_handler');
   
   // ---------------------------------------------------
   //  Welcome
@@ -29,7 +31,7 @@
     
     // If PHP command does not start with any of this keywords we'll prefix a command with return so we can
     // output the commands result
-    $invalid_starts = array('return', 'unset', 'print', 'if', 'foreach', 'for', 'while', 'do');
+    $invalid_starts = array('return', 'unset', 'print', 'if', 'foreach', 'for', 'while', 'do', 'throw');
     
     if($php) {
       print "\nangie+> ";
@@ -67,7 +69,6 @@
       } else {
         print 'Nothing to execute';
       } // if
-      
     } else {
       if($command == 'exit') {
         break;
@@ -77,32 +78,6 @@
       } elseif($command == '<?= '?>' ?>') {
         $php = false;
         print 'PHP mode: Off';
-      } elseif($command == 'e') {
-        if(trim(array_var($peaces, 1))) {
-          $for_eval = trim(substr(implode(' ', $peaces), 2));
-          
-          $return = true;
-          foreach($invalid_starts as $start) {
-            if(str_starts_with($for_eval, $start)) {
-              $return = false;
-            } // if
-          } // foreach
-          
-          $for_eval = $return ? 'return ' . $for_eval : $for_eval;
-          
-          if(!str_ends_with($for_eval, ';')) {
-            $for_eval .= ';';
-          } // if
-          
-          ob_start();
-          $reply = eval($for_eval);
-          if(is_object($reply)) {
-            print 'Object (' . get_class($reply) . ')';
-          } else {
-            var_dump($reply);
-          } // if
-          print trim(ob_get_clean());
-        } // if
       } elseif(in_array($command, array_keys($available_commands))) {
         require_once array_var($available_commands, $command);
         
@@ -111,6 +86,8 @@
           $handler = Angie_Console::prepareCommand($handler, array_slice($peaces, 1));
           if($handler->getOption('h', 'help')) {
             print $handler->defineHelp();
+          } elseif($handler->isQuiet()) {
+            $handler->execute(new Angie_Output_Silent());
           } else {
             $handler->execute(new Angie_Output_Console());
           } // if
@@ -122,6 +99,7 @@
         print "Command '$command' not recognized";
       } // if
     } // if
+    print "\n";
   } while(1);
   die("\n Bye\n");
 

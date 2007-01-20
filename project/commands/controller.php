@@ -47,6 +47,7 @@
       $helper_file_path      = Angie::engine()->getHelperPath($controller_name, $application_name);
       $layout_file_path      = Angie::engine()->getLayoutPath($controller_name, $application_name);
       $views_folder_path     = Angie::engine()->getViewsFolderPath($controller_name, $application_name);
+      $view_file_path        = Angie::engine()->getViewPath('index', $controller_name, $application_name);
       
       if(!$this->createDir($views_folder_path, $output)) {
         return false;
@@ -65,6 +66,9 @@
         return false;
       } // if
       if(!$this->createFile($layout_file_path, $this->fetchContent('controller_templates', 'layout'), $output, $force)) {
+        return false;
+      } // if
+      if(!$this->createFile($view_file_path, $this->fetchContent('controller_templates', 'view'), $output, $force)) {
         return false;
       } // if
       

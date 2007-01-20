@@ -4,7 +4,7 @@
   /**
   * Record class for <?= $model_name ?> model
   *
-  * @package <?= $application_name ?>.model
+  * @package <?= $project_name ?>.model
   */
   class <?= $record_class ?> extends Angie_Doctrine_Record {
   
