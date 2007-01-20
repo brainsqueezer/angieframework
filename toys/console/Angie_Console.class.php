@@ -128,7 +128,7 @@
             if(($pos = strpos($option, '=')) !== false) {
               list($option_name, $option_value) = explode('=', $option);
               if(in_array($option_name . ':', $long_options)) {
-                $options[$option_name] = $option_value;
+                $options[$option_name] = self::processValue($option_value);
               } else {
                 throw new Angie_Console_Error_ArgumentRequired($option);
               } // if
@@ -150,7 +150,7 @@
           // Requires an argument
           } elseif(in_array($option . ':', $short_options)) {
             if(isset($arguments[$k + 1])) {
-              $options[$option] = array_var($arguments, $k + 1, true);
+              $options[$option] = self::processValue(array_var($arguments, $k + 1, true));
               $skip_next = true;
             } else {
               throw new Angie_Console_Error_ArgumentRequired($option);
@@ -163,7 +163,7 @@
           
         // Argument
         } else {
-          $non_options[] = $argument;
+          $non_options[] = self::processValue($argument);
         } // if
       } // foreach
       
@@ -172,6 +172,27 @@
         'options'   => $options,
       ); // array
     } // processCommand
+    
+    /**
+    * Process single value
+    * 
+    * This function is called to process a single value (any value that is not 
+    * a short or long option name)
+    *
+    * @param string
+    * @return mixed
+    */
+    static function processValue($value) {
+      if(is_string($value)) {
+        if(str_starts_with($value, '[') && str_ends_with($value, ']')) {
+          return explode(',', substr($value, 1, strlen($value) - 2));
+        } else {
+          return $value;
+        } // if
+      } else {
+        return $value;
+      } // if
+    } // processValue
   
    
     /**

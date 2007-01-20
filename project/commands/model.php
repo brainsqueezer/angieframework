@@ -21,39 +21,48 @@
     * @return null
     */
     function execute(Angie_Output $output) {
-      $model_name = trim(strtolower($this->getArgument(0)));
-      if($model_name == '') {
+      $input = $this->getArgument(0);
+      if(is_array($input)) {
+        if(count($input) == 0) {
+          $output->printMessage('Model name is required');
+          return;
+        } // if
+      } elseif(trim($input) == '') {
         $output->printMessage('Model name is required');
         return;
       } // if
       
       $force = $this->getOption('force');
       
-      $model_dir         = Angie::engine()->getProjectPath("models/$model_name");
-      $record_class_name = Angie_Inflector::camelize($model_name);
-      $record_class_file = "$model_dir/$record_class_name.class.php";
-      $table_name        = Angie_Inflector::pluralize($model_name);
-      $table_class_name  = $record_class_name . 'Table';
-      $table_class_file  = "$model_dir/$table_class_name.class.php";
-      
-      $this->assignToView('project_name', Angie::getConfig('project.name'));
-      $this->assignToView('model_name', $model_name);
-      $this->assignToView('record_class', $record_class_name);
-      $this->assignToView('table_name', $table_name);
-      $this->assignToView('table_class', $table_class_name);
-      
-      if(!$this->createDir($model_dir, $output)) {
-        return;
+      $model_names = is_array($input) ? $input : array($input);
+      foreach($model_names as $model_name) {
+        $model_dir              = Angie::engine()->getProjectPath("models/$model_name");
+        $record_class_name      = Angie_Inflector::camelize($model_name);
+        $record_class_file      = "$model_dir/$record_class_name.class.php";
+        $table_name             = Angie_Inflector::pluralize($model_name);
+        $table_class_name       = $record_class_name . 'Table';
+        $table_class_file       = "$model_dir/$table_class_name.class.php";
+        $fixtures_file          = Angie::engine()->getDevelopmentPath("tests/fixtures/$model_name.ini");
+        $unit_test_class_name   = 'Test' . $record_class_name;
+        $unit_test_file         = Angie::engine()->getDevelopmentPath("tests/unit/$unit_test_class_name.class.php");
+        
+        $this->assignToView('project_name', Angie::getConfig('project.name'));
+        $this->assignToView('model_name', $model_name);
+        $this->assignToView('record_class', $record_class_name);
+        $this->assignToView('table_name', $table_name);
+        $this->assignToView('table_class', $table_class_name);
+        $this->assignToView('unit_test_class', $unit_test_class_name);
+        
+        if(!$this->createDir($model_dir, $output)) {
+          return;
+        } // if
+        $this->createFile($record_class_file, $this->fetchContent('model_templates', 'record'), $output, $force);
+        $this->createFile($table_class_file, $this->fetchContent('model_templates', 'table'), $output, $force);
+        $this->createFile($fixtures_file, $this->fetchContent('model_templates', 'fixtures'), $output, $force);
+        $this->createFile($unit_test_file, $this->fetchContent('model_templates', 'test'), $output, $force);
+        
+        $output->printMessage("Model $model_name created");
       } // if
-      if(!$this->createFile($record_class_file, $this->fetchContent('model_templates', 'record'), $output, $force)) {
-        return;
-      } // if
-      if(!$this->createFile($table_class_file, $this->fetchContent('model_templates', 'table'), $output, $force)) {
-        return;
-      } // if
-      
-      $output->printMessage("Model $model_name created");
-      return;
     } // execute
     
     /**

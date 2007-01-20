@@ -1,0 +1,1 @@
+; Fixtures file for <?= $model_name ?> entity
