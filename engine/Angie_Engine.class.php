@@ -75,7 +75,7 @@
       $request = $this->getRequest();
       if($request instanceof Angie_Request) {
         require_once $this->getApplicationInitfilePath($request->getApplicationName()); // init
-        $this->executeAction($request->getControllerName(), $request->getActionName()); // execute
+        $this->executeAction($request->getControllerName(), $request->getActionName(), $request->getApplicationName()); // execute
       } else {
         throw new Angie_Core_Error_InvalidInstance('this->request', $this->request, '$this->request should be object of Angie_Request class');
       } // if
@@ -466,7 +466,7 @@
     * @return Angie_Controller
     */
     function getController($controller_name, $application_name = null) {
-      $application = is_null($application_name) ? $this->getRequest()->getApplicationName() : $application_name;
+      $application = $application_name === null ? $this->getRequest()->getApplicationName() : $application_name;
       
       $controller_class = $this->getControllerClass($controller_name);
       $controller_file = $this->getControllerPath($controller_class, true, $application);

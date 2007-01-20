@@ -10,7 +10,7 @@
 <?php if(isset($app_controller_class) && $app_controller_class) { ?>
   class <?= $controller_class_name ?> extends <?= $app_controller_class ?> {
 <?php } else { ?>
-  class <?= $controller_class_name ?> {
+  class <?= $controller_class_name ?> extends Angie_Controller_Page {
 <?php } // if ?>
   
     // Put your actions here

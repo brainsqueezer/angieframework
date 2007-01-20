@@ -55,7 +55,7 @@
       $app_controller_file_path = Angie::engine()->getControllerPath($app_controller_class, true, $application_name);
       $app_helper_file_path     = Angie::engine()->getHelperPath($application_name, $application_name);
       $app_layout_file_path     = Angie::engine()->getLayoutPath($application_name, $application_name);
-      $app_view_file_path        = Angie::engine()->getViewPath('index', $application_name, $application_name);
+      $app_view_file_path       = Angie::engine()->getViewPath('index', $application_name, $application_name);
       $init_file_path           = Angie::engine()->getApplicationInitfilePath($application_name);
       
       $this->assignToView('application_name', $application_name);
